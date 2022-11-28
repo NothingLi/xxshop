@@ -1,0 +1,18 @@
+FROM alpine:3.15
+ENV LANG=en_US.UTF-8
+
+RUN BASE_URL="https://github.com/sgerrand/alpine-pkg-glibc/releases/download" && \
+    PACKAGE_VERSION="2.34-r0" && \
+    BASE_PACKAGE="glibc-$PACKAGE_VERSION.apk" && \
+    BIN_PACKAGE="glibc-bin-$PACKAGE_VERSION.apk" && \
+    I18N_PACKAGE="glibc-i18n-$PACKAGE_VERSION.apk" && \
+    apk add --no-cache --virtual=.build-dependencies ca-certificates && \
+    wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub && \
+    wget -q $BASE_URL/$PACKAGE_VERSION/$BASE_PACKAGE $BASE_URL/$PACKAGE_VERSION/$BIN_PACKAGE $BASE_URL/$PACKAGE_VERSION/$I18N_PACKAGE && \
+    apk add --no-cache $BASE_PACKAGE $BIN_PACKAGE $I18N_PACKAGE && \
+    rm /etc/apk/keys/sgerrand.rsa.pub && \
+    /usr/glibc-compat/bin/localedef -i en_US -f UTF-8 en_US.UTF-8 && \
+    echo "export LANG=$LANG" > /etc/profile.d/locale.sh && \
+    apk del glibc-i18n && \
+    apk del .build-dependencies && \
+    rm $BASE_PACKAGE $BIN_PACKAGE $I18N_PACKAGE \
