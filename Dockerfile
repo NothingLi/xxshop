@@ -1,4 +1,4 @@
-FROM alpine_glibc_jre8
+FROM harbor.bielai.top/library/alpine_glibc_jre8
 WORKDIR /app
 
 ENV TZ=Asia/Shanghai
