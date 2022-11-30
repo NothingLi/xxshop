@@ -1,11 +1,4 @@
-/**
- * 严肃声明：
- * 开源版本请务必保留此注释头信息，若删除我方将保留所有法律责任追究！
- * 本软件已申请软件著作权，受国家版权局知识产权以及国家计算机软件著作权保护！
- * 可正常分享和学习源码，不得用于违法犯罪活动，违者必究！
- * Copyright (c) 2019-2021 十三 all rights reserved.
- * 版权所有，侵权必究！
- */
+
 package top.bielai.shop.api.mall;
 
 import io.swagger.annotations.Api;
@@ -21,8 +14,8 @@ import top.bielai.shop.common.Constants;
 import top.bielai.shop.common.ServiceResultEnum;
 import top.bielai.shop.common.XxShopException;
 import top.bielai.shop.config.annotation.TokenToShopUser;
-import top.bielai.shop.entity.ShopUser;
-import top.bielai.shop.entity.ShopUserAddress;
+import top.bielai.shop.domain.XxShopUser;
+import top.bielai.shop.domain.XxShopUserAddress;
 import top.bielai.shop.service.XxShopOrderService;
 import top.bielai.shop.service.XxShopShoppingCartService;
 import top.bielai.shop.service.XxShopUserAddressService;
@@ -51,7 +44,7 @@ public class XxShopOrderAPI {
 
     @PostMapping("/saveOrder")
     @ApiOperation(value = "生成订单接口", notes = "传参为地址id和待结算的购物项id数组")
-    public Result<String> saveOrder(@ApiParam(value = "订单参数") @RequestBody SaveOrderParam saveOrderParam, @TokenToShopUser ShopUser loginShopUser) {
+    public Result<String> saveOrder(@ApiParam(value = "订单参数") @RequestBody SaveOrderParam saveOrderParam, @TokenToShopUser XxShopUser loginShopUser) {
         int priceTotal = 0;
         if (saveOrderParam == null || saveOrderParam.getCartItemIds() == null || saveOrderParam.getAddressId() == null) {
             XxShopException.fail(ServiceResultEnum.PARAM_ERROR.getResult());
@@ -86,7 +79,7 @@ public class XxShopOrderAPI {
 
     @GetMapping("/order/{orderNo}")
     @ApiOperation(value = "订单详情接口", notes = "传参为订单号")
-    public Result<XxShopOrderDetailVO> orderDetailPage(@ApiParam(value = "订单号") @PathVariable("orderNo") String orderNo, @TokenToShopUser ShopUser loginShopUser) {
+    public Result<XxShopOrderDetailVO> orderDetailPage(@ApiParam(value = "订单号") @PathVariable("orderNo") String orderNo, @TokenToShopUser XxShopUser loginShopUser) {
         return ResultGenerator.genSuccessResult(xxShopOrderService.getOrderDetailByOrderNo(orderNo, loginShopUser.getUserId()));
     }
 
@@ -94,7 +87,7 @@ public class XxShopOrderAPI {
     @ApiOperation(value = "订单列表接口", notes = "传参为页码")
     public Result<PageResult<List<XxShopOrderListVO>>> orderList(@ApiParam(value = "页码") @RequestParam(required = false) Integer pageNumber,
                             @ApiParam(value = "订单状态:0.待支付 1.待确认 2.待发货 3:已发货 4.交易成功") @RequestParam(required = false) Integer status,
-                            @TokenToShopUser ShopUser loginShopUser) {
+                            @TokenToShopUser XxShopUser loginShopUser) {
         Map params = new HashMap(8);
         if (pageNumber == null || pageNumber < 1) {
             pageNumber = 1;
@@ -110,7 +103,7 @@ public class XxShopOrderAPI {
 
     @PutMapping("/order/{orderNo}/cancel")
     @ApiOperation(value = "订单取消接口", notes = "传参为订单号")
-    public Result cancelOrder(@ApiParam(value = "订单号") @PathVariable("orderNo") String orderNo, @TokenToShopUser ShopUser loginShopUser) {
+    public Result cancelOrder(@ApiParam(value = "订单号") @PathVariable("orderNo") String orderNo, @TokenToShopUser XxShopUser loginShopUser) {
         String cancelOrderResult = xxShopOrderService.cancelOrder(orderNo, loginShopUser.getUserId());
         if (ServiceResultEnum.SUCCESS.getResult().equals(cancelOrderResult)) {
             return ResultGenerator.genSuccessResult();
@@ -121,7 +114,7 @@ public class XxShopOrderAPI {
 
     @PutMapping("/order/{orderNo}/finish")
     @ApiOperation(value = "确认收货接口", notes = "传参为订单号")
-    public Result finishOrder(@ApiParam(value = "订单号") @PathVariable("orderNo") String orderNo, @TokenToShopUser ShopUser loginShopUser) {
+    public Result finishOrder(@ApiParam(value = "订单号") @PathVariable("orderNo") String orderNo, @TokenToShopUser XxShopUser loginShopUser) {
         String finishOrderResult = xxShopOrderService.finishOrder(orderNo, loginShopUser.getUserId());
         if (ServiceResultEnum.SUCCESS.getResult().equals(finishOrderResult)) {
             return ResultGenerator.genSuccessResult();

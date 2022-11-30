@@ -1,11 +1,4 @@
-/**
- * 严肃声明：
- * 开源版本请务必保留此注释头信息，若删除我方将保留所有法律责任追究！
- * 本软件已申请软件著作权，受国家版权局知识产权以及国家计算机软件著作权保护！
- * 可正常分享和学习源码，不得用于违法犯罪活动，违者必究！
- * Copyright (c) 2019-2021 十三 all rights reserved.
- * 版权所有，侵权必究！
- */
+
 package top.bielai.shop.api.mall;
 
 import io.swagger.annotations.Api;
@@ -18,6 +11,7 @@ import top.bielai.shop.api.mall.vo.XxShopIndexCategoryVO;
 import top.bielai.shop.common.ServiceResultEnum;
 import top.bielai.shop.common.XxShopException;
 import top.bielai.shop.service.XxShopCategoryService;
+import top.bielai.shop.service.XxShopGoodsCategoryService;
 import top.bielai.shop.util.Result;
 import top.bielai.shop.util.ResultGenerator;
 
@@ -31,6 +25,9 @@ public class XxShopGoodsCategoryAPI {
 
     @Resource
     private XxShopCategoryService xxShopCategoryService;
+
+    @Resource
+    private XxShopGoodsCategoryService categoryService;
 
     @GetMapping("/categories")
     @ApiOperation(value = "获取分类数据", notes = "分类页面使用")

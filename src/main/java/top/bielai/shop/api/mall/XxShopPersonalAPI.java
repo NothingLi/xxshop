@@ -1,11 +1,4 @@
-/**
- * 严肃声明：
- * 开源版本请务必保留此注释头信息，若删除我方将保留所有法律责任追究！
- * 本软件已申请软件著作权，受国家版权局知识产权以及国家计算机软件著作权保护！
- * 可正常分享和学习源码，不得用于违法犯罪活动，违者必究！
- * Copyright (c) 2019-2021 十三 all rights reserved.
- * 版权所有，侵权必究！
- */
+
 package top.bielai.shop.api.mall;
 
 import io.swagger.annotations.Api;
@@ -22,7 +15,7 @@ import top.bielai.shop.api.mall.vo.XxShopUserVO;
 import top.bielai.shop.common.Constants;
 import top.bielai.shop.common.ServiceResultEnum;
 import top.bielai.shop.config.annotation.TokenToShopUser;
-import top.bielai.shop.entity.ShopUser;
+import top.bielai.shop.domain.XxShopUser;
 import top.bielai.shop.service.XxShopUserService;
 import top.bielai.shop.util.BeanUtil;
 import top.bielai.shop.util.NumberUtil;
@@ -65,7 +58,7 @@ public class XxShopPersonalAPI {
 
     @PostMapping("/user/logout")
     @ApiOperation(value = "登出接口", notes = "清除token")
-    public Result<String> logout(@TokenToShopUser ShopUser loginShopUser) {
+    public Result<String> logout(@TokenToShopUser XxShopUser loginShopUser) {
         Boolean logoutResult = xxShopUserService.logout(loginShopUser.getUserId());
 
         logger.info("logout api,loginShopUser={}", loginShopUser.getUserId());
@@ -99,7 +92,7 @@ public class XxShopPersonalAPI {
 
     @PutMapping("/user/info")
     @ApiOperation(value = "修改用户信息", notes = "")
-    public Result updateInfo(@RequestBody @ApiParam("用户信息") ShopUserUpdateParam mallUserUpdateParam, @TokenToShopUser ShopUser loginShopUser) {
+    public Result updateInfo(@RequestBody @ApiParam("用户信息") ShopUserUpdateParam mallUserUpdateParam, @TokenToShopUser XxShopUser loginShopUser) {
         Boolean flag = xxShopUserService.updateUserInfo(mallUserUpdateParam, loginShopUser.getUserId());
         if (flag) {
             //返回成功
@@ -114,7 +107,7 @@ public class XxShopPersonalAPI {
 
     @GetMapping("/user/info")
     @ApiOperation(value = "获取用户信息", notes = "")
-    public Result<XxShopUserVO> getUserDetail(@TokenToShopUser ShopUser loginShopUser) {
+    public Result<XxShopUserVO> getUserDetail(@TokenToShopUser XxShopUser loginShopUser) {
         //已登录则直接返回
         XxShopUserVO mallUserVO = new XxShopUserVO();
         BeanUtil.copyProperties(loginShopUser, mallUserVO);

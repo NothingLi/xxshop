@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.bielai.shop.mapper.XxShopUserMapper">
+
+    <resultMap id="BaseResultMap" type="top.bielai.shop.domain.XxShopUser">
+            <id property="userId" column="user_id" jdbcType="BIGINT"/>
+            <result property="nickName" column="nick_name" jdbcType="VARCHAR"/>
+            <result property="loginName" column="login_name" jdbcType="VARCHAR"/>
+            <result property="passwordMd5" column="password_md5" jdbcType="VARCHAR"/>
+            <result property="introduceSign" column="introduce_sign" jdbcType="VARCHAR"/>
+            <result property="isDeleted" column="is_deleted" jdbcType="TINYINT"/>
+            <result property="lockedFlag" column="locked_flag" jdbcType="TINYINT"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        user_id,nick_name,login_name,
+        password_md5,introduce_sign,is_deleted,
+        locked_flag,create_time
+    </sql>
+</mapper>

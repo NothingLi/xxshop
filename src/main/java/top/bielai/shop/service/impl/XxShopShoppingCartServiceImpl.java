@@ -1,11 +1,4 @@
-/**
- * 严肃声明：
- * 开源版本请务必保留此注释头信息，若删除我方将保留所有法律责任追究！
- * 本软件已申请软件著作权，受国家版权局知识产权以及国家计算机软件著作权保护！
- * 可正常分享和学习源码，不得用于违法犯罪活动，违者必究！
- * Copyright (c) 2019-2021 十三 all rights reserved.
- * 版权所有，侵权必究！
- */
+
 package top.bielai.shop.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +12,8 @@ import top.bielai.shop.common.ServiceResultEnum;
 import top.bielai.shop.common.XxShopException;
 import top.bielai.shop.dao.XxShopGoodsMapper;
 import top.bielai.shop.dao.XxShopShoppingCartItemMapper;
-import top.bielai.shop.entity.XxShopGoods;
-import top.bielai.shop.entity.XxShopShoppingCartItem;
+import top.bielai.shop.domain.XxShopGoodsInfo;
+import top.bielai.shop.domain.XxShopShoppingCartItem;
 import top.bielai.shop.service.XxShopShoppingCartService;
 import top.bielai.shop.util.BeanUtil;
 import top.bielai.shop.util.PageQueryUtil;
@@ -42,7 +35,7 @@ public class XxShopShoppingCartServiceImpl implements XxShopShoppingCartService 
     @Override
     public String saveXxShopCartItem(SaveCartItemParam saveCartItemParam, Long userId) {
 
-        XxShopGoods xxShopGoods = xxShopGoodsMapper.selectByPrimaryKey(saveCartItemParam.getGoodsId());
+        XxShopGoodsInfo xxShopGoods = xxShopGoodsMapper.selectByPrimaryKey(saveCartItemParam.getGoodsId());
         //商品为空
         if (xxShopGoods == null) {
             return ServiceResultEnum.GOODS_NOT_EXIST.getResult();
@@ -105,7 +98,7 @@ public class XxShopShoppingCartServiceImpl implements XxShopShoppingCartService 
         if (updateCartItemParam.getGoodsCount() > Constants.SHOPPING_CART_ITEM_LIMIT_NUMBER || i > Constants.SHOPPING_CART_ITEM_LIMIT_NUMBER) {
             return ServiceResultEnum.SHOPPING_CART_ITEM_LIMIT_NUMBER_ERROR.getResult();
         }
-        XxShopGoods xxShopGoods = xxShopGoodsMapper.selectByPrimaryKey(xxShopShoppingCartItemUpdate.getGoodsId());
+        XxShopGoodsInfo xxShopGoods = xxShopGoodsMapper.selectByPrimaryKey(xxShopShoppingCartItemUpdate.getGoodsId());
         if(i > xxShopGoods.getStockNum()){
             return ServiceResultEnum.GOODS_CART_ITEM_LIMIT_NUMBER_ERROR.getResult();
         }
@@ -179,16 +172,16 @@ public class XxShopShoppingCartServiceImpl implements XxShopShoppingCartService 
         if (!CollectionUtils.isEmpty(xxShopShoppingCartItems)) {
             //查询商品信息并做数据转换
             List<Long> xxShopGoodsIds = xxShopShoppingCartItems.stream().map(XxShopShoppingCartItem::getGoodsId).collect(Collectors.toList());
-            List<XxShopGoods> xxShopGoods = xxShopGoodsMapper.selectByPrimaryKeys(xxShopGoodsIds);
-            Map<Long, XxShopGoods> xxShopGoodsMap = new HashMap<>();
+            List<XxShopGoodsInfo> xxShopGoods = xxShopGoodsMapper.selectByPrimaryKeys(xxShopGoodsIds);
+            Map<Long, XxShopGoodsInfo> xxShopGoodsMap = new HashMap<>();
             if (!CollectionUtils.isEmpty(xxShopGoods)) {
-                xxShopGoodsMap = xxShopGoods.stream().collect(Collectors.toMap(XxShopGoods::getGoodsId, Function.identity(), (entity1, entity2) -> entity1));
+                xxShopGoodsMap = xxShopGoods.stream().collect(Collectors.toMap(XxShopGoodsInfo::getGoodsId, Function.identity(), (entity1, entity2) -> entity1));
             }
             for (XxShopShoppingCartItem xxShopShoppingCartItem : xxShopShoppingCartItems) {
                 XxShopShoppingCartItemVO xxShopShoppingCartItemVO = new XxShopShoppingCartItemVO();
                 BeanUtil.copyProperties(xxShopShoppingCartItem, xxShopShoppingCartItemVO);
                 if (xxShopGoodsMap.containsKey(xxShopShoppingCartItem.getGoodsId())) {
-                    XxShopGoods xxShopGoodsTemp = xxShopGoodsMap.get(xxShopShoppingCartItem.getGoodsId());
+                    XxShopGoodsInfo xxShopGoodsTemp = xxShopGoodsMap.get(xxShopShoppingCartItem.getGoodsId());
                     xxShopShoppingCartItemVO.setGoodsCoverImg(xxShopGoodsTemp.getGoodsCoverImg());
                     String goodsName = xxShopGoodsTemp.getGoodsName();
                     // 字符串过长导致文字超出的问题

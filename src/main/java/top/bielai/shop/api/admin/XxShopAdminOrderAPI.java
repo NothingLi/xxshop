@@ -19,7 +19,7 @@ import top.bielai.shop.api.admin.param.BatchIdParam;
 import top.bielai.shop.api.mall.vo.XxShopOrderDetailVO;
 import top.bielai.shop.common.ServiceResultEnum;
 import top.bielai.shop.config.annotation.TokenToAdminUser;
-import top.bielai.shop.entity.AdminUserToken;
+import top.bielai.shop.domain.XxShopAdminUserToken;
 import top.bielai.shop.service.XxShopOrderService;
 import top.bielai.shop.util.PageQueryUtil;
 import top.bielai.shop.util.Result;

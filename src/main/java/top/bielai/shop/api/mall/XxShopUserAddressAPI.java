@@ -1,11 +1,4 @@
-/**
- * 严肃声明：
- * 开源版本请务必保留此注释头信息，若删除我方将保留所有法律责任追究！
- * 本软件已申请软件著作权，受国家版权局知识产权以及国家计算机软件著作权保护！
- * 可正常分享和学习源码，不得用于违法犯罪活动，违者必究！
- * Copyright (c) 2019-2021 十三 all rights reserved.
- * 版权所有，侵权必究！
- */
+
 package top.bielai.shop.api.mall;
 
 import io.swagger.annotations.Api;
@@ -16,8 +9,8 @@ import top.bielai.shop.api.mall.param.UpdateShopUserAddressParam;
 import top.bielai.shop.api.mall.vo.XxShopUserAddressVO;
 import top.bielai.shop.common.ServiceResultEnum;
 import top.bielai.shop.config.annotation.TokenToShopUser;
-import top.bielai.shop.entity.ShopUser;
-import top.bielai.shop.entity.ShopUserAddress;
+import top.bielai.shop.domain.XxShopUser;
+import top.bielai.shop.domain.XxShopUserAddress;
 import top.bielai.shop.service.XxShopUserAddressService;
 import top.bielai.shop.util.BeanUtil;
 import top.bielai.shop.util.Result;
@@ -36,14 +29,14 @@ public class XxShopUserAddressAPI {
 
     @GetMapping("/address")
     @ApiOperation(value = "我的收货地址列表", notes = "")
-    public Result<List<XxShopUserAddressVO>> addressList(@TokenToShopUser ShopUser loginShopUser) {
+    public Result<List<XxShopUserAddressVO>> addressList(@TokenToShopUser XxShopUser loginShopUser) {
         return ResultGenerator.genSuccessResult(mallUserAddressService.getMyAddresses(loginShopUser.getUserId()));
     }
 
     @PostMapping("/address")
     @ApiOperation(value = "添加地址", notes = "")
     public Result<Boolean> saveUserAddress(@RequestBody SaveShopUserAddressParam saveShopUserAddressParam,
-                                           @TokenToShopUser ShopUser loginShopUser) {
+                                           @TokenToShopUser XxShopUser loginShopUser) {
         ShopUserAddress userAddress = new ShopUserAddress();
         BeanUtil.copyProperties(saveShopUserAddressParam, userAddress);
         userAddress.setUserId(loginShopUser.getUserId());
@@ -59,7 +52,7 @@ public class XxShopUserAddressAPI {
     @PutMapping("/address")
     @ApiOperation(value = "修改地址", notes = "")
     public Result<Boolean> updateShopUserAddress(@RequestBody UpdateShopUserAddressParam updateShopUserAddressParam,
-                                                 @TokenToShopUser ShopUser loginShopUser) {
+                                                 @TokenToShopUser XxShopUser loginShopUser) {
         ShopUserAddress mallUserAddressById = mallUserAddressService.getShopUserAddressById(updateShopUserAddressParam.getAddressId());
         if (!loginShopUser.getUserId().equals(mallUserAddressById.getUserId())) {
             return ResultGenerator.genFailResult(ServiceResultEnum.REQUEST_FORBIDEN_ERROR.getResult());
@@ -79,7 +72,7 @@ public class XxShopUserAddressAPI {
     @GetMapping("/address/{addressId}")
     @ApiOperation(value = "获取收货地址详情", notes = "传参为地址id")
     public Result<XxShopUserAddressVO> getShopUserAddress(@PathVariable("addressId") Long addressId,
-                                                              @TokenToShopUser ShopUser loginShopUser) {
+                                                              @TokenToShopUser XxShopUser loginShopUser) {
         ShopUserAddress mallUserAddressById = mallUserAddressService.getShopUserAddressById(addressId);
         XxShopUserAddressVO xxShopUserAddressVO = new XxShopUserAddressVO();
         BeanUtil.copyProperties(mallUserAddressById, xxShopUserAddressVO);
@@ -91,7 +84,7 @@ public class XxShopUserAddressAPI {
 
     @GetMapping("/address/default")
     @ApiOperation(value = "获取默认收货地址", notes = "无传参")
-    public Result getDefaultShopUserAddress(@TokenToShopUser ShopUser loginShopUser) {
+    public Result getDefaultShopUserAddress(@TokenToShopUser XxShopUser loginShopUser) {
         ShopUserAddress mallUserAddressById = mallUserAddressService.getMyDefaultAddressByUserId(loginShopUser.getUserId());
         return ResultGenerator.genSuccessResult(mallUserAddressById);
     }
@@ -99,7 +92,7 @@ public class XxShopUserAddressAPI {
     @DeleteMapping("/address/{addressId}")
     @ApiOperation(value = "删除收货地址", notes = "传参为地址id")
     public Result deleteAddress(@PathVariable("addressId") Long addressId,
-                                @TokenToShopUser ShopUser loginShopUser) {
+                                @TokenToShopUser XxShopUser loginShopUser) {
         ShopUserAddress mallUserAddressById = mallUserAddressService.getShopUserAddressById(addressId);
         if (!loginShopUser.getUserId().equals(mallUserAddressById.getUserId())) {
             return ResultGenerator.genFailResult(ServiceResultEnum.REQUEST_FORBIDEN_ERROR.getResult());

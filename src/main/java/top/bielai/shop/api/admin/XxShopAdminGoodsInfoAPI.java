@@ -21,9 +21,9 @@ import top.bielai.shop.api.admin.param.GoodsEditParam;
 import top.bielai.shop.common.Constants;
 import top.bielai.shop.common.ServiceResultEnum;
 import top.bielai.shop.config.annotation.TokenToAdminUser;
-import top.bielai.shop.entity.AdminUserToken;
-import top.bielai.shop.entity.GoodsCategory;
-import top.bielai.shop.entity.XxShopGoods;
+import top.bielai.shop.domain.XxShopAdminUserToken;
+import top.bielai.shop.domain.XxShopGoodsCategory;
+import top.bielai.shop.domain.XxShopGoodsInfo;
 import top.bielai.shop.service.XxShopCategoryService;
 import top.bielai.shop.service.XxShopGoodsService;
 import top.bielai.shop.util.BeanUtil;
@@ -84,7 +84,7 @@ public class XxShopAdminGoodsInfoAPI {
     @ApiOperation(value = "新增商品信息", notes = "新增商品信息")
     public Result save(@RequestBody @Valid GoodsAddParam goodsAddParam, @TokenToAdminUser AdminUserToken adminUser) {
         logger.info("adminUser:{}", adminUser.toString());
-        XxShopGoods xxShopGoods = new XxShopGoods();
+        XxShopGoodsInfo xxShopGoods = new XxShopGoodsInfo();
         BeanUtil.copyProperties(goodsAddParam, xxShopGoods);
         String result = xxShopGoodsService.saveXxShopGoods(xxShopGoods);
         if (ServiceResultEnum.SUCCESS.getResult().equals(result)) {
@@ -102,7 +102,7 @@ public class XxShopAdminGoodsInfoAPI {
     @ApiOperation(value = "修改商品信息", notes = "修改商品信息")
     public Result update(@RequestBody @Valid GoodsEditParam goodsEditParam, @TokenToAdminUser AdminUserToken adminUser) {
         logger.info("adminUser:{}", adminUser.toString());
-        XxShopGoods xxShopGoods = new XxShopGoods();
+        XxShopGoodsInfo xxShopGoods = new XxShopGoodsInfo();
         BeanUtil.copyProperties(goodsEditParam, xxShopGoods);
         String result = xxShopGoodsService.updateXxShopGoods(xxShopGoods);
         if (ServiceResultEnum.SUCCESS.getResult().equals(result)) {
@@ -120,7 +120,7 @@ public class XxShopAdminGoodsInfoAPI {
     public Result info(@PathVariable("id") Long id, @TokenToAdminUser AdminUserToken adminUser) {
         logger.info("adminUser:{}", adminUser.toString());
         Map goodsInfo = new HashMap(8);
-        XxShopGoods goods = xxShopGoodsService.getXxShopGoodsById(id);
+        XxShopGoodsInfo goods = xxShopGoodsService.getXxShopGoodsById(id);
         if (goods == null) {
             return ResultGenerator.genFailResult(ServiceResultEnum.DATA_NOT_EXIST.getResult());
         }

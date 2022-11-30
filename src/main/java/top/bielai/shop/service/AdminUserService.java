@@ -8,7 +8,7 @@
  */
 package top.bielai.shop.service;
 
-import top.bielai.shop.entity.AdminUser;
+import top.bielai.shop.domain.XxShopAdminUser;
 
 public interface AdminUserService {
 

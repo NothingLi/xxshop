@@ -1,11 +1,3 @@
-/**
- * 严肃声明：
- * 开源版本请务必保留此注释头信息，若删除我方将保留所有法律责任追究！
- * 本软件已申请软件著作权，受国家版权局知识产权以及国家计算机软件著作权保护！
- * 可正常分享和学习源码，不得用于违法犯罪活动，违者必究！
- * Copyright (c) 2019-2021 十三 all rights reserved.
- * 版权所有，侵权必究！
- */
 package top.bielai.shop.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,31 +9,20 @@ import top.bielai.shop.api.mall.vo.*;
 import top.bielai.shop.common.*;
 import top.bielai.shop.dao.*;
 import top.bielai.shop.entity.*;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import top.bielai.shop.domain.XxShopOrder;
 import top.bielai.shop.service.XxShopOrderService;
-import top.bielai.shop.util.BeanUtil;
-import top.bielai.shop.util.NumberUtil;
-import top.bielai.shop.util.PageQueryUtil;
-import top.bielai.shop.util.PageResult;
+import top.bielai.shop.mapper.XxShopOrderMapper;
+import org.springframework.stereotype.Service;
 
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import static java.util.stream.Collectors.groupingBy;
-
+/**
+* @author Administrator
+* @description 针对表【tb_xx_shop_order】的数据库操作Service实现
+* @createDate 2022-11-30 13:58:39
+*/
 @Service
-public class XxShopOrderServiceImpl implements XxShopOrderService {
-
-    @Autowired
-    private XxShopOrderMapper xxShopOrderMapper;
-    @Autowired
-    private XxShopOrderItemMapper xxShopOrderItemMapper;
-    @Autowired
-    private XxShopShoppingCartItemMapper xxShopShoppingCartItemMapper;
-    @Autowired
-    private XxShopGoodsMapper xxShopGoodsMapper;
-    @Autowired
-    private XxShopOrderAddressMapper xxShopOrderAddressMapper;
+public class XxShopOrderServiceImpl extends ServiceImpl<XxShopOrderMapper, XxShopOrder>
+    implements XxShopOrderService{
 
     @Override
     public XxShopOrderDetailVO getOrderDetailByOrderId(Long orderId) {

@@ -1,11 +1,4 @@
-/**
- * 严肃声明：
- * 开源版本请务必保留此注释头信息，若删除我方将保留所有法律责任追究！
- * 本软件已申请软件著作权，受国家版权局知识产权以及国家计算机软件著作权保护！
- * 可正常分享和学习源码，不得用于违法犯罪活动，违者必究！
- * Copyright (c) 2019-2021 十三 all rights reserved.
- * 版权所有，侵权必究！
- */
+
 package top.bielai.shop.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +10,8 @@ import top.bielai.shop.common.XxShopCategoryLevelEnum;
 import top.bielai.shop.common.XxShopException;
 import top.bielai.shop.dao.GoodsCategoryMapper;
 import top.bielai.shop.dao.XxShopGoodsMapper;
-import top.bielai.shop.entity.GoodsCategory;
-import top.bielai.shop.entity.XxShopGoods;
+import top.bielai.shop.domain.XxShopGoodsCategory;
+import top.bielai.shop.domain.XxShopGoodsInfo;
 import top.bielai.shop.service.XxShopGoodsService;
 import top.bielai.shop.util.BeanUtil;
 import top.bielai.shop.util.PageQueryUtil;
@@ -38,14 +31,14 @@ public class XxShopGoodsServiceImpl implements XxShopGoodsService {
 
     @Override
     public PageResult getXxShopGoodsPage(PageQueryUtil pageUtil) {
-        List<XxShopGoods> goodsList = goodsMapper.findXxShopGoodsList(pageUtil);
+        List<XxShopGoodsInfo> goodsList = goodsMapper.findXxShopGoodsList(pageUtil);
         int total = goodsMapper.getTotalXxShopGoods(pageUtil);
         PageResult pageResult = new PageResult(goodsList, total, pageUtil.getLimit(), pageUtil.getPage());
         return pageResult;
     }
 
     @Override
-    public String saveXxShopGoods(XxShopGoods goods) {
+    public String saveXxShopGoods(XxShopGoodsInfo goods) {
         GoodsCategory goodsCategory = goodsCategoryMapper.selectByPrimaryKey(goods.getGoodsCategoryId());
         // 分类不存在或者不是三级分类，则该参数字段异常
         if (goodsCategory == null || goodsCategory.getCategoryLevel().intValue() != XxShopCategoryLevelEnum.LEVEL_THREE.getLevel()) {
@@ -61,24 +54,24 @@ public class XxShopGoodsServiceImpl implements XxShopGoodsService {
     }
 
     @Override
-    public void batchSaveXxShopGoods(List<XxShopGoods> xxShopGoodsList) {
+    public void batchSaveXxShopGoods(List<XxShopGoodsInfo> xxShopGoodsList) {
         if (!CollectionUtils.isEmpty(xxShopGoodsList)) {
             goodsMapper.batchInsert(xxShopGoodsList);
         }
     }
 
     @Override
-    public String updateXxShopGoods(XxShopGoods goods) {
+    public String updateXxShopGoods(XxShopGoodsInfo goods) {
         GoodsCategory goodsCategory = goodsCategoryMapper.selectByPrimaryKey(goods.getGoodsCategoryId());
         // 分类不存在或者不是三级分类，则该参数字段异常
         if (goodsCategory == null || goodsCategory.getCategoryLevel().intValue() != XxShopCategoryLevelEnum.LEVEL_THREE.getLevel()) {
             return ServiceResultEnum.GOODS_CATEGORY_ERROR.getResult();
         }
-        XxShopGoods temp = goodsMapper.selectByPrimaryKey(goods.getGoodsId());
+        XxShopGoodsInfo temp = goodsMapper.selectByPrimaryKey(goods.getGoodsId());
         if (temp == null) {
             return ServiceResultEnum.DATA_NOT_EXIST.getResult();
         }
-        XxShopGoods temp2 = goodsMapper.selectByCategoryIdAndName(goods.getGoodsName(), goods.getGoodsCategoryId());
+        XxShopGoodsInfo temp2 = goodsMapper.selectByCategoryIdAndName(goods.getGoodsName(), goods.getGoodsCategoryId());
         if (temp2 != null && !temp2.getGoodsId().equals(goods.getGoodsId())) {
             //name和分类id相同且不同id 不能继续修改
             return ServiceResultEnum.SAME_GOODS_EXIST.getResult();
@@ -91,8 +84,8 @@ public class XxShopGoodsServiceImpl implements XxShopGoodsService {
     }
 
     @Override
-    public XxShopGoods getXxShopGoodsById(Long id) {
-        XxShopGoods xxShopGoods = goodsMapper.selectByPrimaryKey(id);
+    public XxShopGoodsInfo getXxShopGoodsById(Long id) {
+        XxShopGoodsInfo xxShopGoods = goodsMapper.selectByPrimaryKey(id);
         if (xxShopGoods == null) {
             XxShopException.fail(ServiceResultEnum.GOODS_NOT_EXIST.getResult());
         }
@@ -106,7 +99,7 @@ public class XxShopGoodsServiceImpl implements XxShopGoodsService {
 
     @Override
     public PageResult searchXxShopGoods(PageQueryUtil pageUtil) {
-        List<XxShopGoods> goodsList = goodsMapper.findXxShopGoodsListBySearch(pageUtil);
+        List<XxShopGoodsInfo> goodsList = goodsMapper.findXxShopGoodsListBySearch(pageUtil);
         int total = goodsMapper.getTotalXxShopGoodsBySearch(pageUtil);
         List<XxShopSearchGoodsVO> xxShopSearchGoodsVOS = new ArrayList<>();
         if (!CollectionUtils.isEmpty(goodsList)) {

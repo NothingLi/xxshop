@@ -1,11 +1,4 @@
-/**
- * 严肃声明：
- * 开源版本请务必保留此注释头信息，若删除我方将保留所有法律责任追究！
- * 本软件已申请软件著作权，受国家版权局知识产权以及国家计算机软件著作权保护！
- * 可正常分享和学习源码，不得用于违法犯罪活动，违者必究！
- * Copyright (c) 2019-2021 十三 all rights reserved.
- * 版权所有，侵权必究！
- */
+
 package top.bielai.shop.api.mall;
 
 import io.swagger.annotations.Api;
@@ -19,8 +12,8 @@ import top.bielai.shop.common.Constants;
 import top.bielai.shop.common.ServiceResultEnum;
 import top.bielai.shop.common.XxShopException;
 import top.bielai.shop.config.annotation.TokenToShopUser;
-import top.bielai.shop.entity.ShopUser;
-import top.bielai.shop.entity.XxShopShoppingCartItem;
+import top.bielai.shop.domain.XxShopUser;
+import top.bielai.shop.domain.XxShopShoppingCartItem;
 import top.bielai.shop.service.XxShopShoppingCartService;
 import top.bielai.shop.util.PageQueryUtil;
 import top.bielai.shop.util.PageResult;
@@ -43,7 +36,7 @@ public class XxShopShoppingCartAPI {
 
     @GetMapping("/shop-cart/page")
     @ApiOperation(value = "购物车列表(每页默认5条)", notes = "传参为页码")
-    public Result<PageResult<List<XxShopShoppingCartItemVO>>> cartItemPageList(Integer pageNumber, @TokenToShopUser ShopUser loginShopUser) {
+    public Result<PageResult<List<XxShopShoppingCartItemVO>>> cartItemPageList(Integer pageNumber, @TokenToShopUser XxShopUser loginShopUser) {
         Map params = new HashMap(8);
         if (pageNumber == null || pageNumber < 1) {
             pageNumber = 1;
@@ -58,14 +51,14 @@ public class XxShopShoppingCartAPI {
 
     @GetMapping("/shop-cart")
     @ApiOperation(value = "购物车列表(网页移动端不分页)", notes = "")
-    public Result<List<XxShopShoppingCartItemVO>> cartItemList(@TokenToShopUser ShopUser loginShopUser) {
+    public Result<List<XxShopShoppingCartItemVO>> cartItemList(@TokenToShopUser XxShopUser loginShopUser) {
         return ResultGenerator.genSuccessResult(xxShopShoppingCartService.getMyShoppingCartItems(loginShopUser.getUserId()));
     }
 
     @PostMapping("/shop-cart")
     @ApiOperation(value = "添加商品到购物车接口", notes = "传参为商品id、数量")
     public Result saveXxShopShoppingCartItem(@RequestBody SaveCartItemParam saveCartItemParam,
-                                                 @TokenToShopUser ShopUser loginShopUser) {
+                                                 @TokenToShopUser XxShopUser loginShopUser) {
         String saveResult = xxShopShoppingCartService.saveXxShopCartItem(saveCartItemParam, loginShopUser.getUserId());
         //添加成功
         if (ServiceResultEnum.SUCCESS.getResult().equals(saveResult)) {
@@ -78,7 +71,7 @@ public class XxShopShoppingCartAPI {
     @PutMapping("/shop-cart")
     @ApiOperation(value = "修改购物项数据", notes = "传参为购物项id、数量")
     public Result updateXxShopShoppingCartItem(@RequestBody UpdateCartItemParam updateCartItemParam,
-                                                   @TokenToShopUser ShopUser loginShopUser) {
+                                                   @TokenToShopUser XxShopUser loginShopUser) {
         String updateResult = xxShopShoppingCartService.updateXxShopCartItem(updateCartItemParam, loginShopUser.getUserId());
         //修改成功
         if (ServiceResultEnum.SUCCESS.getResult().equals(updateResult)) {
@@ -91,7 +84,7 @@ public class XxShopShoppingCartAPI {
     @DeleteMapping("/shop-cart/{xxShopShoppingCartItemId}")
     @ApiOperation(value = "删除购物项", notes = "传参为购物项id")
     public Result updateXxShopShoppingCartItem(@PathVariable("xxShopShoppingCartItemId") Long xxShopShoppingCartItemId,
-                                                   @TokenToShopUser ShopUser loginShopUser) {
+                                                   @TokenToShopUser XxShopUser loginShopUser) {
         XxShopShoppingCartItem xxShopCartItemById = xxShopShoppingCartService.getXxShopCartItemById(xxShopShoppingCartItemId);
         if (!loginShopUser.getUserId().equals(xxShopCartItemById.getUserId())) {
             return ResultGenerator.genFailResult(ServiceResultEnum.REQUEST_FORBIDEN_ERROR.getResult());
@@ -109,7 +102,7 @@ public class XxShopShoppingCartAPI {
     @DeleteMapping("/shop-cart")
     @ApiOperation(value = "删除购物项", notes = "传参为购物项id")
     public Result updateXxShopShoppingCartItem(@RequestBody Long[] xxShopShoppingCartItemId,
-                                               @TokenToShopUser ShopUser loginShopUser) {
+                                               @TokenToShopUser XxShopUser loginShopUser) {
 
         Boolean deleteResult = xxShopShoppingCartService.deleteBatchById(xxShopShoppingCartItemId,loginShopUser.getUserId());
         //删除成功
@@ -122,7 +115,7 @@ public class XxShopShoppingCartAPI {
 
     @GetMapping("/shop-cart/settle")
     @ApiOperation(value = "根据购物项id数组查询购物项明细", notes = "确认订单页面使用")
-    public Result<List<XxShopShoppingCartItemVO>> toSettle(Long[] cartItemIds, @TokenToShopUser ShopUser loginShopUser) {
+    public Result<List<XxShopShoppingCartItemVO>> toSettle(Long[] cartItemIds, @TokenToShopUser XxShopUser loginShopUser) {
         if (cartItemIds.length < 1) {
             XxShopException.fail("参数异常");
         }

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.bielai.shop.mapper.XxShopOrderItemMapper">
+
+    <resultMap id="BaseResultMap" type="top.bielai.shop.domain.XxShopOrderItem">
+            <id property="orderItemId" column="order_item_id" jdbcType="BIGINT"/>
+            <result property="orderId" column="order_id" jdbcType="BIGINT"/>
+            <result property="goodsId" column="goods_id" jdbcType="BIGINT"/>
+            <result property="goodsName" column="goods_name" jdbcType="VARCHAR"/>
+            <result property="goodsCoverImg" column="goods_cover_img" jdbcType="VARCHAR"/>
+            <result property="sellingPrice" column="selling_price" jdbcType="INTEGER"/>
+            <result property="goodsCount" column="goods_count" jdbcType="INTEGER"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        order_item_id,order_id,goods_id,
+        goods_name,goods_cover_img,selling_price,
+        goods_count,create_time
+    </sql>
+</mapper>
