@@ -13,10 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
-import top.bielai.shop.api.mall.vo.XxShopOrderDetailVO;
-import top.bielai.shop.api.mall.vo.XxShopOrderItemVO;
-import top.bielai.shop.api.mall.vo.XxShopOrderListVO;
-import top.bielai.shop.api.mall.vo.XxShopShoppingCartItemVO;
+import top.bielai.shop.api.mall.vo.*;
 import top.bielai.shop.common.*;
 import top.bielai.shop.dao.*;
 import top.bielai.shop.entity.*;
@@ -83,11 +80,15 @@ public class XxShopOrderServiceImpl implements XxShopOrderService {
             XxShopException.fail(ServiceResultEnum.ORDER_ITEM_NOT_EXIST_ERROR.getResult());
         }
         List<XxShopOrderItemVO> xxShopOrderItemVOS = BeanUtil.copyList(orderItems, XxShopOrderItemVO.class);
+        XxShopOrderAddress xxShopOrderAddress = xxShopOrderAddressMapper.selectByPrimaryKey(xxShopOrder.getOrderId());
+        XxShopUserAddressVO xxShopUserAddressVO = new XxShopUserAddressVO();
+        BeanUtil.copyProperties(xxShopOrderAddress, xxShopUserAddressVO);
         XxShopOrderDetailVO xxShopOrderDetailVO = new XxShopOrderDetailVO();
         BeanUtil.copyProperties(xxShopOrder, xxShopOrderDetailVO);
         xxShopOrderDetailVO.setOrderStatusString(XxShopOrderStatusEnum.getXxShopOrderStatusEnumByStatus(xxShopOrderDetailVO.getOrderStatus()).getName());
         xxShopOrderDetailVO.setPayTypeString(PayTypeEnum.getPayTypeEnumByType(xxShopOrderDetailVO.getPayType()).getName());
         xxShopOrderDetailVO.setXxShopOrderItemVOS(xxShopOrderItemVOS);
+        xxShopOrderDetailVO.setXxShopUserAddressVO(xxShopUserAddressVO);
         return xxShopOrderDetailVO;
     }
 

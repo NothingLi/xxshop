@@ -53,4 +53,7 @@ public class XxShopOrderDetailVO implements Serializable {
 
     @ApiModelProperty("订单项列表")
     private List<XxShopOrderItemVO> xxShopOrderItemVOS;
+
+    @ApiModelProperty("收货地址")
+    private XxShopUserAddressVO xxShopUserAddressVO;
 }

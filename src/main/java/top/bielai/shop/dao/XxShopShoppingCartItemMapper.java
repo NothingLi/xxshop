@@ -35,7 +35,7 @@ public interface XxShopShoppingCartItemMapper {
 
     int updateByPrimaryKey(XxShopShoppingCartItem record);
 
-    int deleteBatch(@Param("ids") List<Long> ids, Long userId);
+    int deleteBatch(@Param("ids") List<Long> ids, @Param("userId") Long userId);
 
     List<XxShopShoppingCartItem> findMyXxShopCartItems(PageQueryUtil pageUtil);
 
