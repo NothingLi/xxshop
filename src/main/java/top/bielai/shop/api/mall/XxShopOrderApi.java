@@ -20,7 +20,6 @@ import top.bielai.shop.domain.XxShopUser;
 import top.bielai.shop.domain.XxShopUserAddress;
 import top.bielai.shop.service.XxShopOrderService;
 import top.bielai.shop.service.XxShopShoppingCartItemService;
-import top.bielai.shop.service.XxShopShoppingCartService;
 import top.bielai.shop.service.XxShopUserAddressService;
 import top.bielai.shop.util.PageQueryUtil;
 import top.bielai.shop.util.PageResult;
@@ -29,7 +28,6 @@ import top.bielai.shop.util.ResultGenerator;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
-import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -61,28 +59,16 @@ public class XxShopOrderApi {
      */
     @PostMapping("/saveOrder")
     public Result<String> saveOrder(@Validated @RequestBody SaveOrderParam saveOrderParam, @TokenToShopUser Long userId) {
-        BigDecimal priceTotal = BigDecimal.ZERO;
         XxShopUserAddress address = xxShopUserAddressService.getOne(new LambdaQueryWrapper<XxShopUserAddress>()
                 .eq(XxShopUserAddress::getUserId, userId).eq(XxShopUserAddress::getAddressId, saveOrderParam.getAddressId()));
         if (ObjectUtils.isEmpty(address)) {
             XxShopException.fail(ErrorEnum.USER_ADDRESS_DOWN);
         }
         List<XxShopShoppingCartItemVO> itemsForSave = cartItemService.getCartItemsForSettle(Arrays.asList(saveOrderParam.getCartItemIds()), userId);
-        //总价
-        for (XxShopShoppingCartItemVO xxShopShoppingCartItemVO : itemsForSave) {
-            priceTotal = priceTotal.add(xxShopShoppingCartItemVO.getSellingPrice().multiply(BigDecimal.valueOf(xxShopShoppingCartItemVO.getGoodsCount())));
-        }
-        if (BigDecimal.ZERO.compareTo(priceTotal) <= 0) {
-            XxShopException.fail(ErrorEnum.GOODS_PUT_DOWN);
-        }
-
-        //保存订单并返回订单号
+        //生成订单并返回订单号
         String saveOrderResult = xxShopOrderService.saveOrder(userId, address, itemsForSave);
-        Result result = ResultGenerator.genSuccessResult();
-        result.setData(saveOrderResult);
-        return result;
 
-        return ResultGenerator.genFailResult("生成订单失败");
+        return ResultGenerator.genSuccessResult(saveOrderResult);
     }
 
     @GetMapping("/order/{orderNo}")

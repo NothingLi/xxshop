@@ -2,15 +2,22 @@
 package top.bielai.shop.common;
 
 
+/**
+ * @author JiangYouYuan
+ */
+
 public enum PayStatusEnum {
 
+    /**
+     * 支付状态
+     */
     DEFAULT(-1, "支付失败"),
-    PAY_ING(0, "支付中"),
+    WAIT_PAY(0, "未支付"),
     PAY_SUCCESS(1, "支付成功");
 
-    private int payStatus;
+    private final int payStatus;
 
-    private String name;
+    private final String name;
 
     PayStatusEnum(int payStatus, String name) {
         this.payStatus = payStatus;
@@ -30,15 +37,7 @@ public enum PayStatusEnum {
         return payStatus;
     }
 
-    public void setPayStatus(int payStatus) {
-        this.payStatus = payStatus;
-    }
-
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 }

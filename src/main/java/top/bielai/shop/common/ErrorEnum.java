@@ -32,7 +32,8 @@ public enum ErrorEnum {
 
     DATA_NOT_EXIST(404, "没有你想要的东西噢！"),
 
-    PRICE_ERROR(500, "这价不对啊，我重新算算！");
+    PRICE_ERROR(500, "这价不对啊，我重新算算！"),
+    ERROR(500, "我这网有点问题啊!");
 
     private final int code;
 

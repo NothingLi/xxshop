@@ -18,11 +18,9 @@ import org.springframework.web.bind.annotation.*;
 import top.bielai.shop.api.admin.param.BatchIdParam;
 import top.bielai.shop.api.admin.param.GoodsCategoryAddParam;
 import top.bielai.shop.api.admin.param.GoodsCategoryEditParam;
+import top.bielai.shop.common.CategoryLevelEnum;
 import top.bielai.shop.common.ServiceResultEnum;
-import top.bielai.shop.common.XxShopCategoryLevelEnum;
 import top.bielai.shop.config.annotation.TokenToAdminUser;
-import top.bielai.shop.domain.XxShopAdminUserToken;
-import top.bielai.shop.domain.XxShopGoodsCategory;
 import top.bielai.shop.service.XxShopCategoryService;
 import top.bielai.shop.util.BeanUtil;
 import top.bielai.shop.util.PageQueryUtil;
@@ -83,24 +81,24 @@ public class XxShopAdminGoodsCategoryAPI {
         }
         GoodsCategory category = xxShopCategoryService.getGoodsCategoryById(categoryId);
         //既不是一级分类也不是二级分类则为不返回数据
-        if (category == null || category.getCategoryLevel() == XxShopCategoryLevelEnum.LEVEL_THREE.getLevel()) {
+        if (category == null || category.getCategoryLevel() == CategoryLevelEnum.LEVEL_THREE.getLevel()) {
             return ResultGenerator.genFailResult("参数异常！");
         }
         Map categoryResult = new HashMap(4);
-        if (category.getCategoryLevel() == XxShopCategoryLevelEnum.LEVEL_ONE.getLevel()) {
+        if (category.getCategoryLevel() == CategoryLevelEnum.LEVEL_ONE.getLevel()) {
             //如果是一级分类则返回当前一级分类下的所有二级分类，以及二级分类列表中第一条数据下的所有三级分类列表
             //查询一级分类列表中第一个实体的所有二级分类
-            List<GoodsCategory> secondLevelCategories = xxShopCategoryService.selectByLevelAndParentIdsAndNumber(Collections.singletonList(categoryId), XxShopCategoryLevelEnum.LEVEL_TWO.getLevel());
+            List<GoodsCategory> secondLevelCategories = xxShopCategoryService.selectByLevelAndParentIdsAndNumber(Collections.singletonList(categoryId), CategoryLevelEnum.LEVEL_TWO.getLevel());
             if (!CollectionUtils.isEmpty(secondLevelCategories)) {
                 //查询二级分类列表中第一个实体的所有三级分类
-                List<GoodsCategory> thirdLevelCategories = xxShopCategoryService.selectByLevelAndParentIdsAndNumber(Collections.singletonList(secondLevelCategories.get(0).getCategoryId()), XxShopCategoryLevelEnum.LEVEL_THREE.getLevel());
+                List<GoodsCategory> thirdLevelCategories = xxShopCategoryService.selectByLevelAndParentIdsAndNumber(Collections.singletonList(secondLevelCategories.get(0).getCategoryId()), CategoryLevelEnum.LEVEL_THREE.getLevel());
                 categoryResult.put("secondLevelCategories", secondLevelCategories);
                 categoryResult.put("thirdLevelCategories", thirdLevelCategories);
             }
         }
-        if (category.getCategoryLevel() == XxShopCategoryLevelEnum.LEVEL_TWO.getLevel()) {
+        if (category.getCategoryLevel() == CategoryLevelEnum.LEVEL_TWO.getLevel()) {
             //如果是二级分类则返回当前分类下的所有三级分类列表
-            List<GoodsCategory> thirdLevelCategories = xxShopCategoryService.selectByLevelAndParentIdsAndNumber(Collections.singletonList(categoryId), XxShopCategoryLevelEnum.LEVEL_THREE.getLevel());
+            List<GoodsCategory> thirdLevelCategories = xxShopCategoryService.selectByLevelAndParentIdsAndNumber(Collections.singletonList(categoryId), CategoryLevelEnum.LEVEL_THREE.getLevel());
             categoryResult.put("thirdLevelCategories", thirdLevelCategories);
         }
         return ResultGenerator.genSuccessResult(categoryResult);

@@ -24,11 +24,19 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        goods_id,goods_name,goods_intro,
+        goods_id
+        ,goods_name,goods_intro,
         goods_category_id,goods_cover_img,goods_carousel,
         goods_detail_content,original_price,selling_price,
         stock_num,tag,goods_sell_status,
         create_user,create_time,update_user,
         update_time
     </sql>
+    <update id="updateStockNum">
+        update tb_xx_shop_goods_info
+        set stock_num = stock_num - #{stockNum}
+        where goods_id = #{id}
+          and stock_num >= #{stockNum}
+          and goods_sell_status = 0;
+    </update>
 </mapper>

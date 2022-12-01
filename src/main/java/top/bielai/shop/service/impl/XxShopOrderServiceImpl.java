@@ -1,8 +1,6 @@
 package top.bielai.shop.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.baomidou.mybatisplus.extension.conditions.update.UpdateChainWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,16 +9,19 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import top.bielai.shop.api.mall.vo.*;
 import top.bielai.shop.common.*;
-import top.bielai.shop.domain.XxShopGoodsInfo;
-import top.bielai.shop.domain.XxShopOrder;
-import top.bielai.shop.domain.XxShopShoppingCartItem;
-import top.bielai.shop.domain.XxShopUserAddress;
+import top.bielai.shop.domain.*;
 import top.bielai.shop.entity.*;
 import top.bielai.shop.mapper.XxShopGoodsInfoMapper;
 import top.bielai.shop.mapper.XxShopOrderMapper;
 import top.bielai.shop.mapper.XxShopShoppingCartItemMapper;
+import top.bielai.shop.service.XxShopOrderAddressService;
+import top.bielai.shop.service.XxShopOrderItemService;
 import top.bielai.shop.service.XxShopOrderService;
+import top.bielai.shop.util.BeanUtil;
+import top.bielai.shop.util.NumberUtil;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -40,6 +41,12 @@ public class XxShopOrderServiceImpl extends ServiceImpl<XxShopOrderMapper, XxSho
     @Autowired
     private XxShopGoodsInfoMapper goodsInfoMapper;
 
+    @Autowired
+    private XxShopOrderItemService orderItemService;
+
+    @Autowired
+    private XxShopOrderAddressService orderAddressService;
+
     @Override
     public XxShopOrderDetailVO getOrderDetailByOrderId(Long orderId) {
         XxShopOrder xxShopOrder = xxShopOrderMapper.selectByPrimaryKey(orderId);
@@ -52,7 +59,7 @@ public class XxShopOrderServiceImpl extends ServiceImpl<XxShopOrderMapper, XxSho
             List<XxShopOrderItemVO> xxShopOrderItemVOS = BeanUtil.copyList(orderItems, XxShopOrderItemVO.class);
             XxShopOrderDetailVO xxShopOrderDetailVO = new XxShopOrderDetailVO();
             BeanUtil.copyProperties(xxShopOrder, xxShopOrderDetailVO);
-            xxShopOrderDetailVO.setOrderStatusString(XxShopOrderStatusEnum.getXxShopOrderStatusEnumByStatus(xxShopOrderDetailVO.getOrderStatus()).getName());
+            xxShopOrderDetailVO.setOrderStatusString(OrderStatusEnum.getXxShopOrderStatusEnumByStatus(xxShopOrderDetailVO.getOrderStatus()).getName());
             xxShopOrderDetailVO.setPayTypeString(PayTypeEnum.getPayTypeEnumByType(xxShopOrderDetailVO.getPayType()).getName());
             xxShopOrderDetailVO.setXxShopOrderItemVOS(xxShopOrderItemVOS);
             return xxShopOrderDetailVO;
@@ -82,7 +89,7 @@ public class XxShopOrderServiceImpl extends ServiceImpl<XxShopOrderMapper, XxSho
         BeanUtil.copyProperties(xxShopOrderAddress, xxShopUserAddressVO);
         XxShopOrderDetailVO xxShopOrderDetailVO = new XxShopOrderDetailVO();
         BeanUtil.copyProperties(xxShopOrder, xxShopOrderDetailVO);
-        xxShopOrderDetailVO.setOrderStatusString(XxShopOrderStatusEnum.getXxShopOrderStatusEnumByStatus(xxShopOrderDetailVO.getOrderStatus()).getName());
+        xxShopOrderDetailVO.setOrderStatusString(OrderStatusEnum.getXxShopOrderStatusEnumByStatus(xxShopOrderDetailVO.getOrderStatus()).getName());
         xxShopOrderDetailVO.setPayTypeString(PayTypeEnum.getPayTypeEnumByType(xxShopOrderDetailVO.getPayType()).getName());
         xxShopOrderDetailVO.setXxShopOrderItemVOS(xxShopOrderItemVOS);
         xxShopOrderDetailVO.setXxShopUserAddressVO(xxShopUserAddressVO);
@@ -100,7 +107,7 @@ public class XxShopOrderServiceImpl extends ServiceImpl<XxShopOrderMapper, XxSho
             orderListVOS = BeanUtil.copyList(xxShopOrders, XxShopOrderListVO.class);
             //设置订单状态中文显示值
             for (XxShopOrderListVO xxShopOrderListVO : orderListVOS) {
-                xxShopOrderListVO.setOrderStatusString(XxShopOrderStatusEnum.getXxShopOrderStatusEnumByStatus(xxShopOrderListVO.getOrderStatus()).getName());
+                xxShopOrderListVO.setOrderStatusString(OrderStatusEnum.getXxShopOrderStatusEnumByStatus(xxShopOrderListVO.getOrderStatus()).getName());
             }
             List<Long> orderIds = xxShopOrders.stream().map(XxShopOrder::getOrderId).collect(Collectors.toList());
             if (!CollectionUtils.isEmpty(orderIds)) {
@@ -131,14 +138,14 @@ public class XxShopOrderServiceImpl extends ServiceImpl<XxShopOrderMapper, XxSho
                 XxShopException.fail(ServiceResultEnum.NO_PERMISSION_ERROR.getResult());
             }
             //订单状态判断
-            if (xxShopOrder.getOrderStatus().intValue() == XxShopOrderStatusEnum.ORDER_SUCCESS.getOrderStatus()
-                    || xxShopOrder.getOrderStatus().intValue() == XxShopOrderStatusEnum.ORDER_CLOSED_BY_MALLUSER.getOrderStatus()
-                    || xxShopOrder.getOrderStatus().intValue() == XxShopOrderStatusEnum.ORDER_CLOSED_BY_EXPIRED.getOrderStatus()
-                    || xxShopOrder.getOrderStatus().intValue() == XxShopOrderStatusEnum.ORDER_CLOSED_BY_JUDGE.getOrderStatus()) {
+            if (xxShopOrder.getOrderStatus().intValue() == OrderStatusEnum.ORDER_SUCCESS.getOrderStatus()
+                    || xxShopOrder.getOrderStatus().intValue() == OrderStatusEnum.ORDER_CLOSED_BY_USER.getOrderStatus()
+                    || xxShopOrder.getOrderStatus().intValue() == OrderStatusEnum.ORDER_CLOSED_BY_EXPIRED.getOrderStatus()
+                    || xxShopOrder.getOrderStatus().intValue() == OrderStatusEnum.ORDER_CLOSED_BY_JUDGE.getOrderStatus()) {
                 return ServiceResultEnum.ORDER_STATUS_ERROR.getResult();
             }
             //修改订单状态&&恢复库存
-            if (xxShopOrderMapper.closeOrder(Collections.singletonList(xxShopOrder.getOrderId()), XxShopOrderStatusEnum.ORDER_CLOSED_BY_MALLUSER.getOrderStatus()) > 0 && recoverStockNum(Collections.singletonList(xxShopOrder.getOrderId()))) {
+            if (xxShopOrderMapper.closeOrder(Collections.singletonList(xxShopOrder.getOrderId()), OrderStatusEnum.ORDER_CLOSED_BY_USER.getOrderStatus()) > 0 && recoverStockNum(Collections.singletonList(xxShopOrder.getOrderId()))) {
                 return ServiceResultEnum.SUCCESS.getResult();
             } else {
                 return ServiceResultEnum.DB_ERROR.getResult();
@@ -156,10 +163,10 @@ public class XxShopOrderServiceImpl extends ServiceImpl<XxShopOrderMapper, XxSho
                 return ServiceResultEnum.NO_PERMISSION_ERROR.getResult();
             }
             //订单状态判断 非出库状态下不进行修改操作
-            if (xxShopOrder.getOrderStatus().intValue() != XxShopOrderStatusEnum.ORDER_EXPRESS.getOrderStatus()) {
+            if (xxShopOrder.getOrderStatus().intValue() != OrderStatusEnum.ORDER_EXPRESS.getOrderStatus()) {
                 return ServiceResultEnum.ORDER_STATUS_ERROR.getResult();
             }
-            xxShopOrder.setOrderStatus((byte) XxShopOrderStatusEnum.ORDER_SUCCESS.getOrderStatus());
+            xxShopOrder.setOrderStatus((byte) OrderStatusEnum.ORDER_SUCCESS.getOrderStatus());
             xxShopOrder.setUpdateTime(new Date());
             if (xxShopOrderMapper.updateByPrimaryKeySelective(xxShopOrder) > 0) {
                 return ServiceResultEnum.SUCCESS.getResult();
@@ -175,10 +182,10 @@ public class XxShopOrderServiceImpl extends ServiceImpl<XxShopOrderMapper, XxSho
         XxShopOrder xxShopOrder = xxShopOrderMapper.selectByOrderNo(orderNo);
         if (xxShopOrder != null) {
             //订单状态判断 非待支付状态下不进行修改操作
-            if (xxShopOrder.getOrderStatus().intValue() != XxShopOrderStatusEnum.ORDER_PRE_PAY.getOrderStatus()) {
+            if (xxShopOrder.getOrderStatus().intValue() != OrderStatusEnum.ORDER_WAIT_PAY.getOrderStatus()) {
                 return ServiceResultEnum.ORDER_STATUS_ERROR.getResult();
             }
-            xxShopOrder.setOrderStatus((byte) XxShopOrderStatusEnum.ORDER_PAID.getOrderStatus());
+            xxShopOrder.setOrderStatus((byte) OrderStatusEnum.ORDER_PAID.getOrderStatus());
             xxShopOrder.setPayType((byte) payType);
             xxShopOrder.setPayStatus((byte) PayStatusEnum.PAY_SUCCESS.getPayStatus());
             xxShopOrder.setPayTime(new Date());
@@ -194,42 +201,38 @@ public class XxShopOrderServiceImpl extends ServiceImpl<XxShopOrderMapper, XxSho
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public String saveOrder(Long userId, XxShopUserAddress address, List<XxShopShoppingCartItemVO> myShoppingCartItems) {
-        List<Long> itemIdList = myShoppingCartItems.stream().map(XxShopShoppingCartItemVO::getCartItemId).collect(Collectors.toList());
+    public String saveOrder(Long userId, XxShopUserAddress address, List<XxShopShoppingCartItemVO> shoppingCartItems) {
+        List<Long> itemIdList = shoppingCartItems.stream().map(XxShopShoppingCartItemVO::getCartItemId).collect(Collectors.toList());
         //删除购物项
         if (cartItemMapper.delete(new LambdaQueryWrapper<XxShopShoppingCartItem>().in(XxShopShoppingCartItem::getCartItemId, itemIdList).eq(XxShopShoppingCartItem::getUserId, userId)) > 0) {
-            goodsInfoMapper.updateById()
-            List<StockNumDTO> stockNumDTOS = BeanUtil.copyList(myShoppingCartItems, StockNumDTO.class);
-            int updateStockNumResult = xxShopGoodsMapper.updateStockNum(stockNumDTOS);
-            if (updateStockNumResult < 1) {
-                XxShopException.fail(ServiceResultEnum.SHOPPING_ITEM_COUNT_ERROR.getResult());
-            }
+            shoppingCartItems.forEach(item -> goodsInfoMapper.updateStockNum(item.getGoodsId(), item.getGoodsCount()));
             //生成订单号
             String orderNo = NumberUtil.genOrderNo();
-            int priceTotal = 0;
             //保存订单
             XxShopOrder xxShopOrder = new XxShopOrder();
             xxShopOrder.setOrderNo(orderNo);
-            xxShopOrder.setUserId(loginShopUser.getUserId());
+            xxShopOrder.setUserId(userId);
+            BigDecimal priceTotal = BigDecimal.ZERO;
             //总价
-            for (XxShopShoppingCartItemVO xxShopShoppingCartItemVO : myShoppingCartItems) {
-                priceTotal += xxShopShoppingCartItemVO.getGoodsCount() * xxShopShoppingCartItemVO.getSellingPrice();
+            for (XxShopShoppingCartItemVO xxShopShoppingCartItemVO : shoppingCartItems) {
+                priceTotal = priceTotal.add(xxShopShoppingCartItemVO.getSellingPrice().multiply(BigDecimal.valueOf(xxShopShoppingCartItemVO.getGoodsCount())));
             }
-            if (priceTotal < 1) {
-                XxShopException.fail(ServiceResultEnum.ORDER_PRICE_ERROR.getResult());
+            if (BigDecimal.ZERO.compareTo(priceTotal) <= 0) {
+                XxShopException.fail(ErrorEnum.PRICE_ERROR);
             }
             xxShopOrder.setTotalPrice(priceTotal);
-            String extraInfo = "";
-            xxShopOrder.setExtraInfo(extraInfo);
+            xxShopOrder.setPayStatus(PayStatusEnum.WAIT_PAY.getPayStatus());
+            xxShopOrder.setOrderStatus(OrderStatusEnum.ORDER_WAIT_PAY.getOrderStatus());
+            xxShopOrder.setExtraInfo("");
             //生成订单项并保存订单项纪录
-            if (xxShopOrderMapper.insertSelective(xxShopOrder) > 0) {
+            if (baseMapper.insert(xxShopOrder) > 0) {
                 //生成订单收货地址快照，并保存至数据库
                 XxShopOrderAddress xxShopOrderAddress = new XxShopOrderAddress();
                 BeanUtil.copyProperties(address, xxShopOrderAddress);
                 xxShopOrderAddress.setOrderId(xxShopOrder.getOrderId());
                 //生成所有的订单项快照，并保存至数据库
                 List<XxShopOrderItem> xxShopOrderItems = new ArrayList<>();
-                for (XxShopShoppingCartItemVO xxShopShoppingCartItemVO : myShoppingCartItems) {
+                for (XxShopShoppingCartItemVO xxShopShoppingCartItemVO : shoppingCartItems) {
                     XxShopOrderItem xxShopOrderItem = new XxShopOrderItem();
                     //使用BeanUtil工具类将xxShopShoppingCartItemVO中的属性复制到xxShopOrderItem对象中
                     BeanUtil.copyProperties(xxShopShoppingCartItemVO, xxShopOrderItem);
@@ -238,17 +241,16 @@ public class XxShopOrderServiceImpl extends ServiceImpl<XxShopOrderMapper, XxSho
                     xxShopOrderItems.add(xxShopOrderItem);
                 }
                 //保存至数据库
-                if (xxShopOrderItemMapper.insertBatch(xxShopOrderItems) > 0 && xxShopOrderAddressMapper.insertSelective(xxShopOrderAddress) > 0) {
+                if (orderItemService.saveBatch(xxShopOrderItems) && orderAddressService.save(xxShopOrderAddress)) {
                     //所有操作成功后，将订单号返回，以供Controller方法跳转到订单详情
                     return orderNo;
                 }
-                XxShopException.fail(ServiceResultEnum.ORDER_PRICE_ERROR.getResult());
             }
-            XxShopException.fail(ServiceResultEnum.DB_ERROR.getResult());
+            XxShopException.fail(ErrorEnum.ERROR);
+        } else {
+            XxShopException.fail(ErrorEnum.CART_ITEM_ERROR);
         }
-        XxShopException.fail(ServiceResultEnum.DB_ERROR.getResult());
-        XxShopException.fail(ServiceResultEnum.SHOPPING_ITEM_ERROR.getResult());
-        return ServiceResultEnum.SHOPPING_ITEM_ERROR.getResult();
+        return null;
     }
 
 
@@ -368,7 +370,7 @@ public class XxShopOrderServiceImpl extends ServiceImpl<XxShopOrderMapper, XxSho
             }
             if (StringUtils.isEmpty(errorOrderNos)) {
                 //订单状态正常 可以执行关闭操作 修改订单状态和更新时间&&恢复库存
-                if (xxShopOrderMapper.closeOrder(Arrays.asList(ids), XxShopOrderStatusEnum.ORDER_CLOSED_BY_JUDGE.getOrderStatus()) > 0 && recoverStockNum(Arrays.asList(ids))) {
+                if (xxShopOrderMapper.closeOrder(Arrays.asList(ids), OrderStatusEnum.ORDER_CLOSED_BY_JUDGE.getOrderStatus()) > 0 && recoverStockNum(Arrays.asList(ids))) {
                     return ServiceResultEnum.SUCCESS.getResult();
                 } else {
                     return ServiceResultEnum.DB_ERROR.getResult();

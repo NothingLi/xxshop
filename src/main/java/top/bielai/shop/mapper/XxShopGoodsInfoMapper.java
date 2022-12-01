@@ -12,6 +12,7 @@ import top.bielai.shop.domain.XxShopGoodsInfo;
  */
 @Mapper
 public interface XxShopGoodsInfoMapper extends BaseMapper<XxShopGoodsInfo> {
+    int updateStockNum(long id, int stockNum);
 
 }
 

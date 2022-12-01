@@ -4,20 +4,16 @@ package top.bielai.shop.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-import top.bielai.shop.api.mall.vo.XxShopSearchGoodsVO;
+import top.bielai.shop.common.CategoryLevelEnum;
 import top.bielai.shop.common.ServiceResultEnum;
-import top.bielai.shop.common.XxShopCategoryLevelEnum;
 import top.bielai.shop.common.XxShopException;
 import top.bielai.shop.dao.GoodsCategoryMapper;
 import top.bielai.shop.dao.XxShopGoodsMapper;
-import top.bielai.shop.domain.XxShopGoodsCategory;
 import top.bielai.shop.domain.XxShopGoodsInfo;
 import top.bielai.shop.service.XxShopGoodsService;
-import top.bielai.shop.util.BeanUtil;
 import top.bielai.shop.util.PageQueryUtil;
 import top.bielai.shop.util.PageResult;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -41,7 +37,7 @@ public class XxShopGoodsServiceImpl implements XxShopGoodsService {
     public String saveXxShopGoods(XxShopGoodsInfo goods) {
         GoodsCategory goodsCategory = goodsCategoryMapper.selectByPrimaryKey(goods.getGoodsCategoryId());
         // 分类不存在或者不是三级分类，则该参数字段异常
-        if (goodsCategory == null || goodsCategory.getCategoryLevel().intValue() != XxShopCategoryLevelEnum.LEVEL_THREE.getLevel()) {
+        if (goodsCategory == null || goodsCategory.getCategoryLevel().intValue() != CategoryLevelEnum.LEVEL_THREE.getLevel()) {
             return ServiceResultEnum.GOODS_CATEGORY_ERROR.getResult();
         }
         if (goodsMapper.selectByCategoryIdAndName(goods.getGoodsName(), goods.getGoodsCategoryId()) != null) {
@@ -64,7 +60,7 @@ public class XxShopGoodsServiceImpl implements XxShopGoodsService {
     public String updateXxShopGoods(XxShopGoodsInfo goods) {
         GoodsCategory goodsCategory = goodsCategoryMapper.selectByPrimaryKey(goods.getGoodsCategoryId());
         // 分类不存在或者不是三级分类，则该参数字段异常
-        if (goodsCategory == null || goodsCategory.getCategoryLevel().intValue() != XxShopCategoryLevelEnum.LEVEL_THREE.getLevel()) {
+        if (goodsCategory == null || goodsCategory.getCategoryLevel().intValue() != CategoryLevelEnum.LEVEL_THREE.getLevel()) {
             return ServiceResultEnum.GOODS_CATEGORY_ERROR.getResult();
         }
         XxShopGoodsInfo temp = goodsMapper.selectByPrimaryKey(goods.getGoodsId());

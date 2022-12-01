@@ -6,7 +6,7 @@ package top.bielai.shop.common;
  * @author Administrator
  */
 
-public enum XxShopCategoryLevelEnum {
+public enum CategoryLevelEnum {
 
     /**
      * 默认结果
@@ -31,15 +31,15 @@ public enum XxShopCategoryLevelEnum {
 
     private final String name;
 
-    XxShopCategoryLevelEnum(int level, String name) {
+    CategoryLevelEnum(int level, String name) {
         this.level = level;
         this.name = name;
     }
 
-    public static XxShopCategoryLevelEnum getXxShopOrderStatusEnumByLevel(int level) {
-        for (XxShopCategoryLevelEnum xxShopCategoryLevelEnum : XxShopCategoryLevelEnum.values()) {
-            if (xxShopCategoryLevelEnum.getLevel() == level) {
-                return xxShopCategoryLevelEnum;
+    public static CategoryLevelEnum getXxShopOrderStatusEnumByLevel(int level) {
+        for (CategoryLevelEnum categoryLevelEnum : CategoryLevelEnum.values()) {
+            if (categoryLevelEnum.getLevel() == level) {
+                return categoryLevelEnum;
             }
         }
         return DEFAULT;

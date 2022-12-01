@@ -7,9 +7,9 @@ import org.springframework.util.CollectionUtils;
 import top.bielai.shop.api.mall.vo.SecondLevelCategoryVO;
 import top.bielai.shop.api.mall.vo.ThirdLevelCategoryVO;
 import top.bielai.shop.api.mall.vo.XxShopIndexCategoryVO;
+import top.bielai.shop.common.CategoryLevelEnum;
 import top.bielai.shop.common.Constants;
 import top.bielai.shop.common.ServiceResultEnum;
-import top.bielai.shop.common.XxShopCategoryLevelEnum;
 import top.bielai.shop.dao.GoodsCategoryMapper;
 import top.bielai.shop.domain.XxShopGoodsCategory;
 import top.bielai.shop.service.XxShopCategoryService;
@@ -76,15 +76,15 @@ public class XxShopCategoryServiceImpl implements XxShopCategoryService {
     public List<XxShopIndexCategoryVO> getCategoriesForIndex() {
         List<XxShopIndexCategoryVO> xxShopIndexCategoryVOS = new ArrayList<>();
         //获取一级分类的固定数量的数据
-        List<XxShopGoodsCategory> firstLevelCategories = goodsCategoryMapper.selectByLevelAndParentIdsAndNumber(Collections.singletonList(0L), XxShopCategoryLevelEnum.LEVEL_ONE.getLevel(), Constants.INDEX_CATEGORY_NUMBER);
+        List<XxShopGoodsCategory> firstLevelCategories = goodsCategoryMapper.selectByLevelAndParentIdsAndNumber(Collections.singletonList(0L), CategoryLevelEnum.LEVEL_ONE.getLevel(), Constants.INDEX_CATEGORY_NUMBER);
         if (!CollectionUtils.isEmpty(firstLevelCategories)) {
             List<Long> firstLevelCategoryIds = firstLevelCategories.stream().map(XxShopGoodsCategory::getCategoryId).collect(Collectors.toList());
             //获取二级分类的数据
-            List<XxShopGoodsCategory> secondLevelCategories = goodsCategoryMapper.selectByLevelAndParentIdsAndNumber(firstLevelCategoryIds, XxShopCategoryLevelEnum.LEVEL_TWO.getLevel(), 0);
+            List<XxShopGoodsCategory> secondLevelCategories = goodsCategoryMapper.selectByLevelAndParentIdsAndNumber(firstLevelCategoryIds, CategoryLevelEnum.LEVEL_TWO.getLevel(), 0);
             if (!CollectionUtils.isEmpty(secondLevelCategories)) {
                 List<Long> secondLevelCategoryIds = secondLevelCategories.stream().map(XxShopGoodsCategory::getCategoryId).collect(Collectors.toList());
                 //获取三级分类的数据
-                List<XxShopGoodsCategory> thirdLevelCategories = goodsCategoryMapper.selectByLevelAndParentIdsAndNumber(secondLevelCategoryIds, XxShopCategoryLevelEnum.LEVEL_THREE.getLevel(), 0);
+                List<XxShopGoodsCategory> thirdLevelCategories = goodsCategoryMapper.selectByLevelAndParentIdsAndNumber(secondLevelCategoryIds, CategoryLevelEnum.LEVEL_THREE.getLevel(), 0);
                 if (!CollectionUtils.isEmpty(thirdLevelCategories)) {
                     //根据 parentId 将 thirdLevelCategories 分组
                     Map<Long, List<XxShopGoodsCategory>> thirdLevelCategoryMap = thirdLevelCategories.stream().collect(groupingBy(XxShopGoodsCategory::getParentId));
