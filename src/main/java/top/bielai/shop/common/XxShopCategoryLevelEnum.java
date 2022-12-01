@@ -2,16 +2,34 @@
 package top.bielai.shop.common;
 
 
+/**
+ * @author Administrator
+ */
+
 public enum XxShopCategoryLevelEnum {
 
+    /**
+     * 默认结果
+     */
     DEFAULT(0, "ERROR"),
+    /**
+     * 一级分类
+     */
     LEVEL_ONE(1, "一级分类"),
+
+    /**
+     * 二级分类
+     */
     LEVEL_TWO(2, "二级分类"),
+
+    /**
+     * 三级分类
+     */
     LEVEL_THREE(3, "三级分类");
 
-    private int level;
+    private final int level;
 
-    private String name;
+    private final String name;
 
     XxShopCategoryLevelEnum(int level, String name) {
         this.level = level;
@@ -31,15 +49,8 @@ public enum XxShopCategoryLevelEnum {
         return level;
     }
 
-    public void setLevel(int level) {
-        this.level = level;
-    }
-
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
 }

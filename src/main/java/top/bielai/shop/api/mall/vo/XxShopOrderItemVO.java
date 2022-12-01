@@ -12,18 +12,33 @@ import java.io.Serializable;
 @Data
 public class XxShopOrderItemVO implements Serializable {
 
-    @ApiModelProperty("商品id")
+    
+    /**
+     * 商品id
+     */
     private Long goodsId;
 
-    @ApiModelProperty("商品数量")
+    
+    /**
+     * 商品数量
+     */
     private Integer goodsCount;
 
-    @ApiModelProperty("商品名称")
+    
+    /**
+     * 商品名称
+     */
     private String goodsName;
 
-    @ApiModelProperty("商品图片")
+    
+    /**
+     * 商品图片
+     */
     private String goodsCoverImg;
 
-    @ApiModelProperty("商品价格")
+    
+    /**
+     * 商品价格
+     */
     private Integer sellingPrice;
 }

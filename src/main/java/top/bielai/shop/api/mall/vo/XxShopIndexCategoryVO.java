@@ -9,19 +9,32 @@ import java.util.List;
 
 /**
  * 首页分类数据VO
+ * @author Administrator
  */
 @Data
 public class XxShopIndexCategoryVO implements Serializable {
 
-    @ApiModelProperty("当前一级分类id")
+    /**
+     * 当前分类id
+     */
     private Long categoryId;
 
-    @ApiModelProperty("当前分类级别")
+    /**
+     * 当前分类级别
+     */
     private Byte categoryLevel;
 
-    @ApiModelProperty("当前一级分类名称")
+    /**
+     * 当前分类名称
+     */
     private String categoryName;
 
-    @ApiModelProperty("二级分类列表")
-    private List<SecondLevelCategoryVO> secondLevelCategoryVOS;
+    /**
+     * 父级分类id
+     */
+    private Long parentId;
+    /**
+     * 二级分类列表
+     */
+    private List<XxShopIndexCategoryVO> childrenCategoryVO;
 }

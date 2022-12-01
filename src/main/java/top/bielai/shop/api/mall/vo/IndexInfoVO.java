@@ -7,18 +7,29 @@ import lombok.Data;
 import java.io.Serializable;
 import java.util.List;
 
+/**
+ * @author Administrator
+ */
 @Data
 public class IndexInfoVO implements Serializable {
 
-    @ApiModelProperty("轮播图(列表)")
+    /**
+     * 轮播图(列表)
+     */
     private List<XxShopIndexCarouselVO> carousels;
 
-    @ApiModelProperty("首页热销商品(列表)")
-    private List<XxShopIndexConfigGoodsVO> hotGoodses;
+    /**
+     * 首页热销商品(列表)
+     */
+    private List<XxShopIndexConfigGoodsVO> hotGoods;
 
-    @ApiModelProperty("首页新品推荐(列表)")
-    private List<XxShopIndexConfigGoodsVO> newGoodses;
+    /**
+     * 首页新品推荐(列表)
+     */
+    private List<XxShopIndexConfigGoodsVO> newGoods;
 
-    @ApiModelProperty("首页推荐商品(列表)")
-    private List<XxShopIndexConfigGoodsVO> recommendGoodses;
+    /**
+     * 首页推荐商品(列表)
+     */
+    private List<XxShopIndexConfigGoodsVO> recommendGoods;
 }

@@ -97,28 +97,4 @@ public class XxShopGoodsServiceImpl implements XxShopGoodsService {
         return goodsMapper.batchUpdateSellStatus(ids, sellStatus) > 0;
     }
 
-    @Override
-    public PageResult searchXxShopGoods(PageQueryUtil pageUtil) {
-        List<XxShopGoodsInfo> goodsList = goodsMapper.findXxShopGoodsListBySearch(pageUtil);
-        int total = goodsMapper.getTotalXxShopGoodsBySearch(pageUtil);
-        List<XxShopSearchGoodsVO> xxShopSearchGoodsVOS = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(goodsList)) {
-            xxShopSearchGoodsVOS = BeanUtil.copyList(goodsList, XxShopSearchGoodsVO.class);
-            for (XxShopSearchGoodsVO xxShopSearchGoodsVO : xxShopSearchGoodsVOS) {
-                String goodsName = xxShopSearchGoodsVO.getGoodsName();
-                String goodsIntro = xxShopSearchGoodsVO.getGoodsIntro();
-                // 字符串过长导致文字超出的问题
-                if (goodsName.length() > 28) {
-                    goodsName = goodsName.substring(0, 28) + "...";
-                    xxShopSearchGoodsVO.setGoodsName(goodsName);
-                }
-                if (goodsIntro.length() > 30) {
-                    goodsIntro = goodsIntro.substring(0, 30) + "...";
-                    xxShopSearchGoodsVO.setGoodsIntro(goodsIntro);
-                }
-            }
-        }
-        PageResult pageResult = new PageResult(xxShopSearchGoodsVOS, total, pageUtil.getLimit(), pageUtil.getPage());
-        return pageResult;
-    }
 }

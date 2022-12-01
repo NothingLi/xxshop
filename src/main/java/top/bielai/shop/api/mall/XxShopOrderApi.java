@@ -1,22 +1,25 @@
 
 package top.bielai.shop.api.mall;
 
-import io.swagger.annotations.Api;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.springframework.util.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import top.bielai.shop.api.mall.param.SaveOrderParam;
 import top.bielai.shop.api.mall.vo.XxShopOrderDetailVO;
 import top.bielai.shop.api.mall.vo.XxShopOrderListVO;
 import top.bielai.shop.api.mall.vo.XxShopShoppingCartItemVO;
 import top.bielai.shop.common.Constants;
+import top.bielai.shop.common.ErrorEnum;
 import top.bielai.shop.common.ServiceResultEnum;
 import top.bielai.shop.common.XxShopException;
 import top.bielai.shop.config.annotation.TokenToShopUser;
 import top.bielai.shop.domain.XxShopUser;
 import top.bielai.shop.domain.XxShopUserAddress;
 import top.bielai.shop.service.XxShopOrderService;
+import top.bielai.shop.service.XxShopShoppingCartItemService;
 import top.bielai.shop.service.XxShopShoppingCartService;
 import top.bielai.shop.service.XxShopUserAddressService;
 import top.bielai.shop.util.PageQueryUtil;
@@ -25,55 +28,60 @@ import top.bielai.shop.util.Result;
 import top.bielai.shop.util.ResultGenerator;
 
 import javax.annotation.Resource;
+import javax.validation.Valid;
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * 小新商城订单操作相关接口
+ *
+ * @author Administrator
+ */
+@Valid
 @RestController
-@Api(value = "v1", tags = "7.小新商城订单操作相关接口")
 @RequestMapping("/api/v1")
-public class XxShopOrderAPI {
+public class XxShopOrderApi {
 
     @Resource
-    private XxShopShoppingCartService xxShopShoppingCartService;
+    private XxShopShoppingCartItemService cartItemService;
     @Resource
     private XxShopOrderService xxShopOrderService;
     @Resource
     private XxShopUserAddressService xxShopUserAddressService;
 
+    /**
+     * 生成订单接口
+     *
+     * @param saveOrderParam 订单参数
+     * @param userId         用户Id
+     * @return 订单编号
+     */
     @PostMapping("/saveOrder")
-    @ApiOperation(value = "生成订单接口", notes = "传参为地址id和待结算的购物项id数组")
-    public Result<String> saveOrder(@ApiParam(value = "订单参数") @RequestBody SaveOrderParam saveOrderParam, @TokenToShopUser XxShopUser loginShopUser) {
-        int priceTotal = 0;
-        if (saveOrderParam == null || saveOrderParam.getCartItemIds() == null || saveOrderParam.getAddressId() == null) {
-            XxShopException.fail(ServiceResultEnum.PARAM_ERROR.getResult());
+    public Result<String> saveOrder(@Validated @RequestBody SaveOrderParam saveOrderParam, @TokenToShopUser Long userId) {
+        BigDecimal priceTotal = BigDecimal.ZERO;
+        XxShopUserAddress address = xxShopUserAddressService.getOne(new LambdaQueryWrapper<XxShopUserAddress>()
+                .eq(XxShopUserAddress::getUserId, userId).eq(XxShopUserAddress::getAddressId, saveOrderParam.getAddressId()));
+        if (ObjectUtils.isEmpty(address)) {
+            XxShopException.fail(ErrorEnum.USER_ADDRESS_DOWN);
         }
-        if (saveOrderParam.getCartItemIds().length < 1) {
-            XxShopException.fail(ServiceResultEnum.PARAM_ERROR.getResult());
+        List<XxShopShoppingCartItemVO> itemsForSave = cartItemService.getCartItemsForSettle(Arrays.asList(saveOrderParam.getCartItemIds()), userId);
+        //总价
+        for (XxShopShoppingCartItemVO xxShopShoppingCartItemVO : itemsForSave) {
+            priceTotal = priceTotal.add(xxShopShoppingCartItemVO.getSellingPrice().multiply(BigDecimal.valueOf(xxShopShoppingCartItemVO.getGoodsCount())));
         }
-        List<XxShopShoppingCartItemVO> itemsForSave = xxShopShoppingCartService.getCartItemsForSettle(Arrays.asList(saveOrderParam.getCartItemIds()), loginShopUser.getUserId());
-        if (CollectionUtils.isEmpty(itemsForSave)) {
-            //无数据
-            XxShopException.fail("参数异常");
-        } else {
-            //总价
-            for (XxShopShoppingCartItemVO xxShopShoppingCartItemVO : itemsForSave) {
-                priceTotal += xxShopShoppingCartItemVO.getGoodsCount() * xxShopShoppingCartItemVO.getSellingPrice();
-            }
-            if (priceTotal < 1) {
-                XxShopException.fail("价格异常");
-            }
-            ShopUserAddress address = xxShopUserAddressService.getShopUserAddressById(saveOrderParam.getAddressId());
-            if (!loginShopUser.getUserId().equals(address.getUserId())) {
-                return ResultGenerator.genFailResult(ServiceResultEnum.REQUEST_FORBIDEN_ERROR.getResult());
-            }
-            //保存订单并返回订单号
-            String saveOrderResult = xxShopOrderService.saveOrder(loginShopUser, address, itemsForSave);
-            Result result = ResultGenerator.genSuccessResult();
-            result.setData(saveOrderResult);
-            return result;
+        if (BigDecimal.ZERO.compareTo(priceTotal) <= 0) {
+            XxShopException.fail(ErrorEnum.GOODS_PUT_DOWN);
         }
+
+        //保存订单并返回订单号
+        String saveOrderResult = xxShopOrderService.saveOrder(userId, address, itemsForSave);
+        Result result = ResultGenerator.genSuccessResult();
+        result.setData(saveOrderResult);
+        return result;
+
         return ResultGenerator.genFailResult("生成订单失败");
     }
 
@@ -86,8 +94,8 @@ public class XxShopOrderAPI {
     @GetMapping("/order")
     @ApiOperation(value = "订单列表接口", notes = "传参为页码")
     public Result<PageResult<List<XxShopOrderListVO>>> orderList(@ApiParam(value = "页码") @RequestParam(required = false) Integer pageNumber,
-                            @ApiParam(value = "订单状态:0.待支付 1.待确认 2.待发货 3:已发货 4.交易成功") @RequestParam(required = false) Integer status,
-                            @TokenToShopUser XxShopUser loginShopUser) {
+                                                                 @ApiParam(value = "订单状态:0.待支付 1.待确认 2.待发货 3:已发货 4.交易成功") @RequestParam(required = false) Integer status,
+                                                                 @TokenToShopUser XxShopUser loginShopUser) {
         Map params = new HashMap(8);
         if (pageNumber == null || pageNumber < 1) {
             pageNumber = 1;

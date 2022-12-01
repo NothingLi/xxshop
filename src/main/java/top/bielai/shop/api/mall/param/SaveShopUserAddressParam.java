@@ -10,24 +10,42 @@ import lombok.Data;
 @Data
 public class SaveShopUserAddressParam {
 
-    @ApiModelProperty("收件人名称")
+    
+    /**
+     * 收件人名称
+     */
     private String userName;
 
-    @ApiModelProperty("收件人联系方式")
+    
+    /**
+     * 收件人联系方式
+     */
     private String userPhone;
 
     @ApiModelProperty("是否默认地址 0-不是 1-是")
     private Byte defaultFlag;
 
-    @ApiModelProperty("省")
+    
+    /**
+     * 省
+     */
     private String provinceName;
 
-    @ApiModelProperty("市")
+    
+    /**
+     * 市
+     */
     private String cityName;
 
-    @ApiModelProperty("区/县")
+    
+    /**
+     * 区/县
+     */
     private String regionName;
 
-    @ApiModelProperty("详细地址")
+    
+    /**
+     * 详细地址
+     */
     private String detailAddress;
 }

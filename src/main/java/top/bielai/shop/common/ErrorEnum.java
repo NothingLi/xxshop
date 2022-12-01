@@ -10,11 +10,29 @@ import lombok.Getter;
 public enum ErrorEnum {
 
     /**
-     * 参数有误
+     * 异常响应的各种情况
      */
-    ERROR_PARAM(400,"非法搜索参数"),
+    ERROR_PARAM(400, "非法搜索参数"),
 
-    GOODS_PUT_DOWN(410,"商品已下架！");
+    TOKEN_EXPIRE_ERROR(401, "你钥匙拿错了吧！请重新登录！"),
+
+    USER_NULL_ERROR(401, "你是这的人么？请重新登录！"),
+
+    LOGIN_USER_LOCKED_ERROR(401, "你被禁止登陆咯！"),
+
+    NOT_LOGIN_ERROR(401, "你没登陆啊蒙面人！"),
+
+    GOODS_PUT_DOWN(410, "商品已下架噢！"),
+
+    USER_ADDRESS_DOWN(410, "这地址不对劲噢，你再看看！"),
+
+    CART_ITEM_ERROR(410, "购物车商品有点问题噢！"),
+
+    CART_ITEM_GOODS_NUM_ERROR(410, "没这么多货呀！"),
+
+    DATA_NOT_EXIST(404, "没有你想要的东西噢！"),
+
+    PRICE_ERROR(500, "这价不对啊，我重新算算！");
 
     private final int code;
 

@@ -9,24 +9,23 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 import top.bielai.shop.common.Constants;
 import top.bielai.shop.config.handler.TokenToAdminUserMethodArgumentResolver;
-import top.bielai.shop.config.handler.TokenToShopUserMethodArgumentResolver;
+import top.bielai.shop.config.handler.TokenToUserIdMethodArgumentResolver;
 
 import java.util.List;
 
+/**
+ * @author Administrator
+ */
 @Configuration
 public class XxShopWebMvcConfigurer extends WebMvcConfigurationSupport {
 
     @Autowired
-    private TokenToShopUserMethodArgumentResolver tokenToShopUserMethodArgumentResolver;
+    private TokenToUserIdMethodArgumentResolver tokenToUserIdMethodArgumentResolver;
     @Autowired
     private TokenToAdminUserMethodArgumentResolver tokenToAdminUserMethodArgumentResolver;
 
-    /**
-     * @param argumentResolvers
-     * @tip @TokenToShopUser @TokenToAdminUser 注解处理方法
-     */
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
-        argumentResolvers.add(tokenToShopUserMethodArgumentResolver);
+        argumentResolvers.add(tokenToUserIdMethodArgumentResolver);
         argumentResolvers.add(tokenToAdminUserMethodArgumentResolver);
     }
 

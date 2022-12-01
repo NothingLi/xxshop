@@ -1,5 +1,9 @@
 package top.bielai.shop.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.extension.conditions.update.UpdateChainWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -7,22 +11,34 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import top.bielai.shop.api.mall.vo.*;
 import top.bielai.shop.common.*;
-import top.bielai.shop.dao.*;
-import top.bielai.shop.entity.*;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import top.bielai.shop.domain.XxShopGoodsInfo;
 import top.bielai.shop.domain.XxShopOrder;
-import top.bielai.shop.service.XxShopOrderService;
+import top.bielai.shop.domain.XxShopShoppingCartItem;
+import top.bielai.shop.domain.XxShopUserAddress;
+import top.bielai.shop.entity.*;
+import top.bielai.shop.mapper.XxShopGoodsInfoMapper;
 import top.bielai.shop.mapper.XxShopOrderMapper;
-import org.springframework.stereotype.Service;
+import top.bielai.shop.mapper.XxShopShoppingCartItemMapper;
+import top.bielai.shop.service.XxShopOrderService;
+
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
-* @author Administrator
-* @description 针对表【tb_xx_shop_order】的数据库操作Service实现
-* @createDate 2022-11-30 13:58:39
-*/
+ * @author Administrator
+ * @description 针对表【tb_xx_shop_order】的数据库操作Service实现
+ * @createDate 2022-11-30 13:58:39
+ */
 @Service
 public class XxShopOrderServiceImpl extends ServiceImpl<XxShopOrderMapper, XxShopOrder>
-    implements XxShopOrderService{
+        implements XxShopOrderService {
+
+    @Autowired
+    private XxShopShoppingCartItemMapper cartItemMapper;
+
+    @Autowired
+    private XxShopGoodsInfoMapper goodsInfoMapper;
 
     @Override
     public XxShopOrderDetailVO getOrderDetailByOrderId(Long orderId) {
@@ -177,83 +193,60 @@ public class XxShopOrderServiceImpl extends ServiceImpl<XxShopOrderMapper, XxSho
     }
 
     @Override
-    @Transactional
-    public String saveOrder(ShopUser loginShopUser, ShopUserAddress address, List<XxShopShoppingCartItemVO> myShoppingCartItems) {
+    @Transactional(rollbackFor = Exception.class)
+    public String saveOrder(Long userId, XxShopUserAddress address, List<XxShopShoppingCartItemVO> myShoppingCartItems) {
         List<Long> itemIdList = myShoppingCartItems.stream().map(XxShopShoppingCartItemVO::getCartItemId).collect(Collectors.toList());
-        List<Long> goodsIds = myShoppingCartItems.stream().map(XxShopShoppingCartItemVO::getGoodsId).collect(Collectors.toList());
-        List<XxShopGoods> xxShopGoods = xxShopGoodsMapper.selectByPrimaryKeys(goodsIds);
-        //检查是否包含已下架商品
-        List<XxShopGoods> goodsListNotSelling = xxShopGoods.stream()
-                .filter(xxShopGoodsTemp -> xxShopGoodsTemp.getGoodsSellStatus() != Constants.SELL_STATUS_UP)
-                .collect(Collectors.toList());
-        if (!CollectionUtils.isEmpty(goodsListNotSelling)) {
-            //goodsListNotSelling 对象非空则表示有下架商品
-            XxShopException.fail(goodsListNotSelling.get(0).getGoodsName() + "已下架，无法生成订单");
-        }
-        Map<Long, XxShopGoods> xxShopGoodsMap = xxShopGoods.stream().collect(Collectors.toMap(XxShopGoods::getGoodsId, Function.identity(), (entity1, entity2) -> entity1));
-        //判断商品库存
-        for (XxShopShoppingCartItemVO shoppingCartItemVO : myShoppingCartItems) {
-            //查出的商品中不存在购物车中的这条关联商品数据，直接返回错误提醒
-            if (!xxShopGoodsMap.containsKey(shoppingCartItemVO.getGoodsId())) {
-                XxShopException.fail(ServiceResultEnum.SHOPPING_ITEM_ERROR.getResult());
-            }
-            //存在数量大于库存的情况，直接返回错误提醒
-            if (shoppingCartItemVO.getGoodsCount() > xxShopGoodsMap.get(shoppingCartItemVO.getGoodsId()).getStockNum()) {
+        //删除购物项
+        if (cartItemMapper.delete(new LambdaQueryWrapper<XxShopShoppingCartItem>().in(XxShopShoppingCartItem::getCartItemId, itemIdList).eq(XxShopShoppingCartItem::getUserId, userId)) > 0) {
+            goodsInfoMapper.updateById()
+            List<StockNumDTO> stockNumDTOS = BeanUtil.copyList(myShoppingCartItems, StockNumDTO.class);
+            int updateStockNumResult = xxShopGoodsMapper.updateStockNum(stockNumDTOS);
+            if (updateStockNumResult < 1) {
                 XxShopException.fail(ServiceResultEnum.SHOPPING_ITEM_COUNT_ERROR.getResult());
             }
-        }
-        //删除购物项
-        if (!CollectionUtils.isEmpty(itemIdList) && !CollectionUtils.isEmpty(goodsIds) && !CollectionUtils.isEmpty(xxShopGoods)) {
-            if (xxShopShoppingCartItemMapper.deleteBatch(itemIdList, loginShopUser.getUserId()) > 0) {
-                List<StockNumDTO> stockNumDTOS = BeanUtil.copyList(myShoppingCartItems, StockNumDTO.class);
-                int updateStockNumResult = xxShopGoodsMapper.updateStockNum(stockNumDTOS);
-                if (updateStockNumResult < 1) {
-                    XxShopException.fail(ServiceResultEnum.SHOPPING_ITEM_COUNT_ERROR.getResult());
-                }
-                //生成订单号
-                String orderNo = NumberUtil.genOrderNo();
-                int priceTotal = 0;
-                //保存订单
-                XxShopOrder xxShopOrder = new XxShopOrder();
-                xxShopOrder.setOrderNo(orderNo);
-                xxShopOrder.setUserId(loginShopUser.getUserId());
-                //总价
+            //生成订单号
+            String orderNo = NumberUtil.genOrderNo();
+            int priceTotal = 0;
+            //保存订单
+            XxShopOrder xxShopOrder = new XxShopOrder();
+            xxShopOrder.setOrderNo(orderNo);
+            xxShopOrder.setUserId(loginShopUser.getUserId());
+            //总价
+            for (XxShopShoppingCartItemVO xxShopShoppingCartItemVO : myShoppingCartItems) {
+                priceTotal += xxShopShoppingCartItemVO.getGoodsCount() * xxShopShoppingCartItemVO.getSellingPrice();
+            }
+            if (priceTotal < 1) {
+                XxShopException.fail(ServiceResultEnum.ORDER_PRICE_ERROR.getResult());
+            }
+            xxShopOrder.setTotalPrice(priceTotal);
+            String extraInfo = "";
+            xxShopOrder.setExtraInfo(extraInfo);
+            //生成订单项并保存订单项纪录
+            if (xxShopOrderMapper.insertSelective(xxShopOrder) > 0) {
+                //生成订单收货地址快照，并保存至数据库
+                XxShopOrderAddress xxShopOrderAddress = new XxShopOrderAddress();
+                BeanUtil.copyProperties(address, xxShopOrderAddress);
+                xxShopOrderAddress.setOrderId(xxShopOrder.getOrderId());
+                //生成所有的订单项快照，并保存至数据库
+                List<XxShopOrderItem> xxShopOrderItems = new ArrayList<>();
                 for (XxShopShoppingCartItemVO xxShopShoppingCartItemVO : myShoppingCartItems) {
-                    priceTotal += xxShopShoppingCartItemVO.getGoodsCount() * xxShopShoppingCartItemVO.getSellingPrice();
+                    XxShopOrderItem xxShopOrderItem = new XxShopOrderItem();
+                    //使用BeanUtil工具类将xxShopShoppingCartItemVO中的属性复制到xxShopOrderItem对象中
+                    BeanUtil.copyProperties(xxShopShoppingCartItemVO, xxShopOrderItem);
+                    //XxShopOrderMapper文件insert()方法中使用了useGeneratedKeys因此orderId可以获取到
+                    xxShopOrderItem.setOrderId(xxShopOrder.getOrderId());
+                    xxShopOrderItems.add(xxShopOrderItem);
                 }
-                if (priceTotal < 1) {
-                    XxShopException.fail(ServiceResultEnum.ORDER_PRICE_ERROR.getResult());
+                //保存至数据库
+                if (xxShopOrderItemMapper.insertBatch(xxShopOrderItems) > 0 && xxShopOrderAddressMapper.insertSelective(xxShopOrderAddress) > 0) {
+                    //所有操作成功后，将订单号返回，以供Controller方法跳转到订单详情
+                    return orderNo;
                 }
-                xxShopOrder.setTotalPrice(priceTotal);
-                String extraInfo = "";
-                xxShopOrder.setExtraInfo(extraInfo);
-                //生成订单项并保存订单项纪录
-                if (xxShopOrderMapper.insertSelective(xxShopOrder) > 0) {
-                    //生成订单收货地址快照，并保存至数据库
-                    XxShopOrderAddress xxShopOrderAddress = new XxShopOrderAddress();
-                    BeanUtil.copyProperties(address, xxShopOrderAddress);
-                    xxShopOrderAddress.setOrderId(xxShopOrder.getOrderId());
-                    //生成所有的订单项快照，并保存至数据库
-                    List<XxShopOrderItem> xxShopOrderItems = new ArrayList<>();
-                    for (XxShopShoppingCartItemVO xxShopShoppingCartItemVO : myShoppingCartItems) {
-                        XxShopOrderItem xxShopOrderItem = new XxShopOrderItem();
-                        //使用BeanUtil工具类将xxShopShoppingCartItemVO中的属性复制到xxShopOrderItem对象中
-                        BeanUtil.copyProperties(xxShopShoppingCartItemVO, xxShopOrderItem);
-                        //XxShopOrderMapper文件insert()方法中使用了useGeneratedKeys因此orderId可以获取到
-                        xxShopOrderItem.setOrderId(xxShopOrder.getOrderId());
-                        xxShopOrderItems.add(xxShopOrderItem);
-                    }
-                    //保存至数据库
-                    if (xxShopOrderItemMapper.insertBatch(xxShopOrderItems) > 0 && xxShopOrderAddressMapper.insertSelective(xxShopOrderAddress) > 0) {
-                        //所有操作成功后，将订单号返回，以供Controller方法跳转到订单详情
-                        return orderNo;
-                    }
-                    XxShopException.fail(ServiceResultEnum.ORDER_PRICE_ERROR.getResult());
-                }
-                XxShopException.fail(ServiceResultEnum.DB_ERROR.getResult());
+                XxShopException.fail(ServiceResultEnum.ORDER_PRICE_ERROR.getResult());
             }
             XxShopException.fail(ServiceResultEnum.DB_ERROR.getResult());
         }
+        XxShopException.fail(ServiceResultEnum.DB_ERROR.getResult());
         XxShopException.fail(ServiceResultEnum.SHOPPING_ITEM_ERROR.getResult());
         return ServiceResultEnum.SHOPPING_ITEM_ERROR.getResult();
     }

@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -50,7 +51,7 @@ public class XxShopOrderItem implements Serializable {
      * 下单时商品的价格(订单快照)
      */
     @TableField(value = "selling_price")
-    private Integer sellingPrice;
+    private BigDecimal sellingPrice;
 
     /**
      * 数量(订单快照)

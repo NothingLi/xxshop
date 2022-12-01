@@ -29,8 +29,8 @@ public class XxShopCategoryServiceImpl implements XxShopCategoryService {
     private GoodsCategoryMapper goodsCategoryMapper;
 
     @Override
-    public String saveCategory(GoodsCategory goodsCategory) {
-        GoodsCategory temp = goodsCategoryMapper.selectByLevelAndName(goodsCategory.getCategoryLevel(), goodsCategory.getCategoryName());
+    public String saveCategory(XxShopGoodsCategory goodsCategory) {
+        XxShopGoodsCategory temp = goodsCategoryMapper.selectByLevelAndName(goodsCategory.getCategoryLevel(), goodsCategory.getCategoryName());
         if (temp != null) {
             return ServiceResultEnum.SAME_CATEGORY_EXIST.getResult();
         }
@@ -41,12 +41,12 @@ public class XxShopCategoryServiceImpl implements XxShopCategoryService {
     }
 
     @Override
-    public String updateGoodsCategory(GoodsCategory goodsCategory) {
-        GoodsCategory temp = goodsCategoryMapper.selectByPrimaryKey(goodsCategory.getCategoryId());
+    public String updateGoodsCategory(XxShopGoodsCategory goodsCategory) {
+        XxShopGoodsCategory temp = goodsCategoryMapper.selectByPrimaryKey(goodsCategory.getCategoryId());
         if (temp == null) {
             return ServiceResultEnum.DATA_NOT_EXIST.getResult();
         }
-        GoodsCategory temp2 = goodsCategoryMapper.selectByLevelAndName(goodsCategory.getCategoryLevel(), goodsCategory.getCategoryName());
+        XxShopGoodsCategory temp2 = goodsCategoryMapper.selectByLevelAndName(goodsCategory.getCategoryLevel(), goodsCategory.getCategoryName());
         if (temp2 != null && !temp2.getCategoryId().equals(goodsCategory.getCategoryId())) {
             //同名且不同id 不能继续修改
             return ServiceResultEnum.SAME_CATEGORY_EXIST.getResult();
@@ -59,7 +59,7 @@ public class XxShopCategoryServiceImpl implements XxShopCategoryService {
     }
 
     @Override
-    public GoodsCategory getGoodsCategoryById(Long id) {
+    public XxShopGoodsCategory getGoodsCategoryById(Long id) {
         return goodsCategoryMapper.selectByPrimaryKey(id);
     }
 
@@ -76,27 +76,27 @@ public class XxShopCategoryServiceImpl implements XxShopCategoryService {
     public List<XxShopIndexCategoryVO> getCategoriesForIndex() {
         List<XxShopIndexCategoryVO> xxShopIndexCategoryVOS = new ArrayList<>();
         //获取一级分类的固定数量的数据
-        List<GoodsCategory> firstLevelCategories = goodsCategoryMapper.selectByLevelAndParentIdsAndNumber(Collections.singletonList(0L), XxShopCategoryLevelEnum.LEVEL_ONE.getLevel(), Constants.INDEX_CATEGORY_NUMBER);
+        List<XxShopGoodsCategory> firstLevelCategories = goodsCategoryMapper.selectByLevelAndParentIdsAndNumber(Collections.singletonList(0L), XxShopCategoryLevelEnum.LEVEL_ONE.getLevel(), Constants.INDEX_CATEGORY_NUMBER);
         if (!CollectionUtils.isEmpty(firstLevelCategories)) {
-            List<Long> firstLevelCategoryIds = firstLevelCategories.stream().map(GoodsCategory::getCategoryId).collect(Collectors.toList());
+            List<Long> firstLevelCategoryIds = firstLevelCategories.stream().map(XxShopGoodsCategory::getCategoryId).collect(Collectors.toList());
             //获取二级分类的数据
-            List<GoodsCategory> secondLevelCategories = goodsCategoryMapper.selectByLevelAndParentIdsAndNumber(firstLevelCategoryIds, XxShopCategoryLevelEnum.LEVEL_TWO.getLevel(), 0);
+            List<XxShopGoodsCategory> secondLevelCategories = goodsCategoryMapper.selectByLevelAndParentIdsAndNumber(firstLevelCategoryIds, XxShopCategoryLevelEnum.LEVEL_TWO.getLevel(), 0);
             if (!CollectionUtils.isEmpty(secondLevelCategories)) {
-                List<Long> secondLevelCategoryIds = secondLevelCategories.stream().map(GoodsCategory::getCategoryId).collect(Collectors.toList());
+                List<Long> secondLevelCategoryIds = secondLevelCategories.stream().map(XxShopGoodsCategory::getCategoryId).collect(Collectors.toList());
                 //获取三级分类的数据
-                List<GoodsCategory> thirdLevelCategories = goodsCategoryMapper.selectByLevelAndParentIdsAndNumber(secondLevelCategoryIds, XxShopCategoryLevelEnum.LEVEL_THREE.getLevel(), 0);
+                List<XxShopGoodsCategory> thirdLevelCategories = goodsCategoryMapper.selectByLevelAndParentIdsAndNumber(secondLevelCategoryIds, XxShopCategoryLevelEnum.LEVEL_THREE.getLevel(), 0);
                 if (!CollectionUtils.isEmpty(thirdLevelCategories)) {
                     //根据 parentId 将 thirdLevelCategories 分组
-                    Map<Long, List<GoodsCategory>> thirdLevelCategoryMap = thirdLevelCategories.stream().collect(groupingBy(GoodsCategory::getParentId));
+                    Map<Long, List<XxShopGoodsCategory>> thirdLevelCategoryMap = thirdLevelCategories.stream().collect(groupingBy(XxShopGoodsCategory::getParentId));
                     List<SecondLevelCategoryVO> secondLevelCategoryVOS = new ArrayList<>();
                     //处理二级分类
-                    for (GoodsCategory secondLevelCategory : secondLevelCategories) {
+                    for (XxShopGoodsCategory secondLevelCategory : secondLevelCategories) {
                         SecondLevelCategoryVO secondLevelCategoryVO = new SecondLevelCategoryVO();
                         BeanUtil.copyProperties(secondLevelCategory, secondLevelCategoryVO);
                         //如果该二级分类下有数据则放入 secondLevelCategoryVOS 对象中
                         if (thirdLevelCategoryMap.containsKey(secondLevelCategory.getCategoryId())) {
                             //根据二级分类的id取出thirdLevelCategoryMap分组中的三级分类list
-                            List<GoodsCategory> tempGoodsCategories = thirdLevelCategoryMap.get(secondLevelCategory.getCategoryId());
+                            List<XxShopGoodsCategory> tempGoodsCategories = thirdLevelCategoryMap.get(secondLevelCategory.getCategoryId());
                             secondLevelCategoryVO.setThirdLevelCategoryVOS((BeanUtil.copyList(tempGoodsCategories, ThirdLevelCategoryVO.class)));
                             secondLevelCategoryVOS.add(secondLevelCategoryVO);
                         }
@@ -105,7 +105,7 @@ public class XxShopCategoryServiceImpl implements XxShopCategoryService {
                     if (!CollectionUtils.isEmpty(secondLevelCategoryVOS)) {
                         //根据 parentId 将 thirdLevelCategories 分组
                         Map<Long, List<SecondLevelCategoryVO>> secondLevelCategoryVOMap = secondLevelCategoryVOS.stream().collect(groupingBy(SecondLevelCategoryVO::getParentId));
-                        for (GoodsCategory firstCategory : firstLevelCategories) {
+                        for (XxShopGoodsCategory firstCategory : firstLevelCategories) {
                             XxShopIndexCategoryVO xxShopIndexCategoryVO = new XxShopIndexCategoryVO();
                             BeanUtil.copyProperties(firstCategory, xxShopIndexCategoryVO);
                             //如果该一级分类下有数据则放入 xxShopIndexCategoryVOS 对象中
@@ -127,14 +127,14 @@ public class XxShopCategoryServiceImpl implements XxShopCategoryService {
 
     @Override
     public PageResult getCategorisPage(PageQueryUtil pageUtil) {
-        List<GoodsCategory> goodsCategories = goodsCategoryMapper.findGoodsCategoryList(pageUtil);
+        List<XxShopGoodsCategory> goodsCategories = goodsCategoryMapper.findGoodsCategoryList(pageUtil);
         int total = goodsCategoryMapper.getTotalGoodsCategories(pageUtil);
         PageResult pageResult = new PageResult(goodsCategories, total, pageUtil.getLimit(), pageUtil.getPage());
         return pageResult;
     }
 
     @Override
-    public List<GoodsCategory> selectByLevelAndParentIdsAndNumber(List<Long> parentIds, int categoryLevel) {
+    public List<XxShopGoodsCategory> selectByLevelAndParentIdsAndNumber(List<Long> parentIds, int categoryLevel) {
         return goodsCategoryMapper.selectByLevelAndParentIdsAndNumber(parentIds, categoryLevel, 0);//0代表查询所有
     }
 }

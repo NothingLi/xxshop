@@ -1,6 +1,7 @@
 package top.bielai.shop.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Mapper;
 import top.bielai.shop.domain.XxShopAdminUser;
 
 /**
@@ -9,6 +10,7 @@ import top.bielai.shop.domain.XxShopAdminUser;
  * @createDate 2022-11-30 13:58:38
  * @Entity top.bielai.shop.domain.XxShopAdminUser
  */
+@Mapper
 public interface XxShopAdminUserMapper extends BaseMapper<XxShopAdminUser> {
 
 }

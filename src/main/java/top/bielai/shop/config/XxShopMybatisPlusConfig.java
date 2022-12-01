@@ -13,7 +13,7 @@ import java.util.Collections;
  * @author Administrator
  */
 @Configuration
-@MapperScan("top.bielai.shop.dao")
+@MapperScan("top.bielai.shop.mapper")
 public class XxShopMybatisPlusConfig {
     @Bean
     public PaginationInnerInterceptor paginationInnerInterceptor() {

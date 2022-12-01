@@ -12,9 +12,15 @@ import java.io.Serializable;
 @Data
 public class SaveCartItemParam implements Serializable {
 
-    @ApiModelProperty("商品数量")
+    
+    /**
+     * 商品数量
+     */
     private Integer goodsCount;
 
-    @ApiModelProperty("商品id")
+    
+    /**
+     * 商品id
+     */
     private Long goodsId;
 }

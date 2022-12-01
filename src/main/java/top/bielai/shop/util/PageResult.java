@@ -8,19 +8,34 @@ import java.util.List;
 
 public class PageResult<T> implements Serializable {
 
-    @ApiModelProperty("总记录数")
+    
+    /**
+     * 总记录数
+     */
     private int totalCount;
 
-    @ApiModelProperty("每页记录数")
+    
+    /**
+     * 每页记录数
+     */
     private int pageSize;
 
-    @ApiModelProperty("总页数")
+    
+    /**
+     * 总页数
+     */
     private int totalPage;
 
-    @ApiModelProperty("当前页数")
+    
+    /**
+     * 当前页数
+     */
     private int currPage;
 
-    @ApiModelProperty("列表数据")
+    
+    /**
+     * 列表数据
+     */
     private List<T> list;
 
     /**

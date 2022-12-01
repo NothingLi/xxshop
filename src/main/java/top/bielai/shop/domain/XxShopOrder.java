@@ -1,12 +1,10 @@
 package top.bielai.shop.domain;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -38,7 +36,7 @@ public class XxShopOrder implements Serializable {
      * 订单总价
      */
     @TableField(value = "total_price")
-    private Integer totalPrice;
+    private BigDecimal totalPrice;
 
     /**
      * 支付状态:0.未支付,1.支付成功,-1:支付失败
@@ -73,8 +71,9 @@ public class XxShopOrder implements Serializable {
     /**
      * 删除标识字段(0-未删除 1-已删除)
      */
+    @TableLogic()
     @TableField(value = "is_deleted")
-    private Integer isDeleted;
+    private Byte isDeleted;
 
     /**
      * 创建时间

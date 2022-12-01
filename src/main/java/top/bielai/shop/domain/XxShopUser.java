@@ -1,9 +1,6 @@
 package top.bielai.shop.domain;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -49,8 +46,9 @@ public class XxShopUser implements Serializable {
     /**
      * 注销标识字段(0-正常 1-已注销)
      */
+    @TableLogic
     @TableField(value = "is_deleted")
-    private Integer isDeleted;
+    private Byte isDeleted;
 
     /**
      * 锁定标识字段(0-未锁定 1-已锁定)

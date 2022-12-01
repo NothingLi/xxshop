@@ -1,9 +1,6 @@
 package top.bielai.shop.domain;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -35,7 +32,7 @@ public class XxShopShoppingCartItem implements Serializable {
     private Long goodsId;
 
     /**
-     * 数量(最大为5)
+     * 数量
      */
     @TableField(value = "goods_count")
     private Integer goodsCount;
@@ -43,8 +40,9 @@ public class XxShopShoppingCartItem implements Serializable {
     /**
      * 删除标识字段(0-未删除 1-已删除)
      */
+    @TableLogic
     @TableField(value = "is_deleted")
-    private Integer isDeleted;
+    private Byte isDeleted;
 
     /**
      * 创建时间
