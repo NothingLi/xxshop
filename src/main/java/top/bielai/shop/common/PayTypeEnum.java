@@ -2,12 +2,19 @@
 package top.bielai.shop.common;
 
 
+/**
+ * @author Administrator
+ */
+
 public enum PayTypeEnum {
 
+    /**
+     * 支付方式
+     */
     DEFAULT(-1, "ERROR"),
     NOT_PAY(0, "无"),
     ALI_PAY(1, "支付宝"),
-    WEIXIN_PAY(2, "微信支付");
+    WECHAT_PAY(2, "微信支付");
 
     private int payType;
 

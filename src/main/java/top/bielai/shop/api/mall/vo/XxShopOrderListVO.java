@@ -58,5 +58,5 @@ public class XxShopOrderListVO implements Serializable {
     /**
      * 订单项列表
      */
-    private List<XxShopOrderItemVO> xxShopOrderItemVOS;
+    private List<XxShopOrderItemVO> xxShopOrderItemVOList;
 }

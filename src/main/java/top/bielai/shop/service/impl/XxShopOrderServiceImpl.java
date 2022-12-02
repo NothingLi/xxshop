@@ -1,7 +1,10 @@
 package top.bielai.shop.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +28,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.groupingBy;
 
 /**
  * @author Administrator
@@ -70,62 +75,32 @@ public class XxShopOrderServiceImpl extends ServiceImpl<XxShopOrderMapper, XxSho
     }
 
     @Override
-    public XxShopOrderDetailVO getOrderDetailByOrderNo(String orderNo, Long userId) {
-        XxShopOrder xxShopOrder = xxShopOrderMapper.selectByOrderNo(orderNo);
-        if (xxShopOrder == null) {
-            XxShopException.fail(ServiceResultEnum.DATA_NOT_EXIST.getResult());
-        }
-        if (!userId.equals(xxShopOrder.getUserId())) {
-            XxShopException.fail(ServiceResultEnum.REQUEST_FORBIDEN_ERROR.getResult());
-        }
-        List<XxShopOrderItem> orderItems = xxShopOrderItemMapper.selectByOrderId(xxShopOrder.getOrderId());
-        //获取订单项数据
-        if (CollectionUtils.isEmpty(orderItems)) {
-            XxShopException.fail(ServiceResultEnum.ORDER_ITEM_NOT_EXIST_ERROR.getResult());
-        }
-        List<XxShopOrderItemVO> xxShopOrderItemVOS = BeanUtil.copyList(orderItems, XxShopOrderItemVO.class);
-        XxShopOrderAddress xxShopOrderAddress = xxShopOrderAddressMapper.selectByPrimaryKey(xxShopOrder.getOrderId());
-        XxShopUserAddressVO xxShopUserAddressVO = new XxShopUserAddressVO();
-        BeanUtil.copyProperties(xxShopOrderAddress, xxShopUserAddressVO);
-        XxShopOrderDetailVO xxShopOrderDetailVO = new XxShopOrderDetailVO();
-        BeanUtil.copyProperties(xxShopOrder, xxShopOrderDetailVO);
-        xxShopOrderDetailVO.setOrderStatusString(OrderStatusEnum.getXxShopOrderStatusEnumByStatus(xxShopOrderDetailVO.getOrderStatus()).getName());
-        xxShopOrderDetailVO.setPayTypeString(PayTypeEnum.getPayTypeEnumByType(xxShopOrderDetailVO.getPayType()).getName());
-        xxShopOrderDetailVO.setXxShopOrderItemVOS(xxShopOrderItemVOS);
-        xxShopOrderDetailVO.setXxShopUserAddressVO(xxShopUserAddressVO);
-        return xxShopOrderDetailVO;
-    }
-
-
-    @Override
-    public PageResult getMyOrders(PageQueryUtil pageUtil) {
-        int total = xxShopOrderMapper.getTotalXxShopOrders(pageUtil);
-        List<XxShopOrder> xxShopOrders = xxShopOrderMapper.findXxShopOrderList(pageUtil);
-        List<XxShopOrderListVO> orderListVOS = new ArrayList<>();
-        if (total > 0) {
-            //数据转换 将实体类转成vo
-            orderListVOS = BeanUtil.copyList(xxShopOrders, XxShopOrderListVO.class);
+    public Page<XxShopOrderListVO> orderList(Page<XxShopOrder> pageParam, LambdaQueryWrapper<XxShopOrder> queryWrapper) {
+        Page<XxShopOrder> page = page(pageParam, queryWrapper);
+        Page<XxShopOrderListVO> result = new Page<>();
+        BeanUtils.copyProperties(page,result,"records");
+        if (!CollectionUtils.isEmpty(page.getRecords())){
+            List<XxShopOrderListVO> voList = BeanUtil.copyList(page.getRecords(), XxShopOrderListVO.class);
             //设置订单状态中文显示值
-            for (XxShopOrderListVO xxShopOrderListVO : orderListVOS) {
+            for (XxShopOrderListVO xxShopOrderListVO : voList) {
                 xxShopOrderListVO.setOrderStatusString(OrderStatusEnum.getXxShopOrderStatusEnumByStatus(xxShopOrderListVO.getOrderStatus()).getName());
             }
-            List<Long> orderIds = xxShopOrders.stream().map(XxShopOrder::getOrderId).collect(Collectors.toList());
+            List<Long> orderIds = page.getRecords().stream().map(XxShopOrder::getOrderId).collect(Collectors.toList());
             if (!CollectionUtils.isEmpty(orderIds)) {
-                List<XxShopOrderItem> orderItems = xxShopOrderItemMapper.selectByOrderIds(orderIds);
+                List<XxShopOrderItem> orderItems = orderItemService.list(new LambdaQueryWrapper<XxShopOrderItem>().in(XxShopOrderItem::getOrderId,orderIds));
                 Map<Long, List<XxShopOrderItem>> itemByOrderIdMap = orderItems.stream().collect(groupingBy(XxShopOrderItem::getOrderId));
-                for (XxShopOrderListVO xxShopOrderListVO : orderListVOS) {
+                for (XxShopOrderListVO xxShopOrderListVO : voList) {
                     //封装每个订单列表对象的订单项数据
                     if (itemByOrderIdMap.containsKey(xxShopOrderListVO.getOrderId())) {
                         List<XxShopOrderItem> orderItemListTemp = itemByOrderIdMap.get(xxShopOrderListVO.getOrderId());
-                        //将XxShopOrderItem对象列表转换成XxShopOrderItemVO对象列表
-                        List<XxShopOrderItemVO> xxShopOrderItemVOS = BeanUtil.copyList(orderItemListTemp, XxShopOrderItemVO.class);
-                        xxShopOrderListVO.setXxShopOrderItemVOS(xxShopOrderItemVOS);
+                        List<XxShopOrderItemVO> xxShopOrderItemVOList = BeanUtil.copyList(orderItemListTemp, XxShopOrderItemVO.class);
+                        xxShopOrderListVO.setXxShopOrderItemVOList(xxShopOrderItemVOList);
                     }
                 }
             }
+            result.setRecords(voList);
         }
-        PageResult pageResult = new PageResult(orderListVOS, total, pageUtil.getLimit(), pageUtil.getPage());
-        return pageResult;
+        return result;
     }
 
     @Override
@@ -155,7 +130,7 @@ public class XxShopOrderServiceImpl extends ServiceImpl<XxShopOrderMapper, XxSho
     }
 
     @Override
-    public String finishOrder(String orderNo, Long userId) {
+    public String finishOrder(String orderNo, @TokenToShopUser Long userId) {
         XxShopOrder xxShopOrder = xxShopOrderMapper.selectByOrderNo(orderNo);
         if (xxShopOrder != null) {
             //验证是否是当前userId下的订单，否则报错
@@ -234,15 +209,12 @@ public class XxShopOrderServiceImpl extends ServiceImpl<XxShopOrderMapper, XxSho
                 List<XxShopOrderItem> xxShopOrderItems = new ArrayList<>();
                 for (XxShopShoppingCartItemVO xxShopShoppingCartItemVO : shoppingCartItems) {
                     XxShopOrderItem xxShopOrderItem = new XxShopOrderItem();
-                    //使用BeanUtil工具类将xxShopShoppingCartItemVO中的属性复制到xxShopOrderItem对象中
                     BeanUtil.copyProperties(xxShopShoppingCartItemVO, xxShopOrderItem);
-                    //XxShopOrderMapper文件insert()方法中使用了useGeneratedKeys因此orderId可以获取到
                     xxShopOrderItem.setOrderId(xxShopOrder.getOrderId());
                     xxShopOrderItems.add(xxShopOrderItem);
                 }
                 //保存至数据库
                 if (orderItemService.saveBatch(xxShopOrderItems) && orderAddressService.save(xxShopOrderAddress)) {
-                    //所有操作成功后，将订单号返回，以供Controller方法跳转到订单详情
                     return orderNo;
                 }
             }

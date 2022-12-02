@@ -1,6 +1,9 @@
 package top.bielai.shop.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import top.bielai.shop.api.mall.vo.XxShopOrderListVO;
 import top.bielai.shop.api.mall.vo.XxShopShoppingCartItemVO;
 import top.bielai.shop.domain.XxShopOrder;
 import top.bielai.shop.domain.XxShopUserAddress;
@@ -23,4 +26,6 @@ public interface XxShopOrderService extends IService<XxShopOrder> {
      * @return 订单编号
      */
     String saveOrder(Long userId, XxShopUserAddress address, List<XxShopShoppingCartItemVO> itemsForSave);
+
+    Page<XxShopOrderListVO> orderList(Page<XxShopOrder> pageParam, LambdaQueryWrapper<XxShopOrder> queryWrapper);
 }

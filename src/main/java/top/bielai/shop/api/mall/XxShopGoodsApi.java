@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.ApiParam;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import top.bielai.shop.api.mall.vo.XxShopGoodsDetailVO;
 import top.bielai.shop.api.mall.vo.XxShopSearchGoodsVO;
@@ -19,12 +20,16 @@ import top.bielai.shop.util.Result;
 import top.bielai.shop.util.ResultGenerator;
 
 import javax.annotation.Resource;
+import javax.validation.Valid;
+import javax.validation.constraints.Min;
 
 /**
  * 小新商城商品相关接口
  *
  * @author Administrator
  */
+@Valid
+@Validated
 @RestController
 @RequestMapping("/api/v1")
 public class XxShopGoodsApi {
@@ -45,7 +50,7 @@ public class XxShopGoodsApi {
     public Result<IPage<XxShopSearchGoodsVO>> search(@RequestParam(required = false) String keyword,
                                                      @RequestParam(required = false) Long goodsCategoryId,
                                                      @RequestParam(required = false) String orderBy,
-                                                     @RequestParam(required = false) Integer pageNumber) {
+                                                     @RequestParam @Min(value = 1, message = "你要看哪样啊？") Integer pageNumber) {
         //两个搜索参数都为空，直接返回异常
         if (goodsCategoryId == null && StringUtils.isBlank(keyword)) {
             XxShopException.fail(ErrorEnum.ERROR_PARAM);

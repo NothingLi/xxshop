@@ -3,6 +3,7 @@ package top.bielai.shop.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 import top.bielai.shop.api.mall.vo.XxShopIndexConfigGoodsVO;
 import top.bielai.shop.common.IndexConfigTypeEnum;
 import top.bielai.shop.dao.XxShopGoodsMapper;
@@ -34,7 +35,7 @@ public class XxShopIndexConfigServiceImpl extends ServiceImpl<XxShopIndexConfigM
                 .eq(XxShopIndexConfig::getConfigType, type)
                 .orderByDesc(XxShopIndexConfig::getConfigRank)
                 .last("limit " + limit));
-        if(!list.isEmpty()){
+        if(!CollectionUtils.isEmpty(list)){
             List<Long> goodIds = list.stream().map(XxShopIndexConfig::getGoodsId).collect(Collectors.toList());
             List<XxShopGoodsInfo> xxShopGoodsInfos = goodsMapper.selectBatchIds(goodIds);
             List<XxShopIndexConfigGoodsVO> xxShopIndexConfigGoodsVOList = BeanUtil.copyList(xxShopGoodsInfos, XxShopIndexConfigGoodsVO.class);

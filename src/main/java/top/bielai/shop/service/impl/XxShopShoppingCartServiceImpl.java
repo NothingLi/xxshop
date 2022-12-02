@@ -33,7 +33,7 @@ public class XxShopShoppingCartServiceImpl implements XxShopShoppingCartService 
     private XxShopGoodsMapper xxShopGoodsMapper;
 
     @Override
-    public String saveXxShopCartItem(SaveCartItemParam saveCartItemParam, Long userId) {
+    public String saveXxShopCartItem(SaveCartItemParam saveCartItemParam, @TokenToShopUser Long userId) {
 
         XxShopGoodsInfo xxShopGoods = xxShopGoodsMapper.selectByPrimaryKey(saveCartItemParam.getGoodsId());
         //商品为空
@@ -79,7 +79,7 @@ public class XxShopShoppingCartServiceImpl implements XxShopShoppingCartService 
     }
 
     @Override
-    public String updateXxShopCartItem(UpdateCartItemParam updateCartItemParam, Long userId) {
+    public String updateXxShopCartItem(UpdateCartItemParam updateCartItemParam, @TokenToShopUser Long userId) {
 
         XxShopShoppingCartItem xxShopShoppingCartItemUpdate = xxShopShoppingCartItemMapper.selectByPrimaryKey(updateCartItemParam.getCartItemId());
         if (xxShopShoppingCartItemUpdate == null) {
@@ -121,7 +121,7 @@ public class XxShopShoppingCartServiceImpl implements XxShopShoppingCartService 
     }
 
     @Override
-    public Boolean deleteById(Long shoppingCartItemId, Long userId) {
+    public Boolean deleteById(Long shoppingCartItemId, @TokenToShopUser Long userId) {
         XxShopShoppingCartItem xxShopShoppingCartItem = xxShopShoppingCartItemMapper.selectByPrimaryKey(shoppingCartItemId);
         if (xxShopShoppingCartItem == null) {
             return false;
@@ -134,7 +134,7 @@ public class XxShopShoppingCartServiceImpl implements XxShopShoppingCartService 
     }
 
     @Override
-    public Boolean deleteBatchById(Long[] shoppingCartItemId, Long userId) {
+    public Boolean deleteBatchById(Long[] shoppingCartItemId, @TokenToShopUser Long userId) {
         return xxShopShoppingCartItemMapper.deleteBatch(Arrays.asList(shoppingCartItemId),userId) > 0;
     }
 

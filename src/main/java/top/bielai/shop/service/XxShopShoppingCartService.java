@@ -19,7 +19,7 @@ public interface XxShopShoppingCartService {
      * @param userId
      * @return
      */
-    String saveXxShopCartItem(SaveCartItemParam saveCartItemParam, Long userId);
+    String saveXxShopCartItem(SaveCartItemParam saveCartItemParam, @TokenToShopUser Long userId);
 
     /**
      * 修改购物车中的属性
@@ -28,7 +28,7 @@ public interface XxShopShoppingCartService {
      * @param userId
      * @return
      */
-    String updateXxShopCartItem(UpdateCartItemParam updateCartItemParam, Long userId);
+    String updateXxShopCartItem(UpdateCartItemParam updateCartItemParam, @TokenToShopUser Long userId);
 
     /**
      * 获取购物项详情
@@ -46,7 +46,7 @@ public interface XxShopShoppingCartService {
      * @param userId
      * @return
      */
-    Boolean deleteById(Long shoppingCartItemId, Long userId);
+    Boolean deleteById(Long shoppingCartItemId, @TokenToShopUser Long userId);
 
     /**
      * 删除购物车中的商品
@@ -56,7 +56,7 @@ public interface XxShopShoppingCartService {
      * @param userId
      * @return
      */
-    Boolean deleteBatchById(Long[] shoppingCartItemId, Long userId);
+    Boolean deleteBatchById(Long[] shoppingCartItemId, @TokenToShopUser Long userId);
 
     /**
      * 获取我的购物车中的列表数据

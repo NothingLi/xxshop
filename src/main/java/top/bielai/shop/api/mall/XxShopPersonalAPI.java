@@ -58,7 +58,7 @@ public class XxShopPersonalAPI {
 
     @PostMapping("/user/logout")
     @ApiOperation(value = "登出接口", notes = "清除token")
-    public Result<String> logout(@TokenToShopUser XxShopUser loginShopUser) {
+    public Result<String> logout(Long userId) {
         Boolean logoutResult = xxShopUserService.logout(loginShopUser.getUserId());
 
         logger.info("logout api,loginShopUser={}", loginShopUser.getUserId());
@@ -92,7 +92,7 @@ public class XxShopPersonalAPI {
 
     @PutMapping("/user/info")
     @ApiOperation(value = "修改用户信息", notes = "")
-    public Result updateInfo(@RequestBody @ApiParam("用户信息") ShopUserUpdateParam mallUserUpdateParam, @TokenToShopUser XxShopUser loginShopUser) {
+    public Result updateInfo(@RequestBody @ApiParam("用户信息") ShopUserUpdateParam mallUserUpdateParam, @TokenToShopUser Long userId) {
         Boolean flag = xxShopUserService.updateUserInfo(mallUserUpdateParam, loginShopUser.getUserId());
         if (flag) {
             //返回成功
@@ -107,7 +107,7 @@ public class XxShopPersonalAPI {
 
     @GetMapping("/user/info")
     @ApiOperation(value = "获取用户信息", notes = "")
-    public Result<XxShopUserVO> getUserDetail(@TokenToShopUser XxShopUser loginShopUser) {
+    public Result<XxShopUserVO> getUserDetail(Long userId) {
         //已登录则直接返回
         XxShopUserVO mallUserVO = new XxShopUserVO();
         BeanUtil.copyProperties(loginShopUser, mallUserVO);

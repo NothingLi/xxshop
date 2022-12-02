@@ -33,6 +33,11 @@ public class XxShopOrderDetailVO implements Serializable {
      */
     private Byte payStatus;
 
+    /**
+     * 订单支付状态
+     */
+    private String payStatusString;
+
     
     /**
      * 订单支付方式
@@ -75,7 +80,7 @@ public class XxShopOrderDetailVO implements Serializable {
     /**
      * 订单项列表
      */
-    private List<XxShopOrderItemVO> xxShopOrderItemVOS;
+    private List<XxShopOrderItemVO> xxShopOrderItemVOList;
 
     
     /**

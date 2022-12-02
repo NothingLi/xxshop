@@ -3,14 +3,20 @@ package top.bielai.shop.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import top.bielai.shop.api.mall.vo.XxShopIndexCategoryVO;
-import top.bielai.shop.common.Constants;
 import top.bielai.shop.domain.XxShopGoodsCategory;
 import top.bielai.shop.mapper.XxShopGoodsCategoryMapper;
 import top.bielai.shop.service.XxShopGoodsCategoryService;
 import top.bielai.shop.util.BeanUtil;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.groupingBy;
 
 /**
  * @author Administrator
@@ -23,33 +29,40 @@ public class XxShopGoodsCategoryServiceImpl extends ServiceImpl<XxShopGoodsCateg
 
     @Override
     public List<XxShopIndexCategoryVO> getCategoriesForIndex() {
-        List<XxShopGoodsCategory> list = list(generateQueryWrapper(0L, 1));
-        return getChildren(list);
+        List<XxShopGoodsCategory> list = list(generateQueryWrapper(Collections.singleton(0L), 1));
+        return getVoList(list);
     }
 
-    private List<XxShopIndexCategoryVO> getChildren(List<XxShopGoodsCategory> list) {
+    private List<XxShopIndexCategoryVO> getVoList(List<XxShopGoodsCategory> list){
         if (!list.isEmpty()) {
             List<XxShopIndexCategoryVO> voList = BeanUtil.copyList(list, XxShopIndexCategoryVO.class);
-            for (XxShopIndexCategoryVO vo : voList) {
-                List<XxShopGoodsCategory> children = list(generateQueryWrapper(vo.getCategoryId(),
-                        vo.getCategoryLevel() + 1));
-                if (!children.isEmpty()) {
-                    getChildren(list);
-                    List<XxShopIndexCategoryVO> childVoList = BeanUtil.copyList(children, XxShopIndexCategoryVO.class);
-                    vo.setChildrenCategoryVO(childVoList);
-                }
-            }
+            getChildren(voList);
             return voList;
         }
         return null;
     }
 
-    private LambdaQueryWrapper<XxShopGoodsCategory> generateQueryWrapper(Long parent, int level) {
+    private List<XxShopIndexCategoryVO> getChildren(List<XxShopIndexCategoryVO> voList) {
+        Set<Long> parentIds = voList.stream().map(XxShopIndexCategoryVO::getCategoryId).collect(Collectors.toSet());
+        List<XxShopGoodsCategory> children = list(generateQueryWrapper(parentIds, voList.get(0).getCategoryLevel() + 1));
+        if (!CollectionUtils.isEmpty(children)) {
+            Map<Long, List<XxShopGoodsCategory>> groupByParent = children.stream().collect(groupingBy(XxShopGoodsCategory::getParentId));
+            for (XxShopIndexCategoryVO vo : voList) {
+                List<XxShopGoodsCategory> childCateGory = groupByParent.get(vo.getCategoryId());
+                if (!CollectionUtils.isEmpty(childCateGory)) {
+                    List<XxShopIndexCategoryVO> childVoList = getChildren(BeanUtil.copyList(childCateGory, XxShopIndexCategoryVO.class));
+                    vo.setChildrenCategoryVO(childVoList);
+                }
+            }
+        }
+        return voList;
+    }
+
+    private LambdaQueryWrapper<XxShopGoodsCategory> generateQueryWrapper(Set<Long> parentIds, int level) {
         return new LambdaQueryWrapper<XxShopGoodsCategory>()
-                .eq(XxShopGoodsCategory::getParentId, parent)
+                .in(XxShopGoodsCategory::getParentId, parentIds)
                 .eq(XxShopGoodsCategory::getCategoryLevel, level)
-                .orderByDesc(XxShopGoodsCategory::getCategoryRank)
-                .last("limit "+ Constants.INDEX_CATEGORY_NUMBER);
+                .orderByDesc(XxShopGoodsCategory::getCategoryRank);
     }
 }
 

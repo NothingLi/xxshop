@@ -36,7 +36,7 @@ public class XxShopShoppingCartAPI {
 
     @GetMapping("/shop-cart/page")
     @ApiOperation(value = "购物车列表(每页默认5条)", notes = "传参为页码")
-    public Result<PageResult<List<XxShopShoppingCartItemVO>>> cartItemPageList(Integer pageNumber, @TokenToShopUser XxShopUser loginShopUser) {
+    public Result<PageResult<List<XxShopShoppingCartItemVO>>> cartItemPageList(Integer pageNumber, @TokenToShopUser Long userId) {
         Map params = new HashMap(8);
         if (pageNumber == null || pageNumber < 1) {
             pageNumber = 1;
@@ -51,14 +51,14 @@ public class XxShopShoppingCartAPI {
 
     @GetMapping("/shop-cart")
     @ApiOperation(value = "购物车列表(网页移动端不分页)", notes = "")
-    public Result<List<XxShopShoppingCartItemVO>> cartItemList(@TokenToShopUser XxShopUser loginShopUser) {
+    public Result<List<XxShopShoppingCartItemVO>> cartItemList(Long userId) {
         return ResultGenerator.genSuccessResult(xxShopShoppingCartService.getMyShoppingCartItems(loginShopUser.getUserId()));
     }
 
     @PostMapping("/shop-cart")
     @ApiOperation(value = "添加商品到购物车接口", notes = "传参为商品id、数量")
     public Result saveXxShopShoppingCartItem(@RequestBody SaveCartItemParam saveCartItemParam,
-                                                 @TokenToShopUser XxShopUser loginShopUser) {
+                                                 Long userId) {
         String saveResult = xxShopShoppingCartService.saveXxShopCartItem(saveCartItemParam, loginShopUser.getUserId());
         //添加成功
         if (ServiceResultEnum.SUCCESS.getResult().equals(saveResult)) {
@@ -71,7 +71,7 @@ public class XxShopShoppingCartAPI {
     @PutMapping("/shop-cart")
     @ApiOperation(value = "修改购物项数据", notes = "传参为购物项id、数量")
     public Result updateXxShopShoppingCartItem(@RequestBody UpdateCartItemParam updateCartItemParam,
-                                                   @TokenToShopUser XxShopUser loginShopUser) {
+                                                   Long userId) {
         String updateResult = xxShopShoppingCartService.updateXxShopCartItem(updateCartItemParam, loginShopUser.getUserId());
         //修改成功
         if (ServiceResultEnum.SUCCESS.getResult().equals(updateResult)) {
@@ -84,7 +84,7 @@ public class XxShopShoppingCartAPI {
     @DeleteMapping("/shop-cart/{xxShopShoppingCartItemId}")
     @ApiOperation(value = "删除购物项", notes = "传参为购物项id")
     public Result updateXxShopShoppingCartItem(@PathVariable("xxShopShoppingCartItemId") Long xxShopShoppingCartItemId,
-                                                   @TokenToShopUser XxShopUser loginShopUser) {
+                                                   Long userId) {
         XxShopShoppingCartItem xxShopCartItemById = xxShopShoppingCartService.getXxShopCartItemById(xxShopShoppingCartItemId);
         if (!loginShopUser.getUserId().equals(xxShopCartItemById.getUserId())) {
             return ResultGenerator.genFailResult(ServiceResultEnum.REQUEST_FORBIDEN_ERROR.getResult());
@@ -102,7 +102,7 @@ public class XxShopShoppingCartAPI {
     @DeleteMapping("/shop-cart")
     @ApiOperation(value = "删除购物项", notes = "传参为购物项id")
     public Result updateXxShopShoppingCartItem(@RequestBody Long[] xxShopShoppingCartItemId,
-                                               @TokenToShopUser XxShopUser loginShopUser) {
+                                               Long userId) {
 
         Boolean deleteResult = xxShopShoppingCartService.deleteBatchById(xxShopShoppingCartItemId,loginShopUser.getUserId());
         //删除成功
@@ -115,7 +115,7 @@ public class XxShopShoppingCartAPI {
 
     @GetMapping("/shop-cart/settle")
     @ApiOperation(value = "根据购物项id数组查询购物项明细", notes = "确认订单页面使用")
-    public Result<List<XxShopShoppingCartItemVO>> toSettle(Long[] cartItemIds, @TokenToShopUser XxShopUser loginShopUser) {
+    public Result<List<XxShopShoppingCartItemVO>> toSettle(Long[] cartItemIds, @TokenToShopUser Long userId) {
         if (cartItemIds.length < 1) {
             XxShopException.fail("参数异常");
         }

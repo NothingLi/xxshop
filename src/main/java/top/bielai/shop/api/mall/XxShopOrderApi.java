@@ -2,36 +2,31 @@
 package top.bielai.shop.api.mall;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import top.bielai.shop.api.mall.param.SaveOrderParam;
-import top.bielai.shop.api.mall.vo.XxShopOrderDetailVO;
-import top.bielai.shop.api.mall.vo.XxShopOrderListVO;
-import top.bielai.shop.api.mall.vo.XxShopShoppingCartItemVO;
-import top.bielai.shop.common.Constants;
-import top.bielai.shop.common.ErrorEnum;
-import top.bielai.shop.common.ServiceResultEnum;
-import top.bielai.shop.common.XxShopException;
+import top.bielai.shop.api.mall.vo.*;
+import top.bielai.shop.common.*;
 import top.bielai.shop.config.annotation.TokenToShopUser;
-import top.bielai.shop.domain.XxShopUser;
+import top.bielai.shop.domain.XxShopOrder;
+import top.bielai.shop.domain.XxShopOrderAddress;
+import top.bielai.shop.domain.XxShopOrderItem;
 import top.bielai.shop.domain.XxShopUserAddress;
-import top.bielai.shop.service.XxShopOrderService;
-import top.bielai.shop.service.XxShopShoppingCartItemService;
-import top.bielai.shop.service.XxShopUserAddressService;
-import top.bielai.shop.util.PageQueryUtil;
-import top.bielai.shop.util.PageResult;
+import top.bielai.shop.service.*;
+import top.bielai.shop.util.BeanUtil;
 import top.bielai.shop.util.Result;
 import top.bielai.shop.util.ResultGenerator;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 小新商城订单操作相关接口
@@ -39,16 +34,25 @@ import java.util.Map;
  * @author Administrator
  */
 @Valid
+@Validated
 @RestController
 @RequestMapping("/api/v1")
 public class XxShopOrderApi {
 
     @Resource
     private XxShopShoppingCartItemService cartItemService;
+
     @Resource
     private XxShopOrderService xxShopOrderService;
+
     @Resource
     private XxShopUserAddressService xxShopUserAddressService;
+
+    @Resource
+    private XxShopOrderItemService orderItemService;
+
+    @Resource
+    private XxShopOrderAddressService orderAddressService;
 
     /**
      * 生成订单接口
@@ -71,33 +75,63 @@ public class XxShopOrderApi {
         return ResultGenerator.genSuccessResult(saveOrderResult);
     }
 
+    /**
+     * 根据订单号查询订单详情
+     *
+     * @param orderNo 订单编号
+     * @return 订单详情
+     */
     @GetMapping("/order/{orderNo}")
-    @ApiOperation(value = "订单详情接口", notes = "传参为订单号")
-    public Result<XxShopOrderDetailVO> orderDetailPage(@ApiParam(value = "订单号") @PathVariable("orderNo") String orderNo, @TokenToShopUser XxShopUser loginShopUser) {
-        return ResultGenerator.genSuccessResult(xxShopOrderService.getOrderDetailByOrderNo(orderNo, loginShopUser.getUserId()));
+    public Result<XxShopOrderDetailVO> getOrderDetail(@PathVariable("orderNo") @NotBlank(message = "订单编号呢？") String orderNo, @TokenToShopUser Long userId) {
+        // 根据订单编号和用户id查询相关订单
+        XxShopOrder one = xxShopOrderService.getOne(new LambdaQueryWrapper<XxShopOrder>().eq(XxShopOrder::getOrderNo, orderNo).eq(XxShopOrder::getUserId, userId));
+        if (ObjectUtils.isEmpty(one)) {
+            XxShopException.fail(ErrorEnum.DATA_NOT_EXIST);
+        }
+        XxShopOrderDetailVO xxShopOrderDetailVO = new XxShopOrderDetailVO();
+        BeanUtil.copyProperties(one, xxShopOrderDetailVO);
+
+        // 查询订单项
+        List<XxShopOrderItem> orderItems = orderItemService.list(new LambdaQueryWrapper<XxShopOrderItem>().eq(XxShopOrderItem::getOrderId, one.getOrderId()));
+        List<XxShopOrderItemVO> xxShopOrderItemVOList = BeanUtil.copyList(orderItems, XxShopOrderItemVO.class);
+        // 查询订单地址
+        XxShopOrderAddress orderAddress = orderAddressService.getOne(new LambdaQueryWrapper<XxShopOrderAddress>().eq(XxShopOrderAddress::getOrderId, one.getOrderId()));
+        XxShopUserAddressVO xxShopUserAddressVO = new XxShopUserAddressVO();
+        BeanUtil.copyProperties(orderAddress, xxShopUserAddressVO);
+
+        // 设置订单状态
+        xxShopOrderDetailVO.setOrderStatusString(OrderStatusEnum.getXxShopOrderStatusEnumByStatus(xxShopOrderDetailVO.getOrderStatus()).getName());
+        // 设置支付类型
+        xxShopOrderDetailVO.setPayTypeString(PayTypeEnum.getPayTypeEnumByType(xxShopOrderDetailVO.getPayType()).getName());
+        // 设置支付状态
+        xxShopOrderDetailVO.setPayStatusString(PayStatusEnum.getPayStatusEnumByStatus(xxShopOrderDetailVO.getPayStatus()).getName());
+        xxShopOrderDetailVO.setXxShopOrderItemVOList(xxShopOrderItemVOList);
+        xxShopOrderDetailVO.setXxShopUserAddressVO(xxShopUserAddressVO);
+        return ResultGenerator.genSuccessResult(xxShopOrderDetailVO);
     }
 
+    /**
+     * 分页查询订单列表数据
+     *
+     * @param pageNumber 页码
+     * @param status     订单状态:0.待支付 1.待确认 2.待发货 3:已发货 4.交易成功
+     * @return 订单分页
+     */
     @GetMapping("/order")
     @ApiOperation(value = "订单列表接口", notes = "传参为页码")
-    public Result<PageResult<List<XxShopOrderListVO>>> orderList(@ApiParam(value = "页码") @RequestParam(required = false) Integer pageNumber,
-                                                                 @ApiParam(value = "订单状态:0.待支付 1.待确认 2.待发货 3:已发货 4.交易成功") @RequestParam(required = false) Integer status,
-                                                                 @TokenToShopUser XxShopUser loginShopUser) {
-        Map params = new HashMap(8);
-        if (pageNumber == null || pageNumber < 1) {
-            pageNumber = 1;
-        }
-        params.put("userId", loginShopUser.getUserId());
-        params.put("orderStatus", status);
-        params.put("page", pageNumber);
-        params.put("limit", Constants.ORDER_SEARCH_PAGE_LIMIT);
+    public Result<Page<XxShopOrderListVO>> orderList(@RequestParam @Min(value = 1,message = "你要看哪样啊？") Integer pageNumber,
+                                                     @RequestParam(required = false) Integer status,
+                                                     @TokenToShopUser Long userId) {
+        Page<XxShopOrder> pageParam = new Page<XxShopOrder>().setCurrent(pageNumber).setSize(Constants.ORDER_SEARCH_PAGE_LIMIT);
+        LambdaQueryWrapper<XxShopOrder> queryWrapper = new LambdaQueryWrapper<XxShopOrder>().eq(null != status, XxShopOrder::getOrderStatus, status)
+                .eq(XxShopOrder::getUserId, userId);
         //封装分页请求参数
-        PageQueryUtil pageUtil = new PageQueryUtil(params);
-        return ResultGenerator.genSuccessResult(xxShopOrderService.getMyOrders(pageUtil));
+        return ResultGenerator.genSuccessResult(xxShopOrderService.orderList(pageParam, queryWrapper));
     }
 
     @PutMapping("/order/{orderNo}/cancel")
     @ApiOperation(value = "订单取消接口", notes = "传参为订单号")
-    public Result cancelOrder(@ApiParam(value = "订单号") @PathVariable("orderNo") String orderNo, @TokenToShopUser XxShopUser loginShopUser) {
+    public Result cancelOrder(@ApiParam(value = "订单号") @PathVariable("orderNo") String orderNo, @TokenToShopUser Long userId) {
         String cancelOrderResult = xxShopOrderService.cancelOrder(orderNo, loginShopUser.getUserId());
         if (ServiceResultEnum.SUCCESS.getResult().equals(cancelOrderResult)) {
             return ResultGenerator.genSuccessResult();
@@ -108,7 +142,7 @@ public class XxShopOrderApi {
 
     @PutMapping("/order/{orderNo}/finish")
     @ApiOperation(value = "确认收货接口", notes = "传参为订单号")
-    public Result finishOrder(@ApiParam(value = "订单号") @PathVariable("orderNo") String orderNo, @TokenToShopUser XxShopUser loginShopUser) {
+    public Result finishOrder(@ApiParam(value = "订单号") @PathVariable("orderNo") String orderNo, @TokenToShopUser Long userId) {
         String finishOrderResult = xxShopOrderService.finishOrder(orderNo, loginShopUser.getUserId());
         if (ServiceResultEnum.SUCCESS.getResult().equals(finishOrderResult)) {
             return ResultGenerator.genSuccessResult();

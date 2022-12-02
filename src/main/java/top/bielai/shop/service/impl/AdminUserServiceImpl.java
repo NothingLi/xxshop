@@ -75,7 +75,7 @@ public class AdminUserServiceImpl implements AdminUserService {
      * @param userId
      * @return
      */
-    private String getNewToken(String timeStr, Long userId) {
+    private String getNewToken(String timeStr, @TokenToShopUser Long userId) {
         String src = timeStr + userId + NumberUtil.genRandomNum(6);
         return SystemUtil.genToken(src);
     }

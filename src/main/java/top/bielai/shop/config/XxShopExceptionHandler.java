@@ -1,7 +1,9 @@
 
 package top.bielai.shop.config;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.validation.BindException;
+import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -9,6 +11,7 @@ import top.bielai.shop.common.XxShopException;
 import top.bielai.shop.util.Result;
 import top.bielai.shop.util.ResultGenerator;
 
+import javax.xml.bind.ValidationException;
 import java.util.Objects;
 
 /**
@@ -19,6 +22,11 @@ import java.util.Objects;
 @RestControllerAdvice
 public class XxShopExceptionHandler {
 
+    @Bean
+    public MethodValidationPostProcessor methodValidationPostProcessor() {
+        return new MethodValidationPostProcessor();
+    }
+
     @ExceptionHandler(BindException.class)
     public Result<String> bindException(BindException e) {
         return ResultGenerator.genErrorResult(400, Objects.requireNonNull(e.getBindingResult().getFieldError()).getDefaultMessage());
@@ -27,6 +35,12 @@ public class XxShopExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public Result<String> bindException(MethodArgumentNotValidException e) {
         return ResultGenerator.genErrorResult(400, Objects.requireNonNull(e.getBindingResult().getFieldError()).getDefaultMessage());
+    }
+
+
+    @ExceptionHandler(ValidationException.class)
+    public Result<String> bindException(ValidationException e) {
+        return ResultGenerator.genErrorResult(400, e.getMessage());
     }
 
     @ExceptionHandler(XxShopException.class)

@@ -8,12 +8,12 @@ package top.bielai.shop.common;
 public class Constants {
 
     /**
-     * 上传文件的默认url前缀，根据部署设置自行修改
+     * 上传文件的默认url前缀
      */
     public final static String FILE_UPLOAD_DIC = "/opt/xxshop/upload/";
 
     /**
-     * 首页轮播图数量(可根据自身需求修改)
+     * 首页轮播图数量
      */
     public final static int INDEX_CAROUSEL_NUMBER = 5;
 
@@ -38,7 +38,7 @@ public class Constants {
     public final static int INDEX_GOODS_RECOMMEND_NUMBER = 10;
 
     /**
-     * 购物车中商品的最大数量(可根据自身需求修改)
+     * 购物车中商品的最大数量
      */
     public final static int SHOPPING_CART_ITEM_TOTAL_NUMBER = 200;
 
@@ -48,19 +48,19 @@ public class Constants {
     public final static int SHOPPING_CART_ITEM_LIMIT_NUMBER = 100;
 
     /**
-     * 搜索分页的默认条数(每页10条)
+     * 搜索分页的默认条数
      */
     public final static int GOODS_SEARCH_PAGE_LIMIT = 10;
 
     /**
-     * 购物车分页的默认条数(每页5条)
+     * 购物车分页的默认条数
      */
-    public final static int SHOPPING_CART_PAGE_LIMIT = 5;
+    public final static int SHOPPING_CART_PAGE_LIMIT = 10;
 
     /**
-     * 我的订单列表分页的默认条数(每页5条)
+     * 我的订单列表分页的默认条数
      */
-    public final static int ORDER_SEARCH_PAGE_LIMIT = 5;
+    public final static int ORDER_SEARCH_PAGE_LIMIT = 10;
 
     /**
      * 商品上架状态

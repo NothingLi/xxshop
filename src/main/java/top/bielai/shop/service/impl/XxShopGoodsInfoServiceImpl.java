@@ -3,6 +3,7 @@ package top.bielai.shop.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import top.bielai.shop.api.mall.vo.XxShopSearchGoodsVO;
@@ -15,20 +16,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
-* @author Administrator
-* @description 针对表【tb_xx_shop_goods_info】的数据库操作Service实现
-* @createDate 2022-11-30 13:58:39
-*/
+ * @author Administrator
+ * @description 针对表【tb_xx_shop_goods_info】的数据库操作Service实现
+ * @createDate 2022-11-30 13:58:39
+ */
 @Service
 public class XxShopGoodsInfoServiceImpl extends ServiceImpl<XxShopGoodsInfoMapper, XxShopGoodsInfo>
-    implements XxShopGoodsInfoService{
+        implements XxShopGoodsInfoService {
 
     @Override
-    public Page<XxShopSearchGoodsVO> searchXxShopGoods(Page<XxShopGoodsInfo> page, LambdaQueryWrapper<XxShopGoodsInfo> queryWrapper) {
-        Page<XxShopGoodsInfo> page1 = page(page, queryWrapper);
-        List<XxShopSearchGoodsVO> xxShopSearchGoods = new ArrayList<>(page1.getRecords().size());
-        if (!CollectionUtils.isEmpty(page1.getRecords())) {
-            xxShopSearchGoods = BeanUtil.copyList(page1.getRecords(), XxShopSearchGoodsVO.class);
+    public Page<XxShopSearchGoodsVO> searchXxShopGoods(Page<XxShopGoodsInfo> pageParam, LambdaQueryWrapper<XxShopGoodsInfo> queryWrapper) {
+        Page<XxShopGoodsInfo> page = page(pageParam, queryWrapper);
+        List<XxShopSearchGoodsVO> xxShopSearchGoods = new ArrayList<>(page.getRecords().size());
+        if (!CollectionUtils.isEmpty(page.getRecords())) {
+            xxShopSearchGoods = BeanUtil.copyList(page.getRecords(), XxShopSearchGoodsVO.class);
             for (XxShopSearchGoodsVO xxShopSearchGoodsVO : xxShopSearchGoods) {
                 String goodsName = xxShopSearchGoodsVO.getGoodsName();
                 String goodsIntro = xxShopSearchGoodsVO.getGoodsIntro();
@@ -43,7 +44,10 @@ public class XxShopGoodsInfoServiceImpl extends ServiceImpl<XxShopGoodsInfoMappe
                 }
             }
         }
-        return new Page<XxShopSearchGoodsVO>(page.getCurrent(),page.getSize(),page.getTotal()).setRecords(xxShopSearchGoods);
+        Page<XxShopSearchGoodsVO> result = new Page<>();
+        BeanUtils.copyProperties(page, result, "records");
+        result.setRecords(xxShopSearchGoods);
+        return result;
     }
 }
 
