@@ -2,7 +2,7 @@ package top.bielai.shop.util;
 
 
 /**
- * @author Administrator
+ * @author bielai
  */
 public class ResultGenerator {
     private static final String DEFAULT_SUCCESS_MESSAGE = "成功";

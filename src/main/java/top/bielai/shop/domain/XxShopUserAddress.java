@@ -9,7 +9,7 @@ import java.util.Date;
 /**
  * 收货地址表
  *
- * @author Administrator
+ * @author bielai
  * @TableName tb_xx_shop_user_address
  */
 @TableName(value = "tb_xx_shop_user_address")

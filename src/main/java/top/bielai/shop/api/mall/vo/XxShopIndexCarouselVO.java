@@ -1,14 +1,14 @@
 
 package top.bielai.shop.api.mall.vo;
 
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
 
 /**
  * 首页轮播图VO
- * @author Administrator
+ *
+ * @author bielai
  */
 @Data
 public class XxShopIndexCarouselVO implements Serializable {

@@ -1,7 +1,6 @@
 
 package top.bielai.shop.api.mall.vo;
 
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -9,7 +8,8 @@ import java.util.List;
 
 /**
  * 首页分类数据VO
- * @author Administrator
+ *
+ * @author bielai
  */
 @Data
 public class XxShopIndexCategoryVO implements Serializable {

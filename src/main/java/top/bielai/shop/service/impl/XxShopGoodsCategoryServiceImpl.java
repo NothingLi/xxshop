@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 import static java.util.stream.Collectors.groupingBy;
 
 /**
- * @author Administrator
+ * @author bielai
  * @description 针对表【tb_xx_shop_goods_category】的数据库操作Service实现
  * @createDate 2022-11-30 13:58:39
  */

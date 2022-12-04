@@ -8,7 +8,7 @@ import java.io.Serializable;
 /**
  * 首页配置商品VO
  *
- * @author Administrator
+ * @author bielai
  */
 @Data
 public class XxShopIndexConfigGoodsVO implements Serializable {

@@ -9,7 +9,7 @@ import lombok.Data;
 import java.io.Serializable;
 
 /**
- * @author Administrator
+ * @author bielai
  * @TableName tb_xx_shop_admin_user
  */
 @TableName(value = "tb_xx_shop_admin_user")

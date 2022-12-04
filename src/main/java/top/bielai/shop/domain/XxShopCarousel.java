@@ -7,7 +7,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * @author Administrator
+ * @author bielai
  * @TableName tb_xx_shop_carousel
  */
 @TableName(value = "tb_xx_shop_carousel")

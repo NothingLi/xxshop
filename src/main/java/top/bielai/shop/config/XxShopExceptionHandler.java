@@ -17,7 +17,7 @@ import java.util.Objects;
 /**
  * xx-shop 异常处理器
  *
- * @author Administrator
+ * @author bielai
  */
 @RestControllerAdvice
 public class XxShopExceptionHandler {

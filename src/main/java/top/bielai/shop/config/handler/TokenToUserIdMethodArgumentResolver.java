@@ -11,7 +11,6 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import top.bielai.shop.common.Constants;
 import top.bielai.shop.common.ErrorEnum;
-import top.bielai.shop.common.ServiceResultEnum;
 import top.bielai.shop.common.XxShopException;
 import top.bielai.shop.config.annotation.TokenToShopUser;
 import top.bielai.shop.domain.XxShopUser;
@@ -20,7 +19,7 @@ import top.bielai.shop.mapper.XxShopUserMapper;
 import top.bielai.shop.mapper.XxShopUserTokenMapper;
 
 /**
- * @author Administrator
+ * @author bielai
  */
 @Component
 public class TokenToUserIdMethodArgumentResolver implements HandlerMethodArgumentResolver {

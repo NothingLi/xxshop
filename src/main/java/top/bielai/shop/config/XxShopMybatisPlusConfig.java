@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import java.util.Collections;
 
 /**
- * @author Administrator
+ * @author bielai
  */
 @Configuration
 @MapperScan("top.bielai.shop.mapper")

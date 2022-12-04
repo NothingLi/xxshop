@@ -14,7 +14,7 @@ import top.bielai.shop.config.handler.TokenToUserIdMethodArgumentResolver;
 import java.util.List;
 
 /**
- * @author Administrator
+ * @author bielai
  */
 @Configuration
 public class XxShopWebMvcConfigurer extends WebMvcConfigurationSupport {

@@ -9,7 +9,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * @author Administrator
+ * @author bielai
  * @TableName tb_xx_shop_user_token
  */
 @TableName(value = "tb_xx_shop_user_token")

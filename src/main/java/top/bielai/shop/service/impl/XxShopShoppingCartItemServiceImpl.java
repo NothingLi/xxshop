@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import top.bielai.shop.api.mall.vo.XxShopShoppingCartItemVO;
 import top.bielai.shop.common.Constants;
 import top.bielai.shop.common.ErrorEnum;
-import top.bielai.shop.common.ServiceResultEnum;
 import top.bielai.shop.common.XxShopException;
 import top.bielai.shop.domain.XxShopGoodsInfo;
 import top.bielai.shop.domain.XxShopShoppingCartItem;
@@ -25,7 +24,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * @author Administrator
+ * @author bielai
  * @description 针对表【tb_xx_shop_shopping_cart_item】的数据库操作Service实现
  * @createDate 2022-11-30 13:58:39
  */

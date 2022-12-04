@@ -7,7 +7,7 @@ import top.bielai.shop.domain.XxShopGoodsCategory;
 import java.util.List;
 
 /**
- * @author Administrator
+ * @author bielai
  * @description 针对表【tb_xx_shop_goods_category】的数据库操作Service
  * @createDate 2022-11-30 13:58:39
  */

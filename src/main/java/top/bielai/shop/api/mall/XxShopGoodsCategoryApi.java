@@ -18,7 +18,7 @@ import java.util.List;
 /**
  * 小新商城分类页面接口
  *
- * @author Administrator
+ * @author bielai
  */
 @RestController
 @RequestMapping("/api/v1")

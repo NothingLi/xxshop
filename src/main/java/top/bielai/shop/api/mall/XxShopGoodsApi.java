@@ -26,7 +26,7 @@ import javax.validation.constraints.Min;
 /**
  * 小新商城商品相关接口
  *
- * @author Administrator
+ * @author bielai
  */
 @Valid
 @Validated

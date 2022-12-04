@@ -23,7 +23,7 @@ import java.util.List;
 /**
  * 小新商城首页接口
  *
- * @author Administrator
+ * @author bielai
  */
 @RestController
 @RequestMapping("/api/v1")

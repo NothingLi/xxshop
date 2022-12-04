@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author Administrator
+ * @author bielai
  * @description 针对表【tb_xx_shop_goods_info】的数据库操作Service实现
  * @createDate 2022-11-30 13:58:39
  */

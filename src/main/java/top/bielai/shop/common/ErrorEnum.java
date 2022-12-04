@@ -3,7 +3,7 @@ package top.bielai.shop.common;
 import lombok.Getter;
 
 /**
- * @author Administrator
+ * @author bielai
  */
 
 @Getter
@@ -30,7 +30,11 @@ public enum ErrorEnum {
 
     CART_ITEM_GOODS_NUM_ERROR(410, "没这么多货呀！"),
 
+    ORDER_STATUS_ERROR(410, "订单不能取消了哦"),
+
     DATA_NOT_EXIST(404, "没有你想要的东西噢！"),
+
+    ORDER_NOT_EXIST(404, "订单号不对哦！"),
 
     PRICE_ERROR(500, "这价不对啊，我重新算算！"),
     ERROR(500, "我这网有点问题啊!");

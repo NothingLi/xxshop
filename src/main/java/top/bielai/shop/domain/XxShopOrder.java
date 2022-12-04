@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 /**
- * @author Administrator
+ * @author bielai
  * @TableName tb_xx_shop_order
  */
 @TableName(value = "tb_xx_shop_order")

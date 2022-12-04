@@ -32,11 +32,18 @@
         create_user,create_time,update_user,
         update_time
     </sql>
-    <update id="updateStockNum">
+    <update id="reduceStockNum">
         update tb_xx_shop_goods_info
         set stock_num = stock_num - #{stockNum}
         where goods_id = #{id}
           and stock_num >= #{stockNum}
+          and goods_sell_status = 0;
+    </update>
+
+    <update id="recoverStockNum">
+        update tb_xx_shop_goods_info
+        set stock_num = stock_num + #{stockNum}
+        where goods_id = #{id}
           and goods_sell_status = 0;
     </update>
 </mapper>

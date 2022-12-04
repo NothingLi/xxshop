@@ -3,8 +3,6 @@ package top.bielai.shop.api.mall;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -25,13 +23,14 @@ import javax.annotation.Resource;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.Arrays;
 import java.util.List;
 
 /**
  * 小新商城订单操作相关接口
  *
- * @author Administrator
+ * @author bielai
  */
 @Valid
 @Validated
@@ -118,8 +117,7 @@ public class XxShopOrderApi {
      * @return 订单分页
      */
     @GetMapping("/order")
-    @ApiOperation(value = "订单列表接口", notes = "传参为页码")
-    public Result<Page<XxShopOrderListVO>> orderList(@RequestParam @Min(value = 1,message = "你要看哪样啊？") Integer pageNumber,
+    public Result<Page<XxShopOrderListVO>> orderList(@RequestParam @Min(value = 1, message = "你要看哪样啊？") Integer pageNumber,
                                                      @RequestParam(required = false) Integer status,
                                                      @TokenToShopUser Long userId) {
         Page<XxShopOrder> pageParam = new Page<XxShopOrder>().setCurrent(pageNumber).setSize(Constants.ORDER_SEARCH_PAGE_LIMIT);
@@ -129,36 +127,49 @@ public class XxShopOrderApi {
         return ResultGenerator.genSuccessResult(xxShopOrderService.orderList(pageParam, queryWrapper));
     }
 
+    /**
+     * 根据订单号取消订单
+     *
+     * @param orderNo 订单号
+     * @return 结果
+     */
     @PutMapping("/order/{orderNo}/cancel")
-    @ApiOperation(value = "订单取消接口", notes = "传参为订单号")
-    public Result cancelOrder(@ApiParam(value = "订单号") @PathVariable("orderNo") String orderNo, @TokenToShopUser Long userId) {
-        String cancelOrderResult = xxShopOrderService.cancelOrder(orderNo, loginShopUser.getUserId());
-        if (ServiceResultEnum.SUCCESS.getResult().equals(cancelOrderResult)) {
-            return ResultGenerator.genSuccessResult();
+    public Result<String> cancelOrder(@PathVariable("orderNo") String orderNo, @TokenToShopUser Long userId) {
+        if (xxShopOrderService.cancelOrder(orderNo, userId)) {
+            return ResultGenerator.genSuccessResult("订单取消成功", null);
         } else {
-            return ResultGenerator.genFailResult(cancelOrderResult);
+            return ResultGenerator.genFailResult();
         }
     }
 
+    /**
+     * 根据订单号将订单确认收货
+     *
+     * @param orderNo 订单编号
+     * @return 结果
+     */
     @PutMapping("/order/{orderNo}/finish")
-    @ApiOperation(value = "确认收货接口", notes = "传参为订单号")
-    public Result finishOrder(@ApiParam(value = "订单号") @PathVariable("orderNo") String orderNo, @TokenToShopUser Long userId) {
-        String finishOrderResult = xxShopOrderService.finishOrder(orderNo, loginShopUser.getUserId());
-        if (ServiceResultEnum.SUCCESS.getResult().equals(finishOrderResult)) {
+    public Result<String> finishOrder(@PathVariable("orderNo") String orderNo, @TokenToShopUser Long userId) {
+        if (xxShopOrderService.finishOrder(orderNo, userId)) {
             return ResultGenerator.genSuccessResult();
         } else {
-            return ResultGenerator.genFailResult(finishOrderResult);
+            return ResultGenerator.genFailResult();
         }
     }
 
+    /**
+     * 根据订单号模拟支付成功回调
+     *
+     * @param orderNo 订单号
+     * @param payType 支付类型
+     * @return 结果
+     */
     @GetMapping("/paySuccess")
-    @ApiOperation(value = "模拟支付成功回调的接口", notes = "传参为订单号和支付方式")
-    public Result paySuccess(@ApiParam(value = "订单号") @RequestParam("orderNo") String orderNo, @ApiParam(value = "支付方式") @RequestParam("payType") int payType) {
-        String payResult = xxShopOrderService.paySuccess(orderNo, payType);
-        if (ServiceResultEnum.SUCCESS.getResult().equals(payResult)) {
-            return ResultGenerator.genSuccessResult();
+    public Result<String> paySuccess(@RequestParam("orderNo") @NotBlank(message = "不给订单号怎么知道哪个确认收货呀") String orderNo, @RequestParam("payType") @NotNull(message = "到底怎么付的款啊") int payType, @TokenToShopUser Long userId) {
+        if (xxShopOrderService.paySuccess(orderNo, payType, userId)) {
+            return ResultGenerator.genSuccessResult("支付成功！", null);
         } else {
-            return ResultGenerator.genFailResult(payResult);
+            return ResultGenerator.genFailResult();
         }
     }
 

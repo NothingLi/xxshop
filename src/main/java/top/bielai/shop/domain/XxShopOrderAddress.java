@@ -10,7 +10,7 @@ import java.io.Serializable;
 /**
  * 订单收货地址关联表
  *
- * @author Administrator
+ * @author bielai
  * @TableName tb_xx_shop_order_address
  */
 @TableName(value = "tb_xx_shop_order_address")

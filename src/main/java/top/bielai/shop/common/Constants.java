@@ -3,7 +3,7 @@ package top.bielai.shop.common;
 
 
 /**
- * @author Administrator
+ * @author bielai
  */
 public class Constants {
 

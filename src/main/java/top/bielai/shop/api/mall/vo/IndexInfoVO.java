@@ -1,14 +1,13 @@
 
 package top.bielai.shop.api.mall.vo;
 
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
 import java.util.List;
 
 /**
- * @author Administrator
+ * @author bielai
  */
 @Data
 public class IndexInfoVO implements Serializable {
