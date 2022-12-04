@@ -50,7 +50,7 @@ public class XxShopGoodsApi {
     public Result<IPage<XxShopSearchGoodsVO>> search(@RequestParam(required = false) String keyword,
                                                      @RequestParam(required = false) Long goodsCategoryId,
                                                      @RequestParam(required = false) String orderBy,
-                                                     @RequestParam @Min(value = 1, message = "你要看哪样啊？") Integer pageNumber) {
+                                                     @RequestParam @Min(value = 1, message = "你想看啥啊？") Integer pageNumber) {
         //两个搜索参数都为空，直接返回异常
         if (goodsCategoryId == null && StringUtils.isBlank(keyword)) {
             XxShopException.fail(ErrorEnum.ERROR_PARAM);
