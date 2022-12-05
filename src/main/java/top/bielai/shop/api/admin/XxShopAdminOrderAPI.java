@@ -11,9 +11,9 @@ package top.bielai.shop.api.admin;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import top.bielai.shop.api.admin.param.BatchIdParam;
 import top.bielai.shop.api.mall.vo.XxShopOrderDetailVO;
@@ -24,6 +24,7 @@ import top.bielai.shop.util.Result;
 import top.bielai.shop.util.ResultGenerator;
 
 import javax.annotation.Resource;
+import javax.validation.constraints.Min;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -45,8 +46,8 @@ public class XxShopAdminOrderAPI {
      */
     @RequestMapping(value = "/orders", method = RequestMethod.GET)
     @ApiOperation(value = "订单列表", notes = "可根据订单号和订单状态筛选")
-    public Result list(@RequestParam(required = false) @ApiParam(value = "页码") Integer pageNumber,
-                       @RequestParam(required = false) @ApiParam(value = "每页条数") Integer pageSize,
+    public Result list(@RequestParam @Min(value = 1, message = "第几页的数据呀") Integer pageNumber,
+                       @RequestParam @Min(value = 1, message = "每页几条啊") Integer pageSize,
                        @RequestParam(required = false) @ApiParam(value = "订单号") String orderNo,
                        @RequestParam(required = false) @ApiParam(value = "订单状态") Integer orderStatus, @TokenToAdminUser AdminUserToken adminUser) {
         logger.info("adminUser:{}", adminUser.toString());

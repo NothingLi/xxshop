@@ -9,9 +9,9 @@
 package top.bielai.shop.api.admin;
 
 import io.swagger.annotations.Api;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -22,8 +22,6 @@ import top.bielai.shop.api.admin.param.UpdateAdminPasswordParam;
 import top.bielai.shop.common.Constants;
 import top.bielai.shop.common.ServiceResultEnum;
 import top.bielai.shop.config.annotation.TokenToAdminUser;
-import top.bielai.shop.domain.XxShopAdminUser;
-import top.bielai.shop.domain.XxShopAdminUserToken;
 import top.bielai.shop.service.AdminUserService;
 import top.bielai.shop.util.Result;
 import top.bielai.shop.util.ResultGenerator;

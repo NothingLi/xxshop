@@ -3,6 +3,7 @@ package top.bielai.shop.api.mall.vo;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 /**
  * 商品详情页VO
@@ -40,7 +41,7 @@ public class XxShopGoodsDetailVO implements Serializable {
     /**
      * 商品价格
      */
-    private Integer sellingPrice;
+    private BigDecimal sellingPrice;
 
 
     /**
@@ -58,7 +59,7 @@ public class XxShopGoodsDetailVO implements Serializable {
     /**
      * 商品原价
      */
-    private Integer originalPrice;
+    private BigDecimal originalPrice;
 
 
     /**

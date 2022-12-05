@@ -14,9 +14,10 @@ public enum ErrorEnum {
      */
     ERROR_PARAM(400, "非法搜索参数"),
 
-    TOKEN_EXPIRE_ERROR(401, "你钥匙拿错了吧！请重新登录！"),
+    TOKEN_EXPIRE_ERROR(401, "你登陆过期了啊！请重新登录！"),
 
     USER_NULL_ERROR(401, "你是这的人么？请重新登录！"),
+    ADMIN_NULL_ERROR(401, "你是这的人么？请重新登录！"),
     USER_NOT_NULL_ERROR(409, "注册过了啊，直接登陆吧！"),
 
     LOGIN_USER_LOCKED_ERROR(401, "你被禁止登陆咯！"),
@@ -27,6 +28,8 @@ public enum ErrorEnum {
 
     GOODS_PUT_DOWN(410, "商品已下架噢！"),
 
+    GOODS_EXIST_ERROR(409, "这个分类下面有这个商品了！"),
+
     USER_ADDRESS_DOWN(410, "这地址不对劲噢，你再看看！"),
 
     CART_ITEM_ERROR(410, "购物车商品有点问题噢！"),
@@ -35,6 +38,8 @@ public enum ErrorEnum {
     CART_ITEM_GOODS_NUM_ERROR(410, "库存不够辣！"),
 
     ORDER_STATUS_ERROR(410, "订单不能取消了哦"),
+
+    CATEGORY_LEVEL_ERROR(410, "分类选到底了么"),
 
     DATA_NOT_EXIST(404, "没有你想要的东西噢！"),
 

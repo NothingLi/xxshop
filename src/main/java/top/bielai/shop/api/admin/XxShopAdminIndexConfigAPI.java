@@ -27,6 +27,7 @@ import top.bielai.shop.util.ResultGenerator;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -48,8 +49,8 @@ public class XxShopAdminIndexConfigAPI {
      */
     @RequestMapping(value = "/indexConfigs", method = RequestMethod.GET)
     @ApiOperation(value = "首页配置列表", notes = "首页配置列表")
-    public Result list(@RequestParam(required = false) @ApiParam(value = "页码") Integer pageNumber,
-                       @RequestParam(required = false) @ApiParam(value = "每页条数") Integer pageSize,
+    public Result list(@RequestParam @Min(value = 1, message = "第几页的数据呀") Integer pageNumber,
+                       @RequestParam @Min(value = 1, message = "每页几条啊") Integer pageSize,
                        @RequestParam(required = false) @ApiParam(value = "1-搜索框热搜 2-搜索下拉框热搜 3-(首页)热销商品 4-(首页)新品上线 5-(首页)为你推荐") Integer configType, @TokenToAdminUser AdminUserToken adminUser) {
         logger.info("adminUser:{}", adminUser.toString());
         if (pageNumber == null || pageNumber < 1 || pageSize == null || pageSize < 10) {

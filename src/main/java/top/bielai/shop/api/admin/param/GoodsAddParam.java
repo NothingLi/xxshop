@@ -1,7 +1,6 @@
 
 package top.bielai.shop.api.admin.param;
 
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 
@@ -9,11 +8,15 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.math.BigDecimal;
 
+/**
+ * @author Administrator
+ */
 @Data
 public class GoodsAddParam {
 
-    
+
     /**
      * 商品名称
      */
@@ -21,7 +24,7 @@ public class GoodsAddParam {
     @Length(max = 128,message = "商品名称内容过长")
     private String goodsName;
 
-    
+
     /**
      * 商品简介
      */
@@ -29,7 +32,7 @@ public class GoodsAddParam {
     @Length(max = 200,message = "商品简介内容过长")
     private String goodsIntro;
 
-    
+
     /**
      * 分类id
      */
@@ -37,32 +40,32 @@ public class GoodsAddParam {
     @Min(value = 1, message = "分类id最低为1")
     private Long goodsCategoryId;
 
-    
+
     /**
      * 商品主图
      */
     @NotEmpty(message = "商品主图不能为空")
     private String goodsCoverImg;
 
-    
+
     /**
      * originalPrice
      */
     @NotNull(message = "originalPrice不能为空")
     @Min(value = 1, message = "originalPrice最低为1")
     @Max(value = 1000000, message = "originalPrice最高为1000000")
-    private Integer originalPrice;
+    private BigDecimal originalPrice;
 
-    
+
     /**
      * sellingPrice
      */
     @NotNull(message = "sellingPrice不能为空")
     @Min(value = 1, message = "sellingPrice最低为1")
     @Max(value = 1000000, message = "sellingPrice最高为1000000")
-    private Integer sellingPrice;
+    private BigDecimal sellingPrice;
 
-    
+
     /**
      * 库存
      */
@@ -71,7 +74,7 @@ public class GoodsAddParam {
     @Max(value = 100000, message = "库存最高为100000")
     private Integer stockNum;
 
-    
+
     /**
      * 商品标签
      */
@@ -81,7 +84,7 @@ public class GoodsAddParam {
 
     private Byte goodsSellStatus;
 
-    
+
     /**
      * 商品详情
      */

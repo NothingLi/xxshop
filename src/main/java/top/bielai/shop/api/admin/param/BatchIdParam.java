@@ -3,10 +3,14 @@ package top.bielai.shop.api.admin.param;
 
 import lombok.Data;
 
+import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
 
+/**
+ * @author Administrator
+ */
 @Data
 public class BatchIdParam implements Serializable {
-    //id数组
+    @NotEmpty(message = "你要删除哪些呀")
     Long[] ids;
 }

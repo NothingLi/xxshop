@@ -1,7 +1,6 @@
 
 package top.bielai.shop.api.admin.param;
 
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 
@@ -10,10 +9,13 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
+/**
+ * @author Administrator
+ */
 @Data
 public class GoodsCategoryEditParam {
 
-    
+
     /**
      * 待修改分类id
      */
@@ -21,7 +23,7 @@ public class GoodsCategoryEditParam {
     @Min(value = 1, message = "分类id不能为空")
     private Long categoryId;
 
-    
+
     /**
      * 分类层级
      */
@@ -30,7 +32,7 @@ public class GoodsCategoryEditParam {
     @Max(value = 3, message = "分类级别最高为3")
     private Byte categoryLevel;
 
-    
+
     /**
      * 父类id
      */
@@ -38,15 +40,15 @@ public class GoodsCategoryEditParam {
     @Min(value = 0, message = "parentId最低为0")
     private Long parentId;
 
-    
+
     /**
      * 分类名称
      */
     @NotEmpty(message = "categoryName不能为空")
-    @Length(max = 16,message = "分类名称过长")
+    @Length(max = 16, message = "分类名称过长")
     private String categoryName;
 
-    
+
     /**
      * 排序值
      */

@@ -21,6 +21,7 @@ import top.bielai.shop.util.Result;
 import top.bielai.shop.util.ResultGenerator;
 
 import javax.annotation.Resource;
+import javax.validation.constraints.Min;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,8 +43,8 @@ public class XxShopAdminRegisteUserAPI {
      */
     @RequestMapping(value = "/users", method = RequestMethod.GET)
     @ApiOperation(value = "商城注册用户列表", notes = "商城注册用户列表")
-    public Result list(@RequestParam(required = false) @ApiParam(value = "页码") Integer pageNumber,
-                       @RequestParam(required = false) @ApiParam(value = "每页条数") Integer pageSize,
+    public Result list(@RequestParam @Min(value = 1, message = "第几页的数据呀") Integer pageNumber,
+                       @RequestParam @Min(value = 1, message = "每页几条啊") Integer pageSize,
                        @RequestParam(required = false) @ApiParam(value = "用户状态") Integer lockStatus, @TokenToAdminUser AdminUserToken adminUser) {
         logger.info("adminUser:{}", adminUser.toString());
         if (pageNumber == null || pageNumber < 1 || pageSize == null || pageSize < 10) {
