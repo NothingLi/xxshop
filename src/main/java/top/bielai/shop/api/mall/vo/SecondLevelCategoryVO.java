@@ -1,7 +1,5 @@
-
 package top.bielai.shop.api.mall.vo;
 
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -13,31 +11,31 @@ import java.util.List;
 @Data
 public class SecondLevelCategoryVO implements Serializable {
 
-    
+
     /**
      * 当前二级分类id
      */
     private Long categoryId;
 
-    
+
     /**
      * 父级分类id
      */
     private Long parentId;
 
-    
+
     /**
      * 当前分类级别
      */
     private Byte categoryLevel;
 
-    
+
     /**
      * 当前二级分类名称
      */
     private String categoryName;
 
-    
+
     /**
      * 三级分类列表
      */

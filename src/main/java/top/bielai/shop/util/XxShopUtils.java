@@ -37,7 +37,7 @@ public class XxShopUtils {
         value = value.replaceAll("document", "d0cument");
         value = value.replaceAll("const", "c0nst");
         value = value.replaceAll("eval\\((.*)\\)", "");
-        value = value.replaceAll("[\\\"\\\'][\\s]*javascript:(.*)[\\\"\\\']", "\"\"");
+        value = value.replaceAll("[\\\"\\'][\\s]*javascript:(.*)[\\\"\\']", "\"\"");
         value = value.replaceAll("script", "scr1pt");
         value = value.replaceAll("insert", "1nsert");
         value = value.replaceAll("drop", "dr0p");

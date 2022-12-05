@@ -10,13 +10,13 @@ import top.bielai.shop.api.mall.vo.XxShopShoppingCartItemVO;
 import top.bielai.shop.common.Constants;
 import top.bielai.shop.common.ServiceResultEnum;
 import top.bielai.shop.common.XxShopException;
+import top.bielai.shop.config.annotation.TokenToShopUser;
 import top.bielai.shop.dao.XxShopGoodsMapper;
 import top.bielai.shop.dao.XxShopShoppingCartItemMapper;
 import top.bielai.shop.domain.XxShopGoodsInfo;
 import top.bielai.shop.domain.XxShopShoppingCartItem;
 import top.bielai.shop.service.XxShopShoppingCartService;
 import top.bielai.shop.util.BeanUtil;
-import top.bielai.shop.util.PageQueryUtil;
 import top.bielai.shop.util.PageResult;
 
 import java.util.*;

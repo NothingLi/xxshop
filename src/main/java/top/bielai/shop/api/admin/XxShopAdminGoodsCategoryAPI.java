@@ -23,7 +23,6 @@ import top.bielai.shop.common.ServiceResultEnum;
 import top.bielai.shop.config.annotation.TokenToAdminUser;
 import top.bielai.shop.service.XxShopCategoryService;
 import top.bielai.shop.util.BeanUtil;
-import top.bielai.shop.util.PageQueryUtil;
 import top.bielai.shop.util.Result;
 import top.bielai.shop.util.ResultGenerator;
 

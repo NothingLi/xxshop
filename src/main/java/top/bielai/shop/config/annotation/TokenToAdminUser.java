@@ -1,4 +1,3 @@
-
 package top.bielai.shop.config.annotation;
 
 import java.lang.annotation.*;
@@ -8,11 +7,7 @@ import java.lang.annotation.*;
 @Documented
 public @interface TokenToAdminUser {
 
-    /**
-     * 当前用户在request中的名字
-     *
-     * @return
-     */
+
     String value() default "adminUser";
 
 }

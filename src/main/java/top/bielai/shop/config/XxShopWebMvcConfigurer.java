@@ -1,13 +1,14 @@
-
 package top.bielai.shop.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 import top.bielai.shop.common.Constants;
+import top.bielai.shop.config.handler.AuthHandlerInterceptor;
 import top.bielai.shop.config.handler.TokenToAdminUserMethodArgumentResolver;
 import top.bielai.shop.config.handler.TokenToUserIdMethodArgumentResolver;
 
@@ -24,6 +25,10 @@ public class XxShopWebMvcConfigurer extends WebMvcConfigurationSupport {
     @Autowired
     private TokenToAdminUserMethodArgumentResolver tokenToAdminUserMethodArgumentResolver;
 
+    @Autowired
+    private AuthHandlerInterceptor authHandlerInterceptor;
+
+
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
         argumentResolvers.add(tokenToUserIdMethodArgumentResolver);
         argumentResolvers.add(tokenToAdminUserMethodArgumentResolver);
@@ -39,10 +44,14 @@ public class XxShopWebMvcConfigurer extends WebMvcConfigurationSupport {
                 .resourceChain(false);
     }
 
+
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(authHandlerInterceptor).addPathPatterns("/**")
+                .excludePathPatterns("/user/login", "/user/logout", "/user/register");
+    }
+
     /**
      * 跨域配置
-     *
-     * @param registry
      */
     @Override
     public void addCorsMappings(CorsRegistry registry) {

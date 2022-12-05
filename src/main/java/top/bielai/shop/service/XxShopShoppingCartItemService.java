@@ -1,6 +1,10 @@
 package top.bielai.shop.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import top.bielai.shop.api.mall.param.SaveCartItemParam;
+import top.bielai.shop.api.mall.param.UpdateCartItemParam;
 import top.bielai.shop.api.mall.vo.XxShopShoppingCartItemVO;
 import top.bielai.shop.domain.XxShopShoppingCartItem;
 
@@ -20,4 +24,31 @@ public interface XxShopShoppingCartItemService extends IService<XxShopShoppingCa
      * @return 购物车数据vo
      */
     List<XxShopShoppingCartItemVO> getCartItemsForSettle(List<Long> cartItemIds, Long xxShopUserId);
+
+    /**
+     * 分页查询购物车项
+     *
+     * @param pageParam    分页参数
+     * @param queryWrapper 查询条件
+     * @return 结果
+     */
+    Page<XxShopShoppingCartItemVO> pageVo(Page<XxShopShoppingCartItem> pageParam, LambdaQueryWrapper<XxShopShoppingCartItem> queryWrapper);
+
+    /**
+     * 添加商品到购物车
+     *
+     * @param saveCartItemParam 购物车信息
+     * @param userId            用户id
+     * @return 结果
+     */
+    boolean saveXxShopCartItem(SaveCartItemParam saveCartItemParam, Long userId);
+
+    /**
+     * 修改购物车
+     *
+     * @param updateCartItemParam 购物车信息
+     * @param userId              用户id
+     * @return 结果
+     */
+    boolean updateXxShopCartItem(UpdateCartItemParam updateCartItemParam, Long userId);
 }

@@ -1,4 +1,3 @@
-
 package top.bielai.shop.config.handler;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +12,6 @@ import top.bielai.shop.common.ServiceResultEnum;
 import top.bielai.shop.common.XxShopException;
 import top.bielai.shop.config.annotation.TokenToAdminUser;
 import top.bielai.shop.dao.XxShopAdminUserTokenMapper;
-import top.bielai.shop.domain.XxShopAdminUserToken;
 
 @Component
 public class TokenToAdminUserMethodArgumentResolver implements HandlerMethodArgumentResolver {
@@ -25,10 +23,7 @@ public class TokenToAdminUserMethodArgumentResolver implements HandlerMethodArgu
     }
 
     public boolean supportsParameter(MethodParameter parameter) {
-        if (parameter.hasParameterAnnotation(TokenToAdminUser.class)) {
-            return true;
-        }
-        return false;
+        return parameter.hasParameterAnnotation(TokenToAdminUser.class);
     }
 
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {

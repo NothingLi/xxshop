@@ -16,9 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 import top.bielai.shop.api.admin.param.BatchIdParam;
 import top.bielai.shop.config.annotation.TokenToAdminUser;
-import top.bielai.shop.domain.XxShopAdminUserToken;
 import top.bielai.shop.service.XxShopUserService;
-import top.bielai.shop.util.PageQueryUtil;
 import top.bielai.shop.util.Result;
 import top.bielai.shop.util.ResultGenerator;
 

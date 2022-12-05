@@ -1,4 +1,3 @@
-
 package top.bielai.shop.config;
 
 import org.springframework.context.annotation.Bean;

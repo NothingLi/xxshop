@@ -1,4 +1,3 @@
-
 package top.bielai.shop.api.mall;
 
 import org.springframework.util.CollectionUtils;
@@ -21,7 +20,7 @@ import java.util.List;
  * @author bielai
  */
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/categories")
 public class XxShopGoodsCategoryApi {
 
     @Resource
@@ -32,7 +31,7 @@ public class XxShopGoodsCategoryApi {
      *
      * @return 分类列表
      */
-    @GetMapping("/categories")
+    @GetMapping
     public Result<List<XxShopIndexCategoryVO>> getCategories() {
         List<XxShopIndexCategoryVO> categories = categoryService.getCategoriesForIndex();
         if (CollectionUtils.isEmpty(categories)) {

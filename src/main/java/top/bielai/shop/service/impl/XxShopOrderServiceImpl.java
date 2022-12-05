@@ -58,6 +58,12 @@ public class XxShopOrderServiceImpl extends ServiceImpl<XxShopOrderMapper, XxSho
     @Transactional(rollbackFor = Exception.class)
     public String saveOrder(Long userId, XxShopUserAddress address, List<XxShopShoppingCartItemVO> shoppingCartItems) {
         List<Long> itemIdList = shoppingCartItems.stream().map(XxShopShoppingCartItemVO::getCartItemId).collect(Collectors.toList());
+        Set<Long> goodIds = shoppingCartItems.stream().map(XxShopShoppingCartItemVO::getGoodsId).collect(Collectors.toSet());
+        List<XxShopGoodsInfo> xxShopGoodsInfos = goodsInfoMapper.selectList(new LambdaQueryWrapper<XxShopGoodsInfo>().in(XxShopGoodsInfo::getGoodsId, goodIds));
+        List<XxShopGoodsInfo> putDownGoods = xxShopGoodsInfos.stream().filter(good -> Constants.SELL_STATUS_DOWN == good.getGoodsSellStatus()).collect(Collectors.toList());
+        if (!putDownGoods.isEmpty() || xxShopGoodsInfos.size() != goodIds.size()) {
+            XxShopException.fail(ErrorEnum.CART_ITEM_ERROR);
+        }
         //删除购物项
         if (cartItemMapper.delete(new LambdaQueryWrapper<XxShopShoppingCartItem>().in(XxShopShoppingCartItem::getCartItemId, itemIdList).eq(XxShopShoppingCartItem::getUserId, userId)) > 0) {
             shoppingCartItems.forEach(item -> goodsInfoMapper.reduceStockNum(item.getGoodsId(), item.getGoodsCount()));
@@ -241,7 +247,7 @@ public class XxShopOrderServiceImpl extends ServiceImpl<XxShopOrderMapper, XxSho
     @Transactional
     public String checkDone(Long[] ids) {
         //查询所有的订单 判断状态 修改状态和更新时间
-        List<XxShopOrder> orders = xxShopOrderMapper.selectByPrimaryKeys(Arrays.asList(ids));
+        List<XxShopOrder> orders = xxShopOrderMapper.selectByPrimaryKeys(Collections.singletonList(ids));
         String errorOrderNos = "";
         if (!CollectionUtils.isEmpty(orders)) {
             for (XxShopOrder xxShopOrder : orders) {
@@ -255,7 +261,7 @@ public class XxShopOrderServiceImpl extends ServiceImpl<XxShopOrderMapper, XxSho
             }
             if (StringUtils.isEmpty(errorOrderNos)) {
                 //订单状态正常 可以执行配货完成操作 修改订单状态和更新时间
-                if (xxShopOrderMapper.checkDone(Arrays.asList(ids)) > 0) {
+                if (xxShopOrderMapper.checkDone(Collections.singletonList(ids)) > 0) {
                     return ServiceResultEnum.SUCCESS.getResult();
                 } else {
                     return ServiceResultEnum.DB_ERROR.getResult();
@@ -277,7 +283,7 @@ public class XxShopOrderServiceImpl extends ServiceImpl<XxShopOrderMapper, XxSho
     @Transactional
     public String checkOut(Long[] ids) {
         //查询所有的订单 判断状态 修改状态和更新时间
-        List<XxShopOrder> orders = xxShopOrderMapper.selectByPrimaryKeys(Arrays.asList(ids));
+        List<XxShopOrder> orders = xxShopOrderMapper.selectByPrimaryKeys(Collections.singletonList(ids));
         String errorOrderNos = "";
         if (!CollectionUtils.isEmpty(orders)) {
             for (XxShopOrder xxShopOrder : orders) {
@@ -291,7 +297,7 @@ public class XxShopOrderServiceImpl extends ServiceImpl<XxShopOrderMapper, XxSho
             }
             if (StringUtils.isEmpty(errorOrderNos)) {
                 //订单状态正常 可以执行出库操作 修改订单状态和更新时间
-                if (xxShopOrderMapper.checkOut(Arrays.asList(ids)) > 0) {
+                if (xxShopOrderMapper.checkOut(Collections.singletonList(ids)) > 0) {
                     return ServiceResultEnum.SUCCESS.getResult();
                 } else {
                     return ServiceResultEnum.DB_ERROR.getResult();
@@ -313,7 +319,7 @@ public class XxShopOrderServiceImpl extends ServiceImpl<XxShopOrderMapper, XxSho
     @Transactional
     public String closeOrder(Long[] ids) {
         //查询所有的订单 判断状态 修改状态和更新时间
-        List<XxShopOrder> orders = xxShopOrderMapper.selectByPrimaryKeys(Arrays.asList(ids));
+        List<XxShopOrder> orders = xxShopOrderMapper.selectByPrimaryKeys(Collections.singletonList(ids));
         String errorOrderNos = "";
         if (!CollectionUtils.isEmpty(orders)) {
             for (XxShopOrder xxShopOrder : orders) {
@@ -329,7 +335,7 @@ public class XxShopOrderServiceImpl extends ServiceImpl<XxShopOrderMapper, XxSho
             }
             if (StringUtils.isEmpty(errorOrderNos)) {
                 //订单状态正常 可以执行关闭操作 修改订单状态和更新时间&&恢复库存
-                if (xxShopOrderMapper.closeOrder(Arrays.asList(ids), OrderStatusEnum.ORDER_CLOSED_BY_JUDGE.getOrderStatus()) > 0 && recoverStockNum(Arrays.asList(ids))) {
+                if (xxShopOrderMapper.closeOrder(Collections.singletonList(ids), OrderStatusEnum.ORDER_CLOSED_BY_JUDGE.getOrderStatus()) > 0 && recoverStockNum(Arrays.asList(ids))) {
                     return ServiceResultEnum.SUCCESS.getResult();
                 } else {
                     return ServiceResultEnum.DB_ERROR.getResult();

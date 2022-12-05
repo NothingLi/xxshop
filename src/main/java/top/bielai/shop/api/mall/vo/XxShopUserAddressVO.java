@@ -1,61 +1,63 @@
-
 package top.bielai.shop.api.mall.vo;
 
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 /**
  * 收货地址VO
+ *
+ * @author Administrator
  */
 @Data
 public class XxShopUserAddressVO {
 
-    
+
     /**
      * 地址id
      */
     private Long addressId;
 
-    
+
     /**
      * 用户id
      */
     private Long userId;
 
-    
+
     /**
      * 收件人名称
      */
     private String userName;
 
-    
+
     /**
      * 收件人联系方式
      */
     private String userPhone;
 
-    @ApiModelProperty("是否默认地址 0-不是 1-是")
+    /**
+     * 是否默认地址 0-不是 1-是
+     */
     private Byte defaultFlag;
 
-    
+
     /**
      * 省
      */
     private String provinceName;
 
-    
+
     /**
      * 市
      */
     private String cityName;
 
-    
+
     /**
      * 区/县
      */
     private String regionName;
 
-    
+
     /**
      * 详细地址
      */

@@ -1,4 +1,3 @@
-
 package top.bielai.shop.common;
 
 /**
@@ -14,6 +13,11 @@ public class XxShopException extends RuntimeException {
     public XxShopException(int code, String message) {
         super(message);
         this.code = code;
+    }
+
+    public XxShopException(ErrorEnum error) {
+        super(error.getMsg());
+        this.code = error.getCode();
     }
 
     /**

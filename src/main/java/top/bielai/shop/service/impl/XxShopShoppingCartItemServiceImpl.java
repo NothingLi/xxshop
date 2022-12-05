@@ -1,11 +1,15 @@
 package top.bielai.shop.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import top.bielai.shop.api.mall.param.SaveCartItemParam;
+import top.bielai.shop.api.mall.param.UpdateCartItemParam;
 import top.bielai.shop.api.mall.vo.XxShopShoppingCartItemVO;
 import top.bielai.shop.common.Constants;
 import top.bielai.shop.common.ErrorEnum;
@@ -15,6 +19,7 @@ import top.bielai.shop.domain.XxShopShoppingCartItem;
 import top.bielai.shop.mapper.XxShopGoodsInfoMapper;
 import top.bielai.shop.mapper.XxShopShoppingCartItemMapper;
 import top.bielai.shop.service.XxShopShoppingCartItemService;
+import top.bielai.shop.util.BeanUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,12 +46,71 @@ public class XxShopShoppingCartItemServiceImpl extends ServiceImpl<XxShopShoppin
         if (list.isEmpty() || list.size() != cartItemIds.size()) {
             XxShopException.fail(ErrorEnum.CART_ITEM_ERROR);
         }
+        return getXxShopShoppingCartItemVOList(list);
+    }
+
+    @Override
+    public Page<XxShopShoppingCartItemVO> pageVo(Page<XxShopShoppingCartItem> pageParam, LambdaQueryWrapper<XxShopShoppingCartItem> queryWrapper) {
+        Page<XxShopShoppingCartItem> page = page(pageParam, queryWrapper);
+        Page<XxShopShoppingCartItemVO> result = new Page<>();
+        BeanUtils.copyProperties(page, result, "records");
+        result.setRecords(getXxShopShoppingCartItemVOList(page.getRecords()));
+        return null;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public boolean saveXxShopCartItem(SaveCartItemParam saveCartItemParam, Long userId) {
+        XxShopGoodsInfo xxShopGoodsInfo = goodsInfoMapper.selectById(saveCartItemParam.getGoodsId());
+        if (ObjectUtils.isEmpty(xxShopGoodsInfo)) {
+            XxShopException.fail(ErrorEnum.DATA_NOT_EXIST);
+        }
+        if (saveCartItemParam.getGoodsCount() > xxShopGoodsInfo.getStockNum()) {
+            XxShopException.fail(ErrorEnum.CART_ITEM_GOODS_NUM_ERROR);
+        }
+        XxShopShoppingCartItem exist = getOne(new LambdaQueryWrapper<XxShopShoppingCartItem>().eq(XxShopShoppingCartItem::getGoodsId, saveCartItemParam.getGoodsId()).eq(XxShopShoppingCartItem::getUserId, userId));
+        if (ObjectUtils.isNotEmpty(exist)) {
+            int i = exist.getGoodsCount() + saveCartItemParam.getGoodsCount();
+            if (i > xxShopGoodsInfo.getStockNum()) {
+                XxShopException.fail(ErrorEnum.CART_ITEM_GOODS_NUM_ERROR);
+            }
+            exist.setGoodsCount(i);
+            return baseMapper.updateById(exist) > 0;
+        }
+        long count = count(new LambdaQueryWrapper<XxShopShoppingCartItem>().eq(XxShopShoppingCartItem::getUserId, userId));
+        if (count >= Constants.SHOPPING_CART_ITEM_TOTAL_NUMBER) {
+            XxShopException.fail(ErrorEnum.CART_ITEM_LIMIT_ERROR);
+        }
+        XxShopShoppingCartItem xxShopShoppingCartItem = new XxShopShoppingCartItem();
+        BeanUtil.copyProperties(saveCartItemParam, xxShopShoppingCartItem);
+        xxShopShoppingCartItem.setUserId(userId);
+        return baseMapper.insert(xxShopShoppingCartItem) > 0;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public boolean updateXxShopCartItem(UpdateCartItemParam updateCartItemParam, Long userId) {
+        XxShopShoppingCartItem exist = getOne(new LambdaQueryWrapper<XxShopShoppingCartItem>().eq(XxShopShoppingCartItem::getCartItemId, updateCartItemParam.getCartItemId()).eq(XxShopShoppingCartItem::getUserId, userId));
+        if (ObjectUtils.isEmpty(exist)) {
+            XxShopException.fail(ErrorEnum.DATA_NOT_EXIST);
+        }
+        if (exist.getGoodsCount().equals(updateCartItemParam.getGoodsCount())) {
+            return true;
+        }
+        XxShopGoodsInfo xxShopGoodsInfo = goodsInfoMapper.selectById(exist.getGoodsId());
+        if (ObjectUtils.isEmpty(xxShopGoodsInfo)) {
+            XxShopException.fail(ErrorEnum.DATA_NOT_EXIST);
+        }
+        if (exist.getGoodsCount() > xxShopGoodsInfo.getStockNum()) {
+            XxShopException.fail(ErrorEnum.CART_ITEM_GOODS_NUM_ERROR);
+        }
+        exist.setGoodsCount(updateCartItemParam.getGoodsCount());
+        return baseMapper.updateById(exist) > 0;
+    }
+
+    private List<XxShopShoppingCartItemVO> getXxShopShoppingCartItemVOList(List<XxShopShoppingCartItem> list) {
         Set<Long> goodIds = list.stream().map(XxShopShoppingCartItem::getGoodsId).collect(Collectors.toSet());
         List<XxShopGoodsInfo> xxShopGoodsInfos = goodsInfoMapper.selectList(new LambdaQueryWrapper<XxShopGoodsInfo>().in(XxShopGoodsInfo::getGoodsId, goodIds));
-        List<XxShopGoodsInfo> putDownGoods = xxShopGoodsInfos.stream().filter(good -> Constants.SELL_STATUS_DOWN == good.getGoodsSellStatus()).collect(Collectors.toList());
-        if (!putDownGoods.isEmpty() || xxShopGoodsInfos.size() != goodIds.size()){
-            XxShopException.fail(ErrorEnum.CART_ITEM_ERROR);
-        }
         Map<Long, XxShopGoodsInfo> collect = xxShopGoodsInfos.stream().collect(Collectors.toMap(XxShopGoodsInfo::getGoodsId, Function.identity(), (entity1, entity2) -> entity1));
         List<XxShopShoppingCartItemVO> voList = new ArrayList<>(list.size());
         for (XxShopShoppingCartItem xxShopShoppingCartItem : list) {
@@ -56,7 +120,7 @@ public class XxShopShoppingCartItemServiceImpl extends ServiceImpl<XxShopShoppin
             if (ObjectUtils.isEmpty(xxShopGoodsInfo)) {
                 XxShopException.fail(ErrorEnum.CART_ITEM_ERROR);
             }
-            if(vo.getGoodsCount() > xxShopGoodsInfo.getStockNum()){
+            if (vo.getGoodsCount() > xxShopGoodsInfo.getStockNum()) {
                 XxShopException.fail(ErrorEnum.CART_ITEM_GOODS_NUM_ERROR);
             }
             vo.setGoodsCoverImg(xxShopGoodsInfo.getGoodsCoverImg());
@@ -69,7 +133,6 @@ public class XxShopShoppingCartItemServiceImpl extends ServiceImpl<XxShopShoppin
             vo.setSellingPrice(xxShopGoodsInfo.getSellingPrice());
             voList.add(vo);
         }
-
         return voList;
     }
 }

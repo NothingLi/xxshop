@@ -11,7 +11,6 @@ import top.bielai.shop.dao.GoodsCategoryMapper;
 import top.bielai.shop.dao.XxShopGoodsMapper;
 import top.bielai.shop.domain.XxShopGoodsInfo;
 import top.bielai.shop.service.XxShopGoodsService;
-import top.bielai.shop.util.PageQueryUtil;
 import top.bielai.shop.util.PageResult;
 
 import java.util.Date;

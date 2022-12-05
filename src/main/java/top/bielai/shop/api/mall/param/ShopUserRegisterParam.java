@@ -1,29 +1,29 @@
-
 package top.bielai.shop.api.mall.param;
 
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 
 /**
  * 用户注册param
+ *
+ * @author Administrator
  */
 @Data
 public class ShopUserRegisterParam implements Serializable {
 
-    
+
     /**
      * 登录名
      */
-    @NotEmpty(message = "登录名不能为空")
+    @NotBlank(message = "登录名不能为空")
     private String loginName;
 
-    
+
     /**
      * 用户密码
      */
-    @NotEmpty(message = "密码不能为空")
+    @NotBlank(message = "密码不能为空")
     private String password;
 }

@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerIntercept
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import java.util.Collections;
 
@@ -14,6 +15,7 @@ import java.util.Collections;
  */
 @Configuration
 @MapperScan("top.bielai.shop.mapper")
+@EnableTransactionManagement
 public class XxShopMybatisPlusConfig {
     @Bean
     public PaginationInnerInterceptor paginationInnerInterceptor() {
@@ -25,8 +27,9 @@ public class XxShopMybatisPlusConfig {
         paginationInterceptor.setOptimizeJoin(true);
         return paginationInterceptor;
     }
+
     @Bean
-    public MybatisPlusInterceptor mybatisPlusInterceptor(){
+    public MybatisPlusInterceptor mybatisPlusInterceptor() {
         MybatisPlusInterceptor mybatisPlusInterceptor = new MybatisPlusInterceptor();
         mybatisPlusInterceptor.setInterceptors(Collections.singletonList(paginationInnerInterceptor()));
         return mybatisPlusInterceptor;

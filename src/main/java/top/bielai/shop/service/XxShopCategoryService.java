@@ -3,7 +3,6 @@ package top.bielai.shop.service;
 
 import top.bielai.shop.api.mall.vo.XxShopIndexCategoryVO;
 import top.bielai.shop.domain.XxShopGoodsCategory;
-import top.bielai.shop.util.PageQueryUtil;
 import top.bielai.shop.util.PageResult;
 
 import java.util.List;

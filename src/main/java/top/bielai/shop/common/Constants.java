@@ -1,4 +1,3 @@
-
 package top.bielai.shop.common;
 
 
@@ -43,7 +42,7 @@ public class Constants {
     public final static int SHOPPING_CART_ITEM_TOTAL_NUMBER = 200;
 
     /**
-     * 购物车中单个商品的最大购买数量(可根据自身需求修改)
+     * 购物车中单个商品的最大购买数量
      */
     public final static int SHOPPING_CART_ITEM_LIMIT_NUMBER = 100;
 

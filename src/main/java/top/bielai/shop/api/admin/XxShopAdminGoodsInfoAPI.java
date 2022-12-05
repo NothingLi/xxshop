@@ -21,13 +21,10 @@ import top.bielai.shop.api.admin.param.GoodsEditParam;
 import top.bielai.shop.common.Constants;
 import top.bielai.shop.common.ServiceResultEnum;
 import top.bielai.shop.config.annotation.TokenToAdminUser;
-import top.bielai.shop.domain.XxShopAdminUserToken;
-import top.bielai.shop.domain.XxShopGoodsCategory;
 import top.bielai.shop.domain.XxShopGoodsInfo;
 import top.bielai.shop.service.XxShopCategoryService;
 import top.bielai.shop.service.XxShopGoodsService;
 import top.bielai.shop.util.BeanUtil;
-import top.bielai.shop.util.PageQueryUtil;
 import top.bielai.shop.util.Result;
 import top.bielai.shop.util.ResultGenerator;
 

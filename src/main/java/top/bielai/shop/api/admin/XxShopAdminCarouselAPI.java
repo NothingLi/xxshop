@@ -19,11 +19,8 @@ import top.bielai.shop.api.admin.param.CarouselAddParam;
 import top.bielai.shop.api.admin.param.CarouselEditParam;
 import top.bielai.shop.common.ServiceResultEnum;
 import top.bielai.shop.config.annotation.TokenToAdminUser;
-import top.bielai.shop.domain.XxShopAdminUserToken;
-import top.bielai.shop.domain.XxShopCarousel;
 import top.bielai.shop.service.XxShopCarouselService;
 import top.bielai.shop.util.BeanUtil;
-import top.bielai.shop.util.PageQueryUtil;
 import top.bielai.shop.util.Result;
 import top.bielai.shop.util.ResultGenerator;
 

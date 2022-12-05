@@ -2,7 +2,6 @@
 package top.bielai.shop.service;
 
 import top.bielai.shop.domain.XxShopGoodsInfo;
-import top.bielai.shop.util.PageQueryUtil;
 import top.bielai.shop.util.PageResult;
 
 import java.util.List;

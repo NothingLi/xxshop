@@ -10,7 +10,6 @@ package top.bielai.shop.dao;
 
 import org.apache.ibatis.annotations.Param;
 import top.bielai.shop.entity.IndexConfig;
-import top.bielai.shop.util.PageQueryUtil;
 
 import java.util.List;
 

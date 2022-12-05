@@ -1,4 +1,3 @@
-
 package top.bielai.shop.api.mall;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -35,7 +34,7 @@ import java.util.List;
 @Valid
 @Validated
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/order")
 public class XxShopOrderApi {
 
     @Resource
@@ -60,7 +59,7 @@ public class XxShopOrderApi {
      * @param userId         用户Id
      * @return 订单编号
      */
-    @PostMapping("/saveOrder")
+    @PostMapping
     public Result<String> saveOrder(@Validated @RequestBody SaveOrderParam saveOrderParam, @TokenToShopUser Long userId) {
         XxShopUserAddress address = xxShopUserAddressService.getOne(new LambdaQueryWrapper<XxShopUserAddress>()
                 .eq(XxShopUserAddress::getUserId, userId).eq(XxShopUserAddress::getAddressId, saveOrderParam.getAddressId()));
@@ -80,7 +79,7 @@ public class XxShopOrderApi {
      * @param orderNo 订单编号
      * @return 订单详情
      */
-    @GetMapping("/order/{orderNo}")
+    @GetMapping("/{orderNo}")
     public Result<XxShopOrderDetailVO> getOrderDetail(@PathVariable("orderNo") @NotBlank(message = "订单编号呢？") String orderNo, @TokenToShopUser Long userId) {
         // 根据订单编号和用户id查询相关订单
         XxShopOrder one = xxShopOrderService.getOne(new LambdaQueryWrapper<XxShopOrder>().eq(XxShopOrder::getOrderNo, orderNo).eq(XxShopOrder::getUserId, userId));
@@ -116,7 +115,7 @@ public class XxShopOrderApi {
      * @param status     订单状态:0.待支付 1.待确认 2.待发货 3:已发货 4.交易成功
      * @return 订单分页
      */
-    @GetMapping("/order")
+    @GetMapping
     public Result<Page<XxShopOrderListVO>> orderList(@RequestParam @Min(value = 1, message = "你要看哪样啊？") Integer pageNumber,
                                                      @RequestParam(required = false) Integer status,
                                                      @TokenToShopUser Long userId) {
@@ -133,7 +132,7 @@ public class XxShopOrderApi {
      * @param orderNo 订单号
      * @return 结果
      */
-    @PutMapping("/order/{orderNo}/cancel")
+    @PutMapping("/{orderNo}/cancel")
     public Result<String> cancelOrder(@PathVariable("orderNo") String orderNo, @TokenToShopUser Long userId) {
         if (xxShopOrderService.cancelOrder(orderNo, userId)) {
             return ResultGenerator.genSuccessResult("订单取消成功", null);
@@ -148,7 +147,7 @@ public class XxShopOrderApi {
      * @param orderNo 订单编号
      * @return 结果
      */
-    @PutMapping("/order/{orderNo}/finish")
+    @PutMapping("/{orderNo}/finish")
     public Result<String> finishOrder(@PathVariable("orderNo") String orderNo, @TokenToShopUser Long userId) {
         if (xxShopOrderService.finishOrder(orderNo, userId)) {
             return ResultGenerator.genSuccessResult();

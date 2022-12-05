@@ -1,8 +1,6 @@
-
 package top.bielai.shop.config;
 
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
@@ -20,7 +18,6 @@ import top.bielai.shop.domain.XxShopUser;
 import java.util.ArrayList;
 import java.util.List;
 
-@Configuration
 @EnableOpenApi
 public class Swagger3Config {
 
@@ -28,7 +25,7 @@ public class Swagger3Config {
     public Docket api() {
         return new Docket(DocumentationType.OAS_30)
                 .apiInfo(apiInfo())
-                .ignoredParameterTypes(XxShopUser.class, AdminUserToken.class)
+                .ignoredParameterTypes(XxShopUser.class, XxShopAdminUserToken.class)
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("top.bielai.shop.api"))
                 .paths(PathSelectors.any())

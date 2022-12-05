@@ -11,7 +11,6 @@ package top.bielai.shop.dao;
 import org.apache.ibatis.annotations.Param;
 import top.bielai.shop.entity.StockNumDTO;
 import top.bielai.shop.entity.XxShopGoods;
-import top.bielai.shop.util.PageQueryUtil;
 
 import java.util.List;
 

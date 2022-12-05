@@ -20,11 +20,8 @@ import top.bielai.shop.api.admin.param.IndexConfigEditParam;
 import top.bielai.shop.common.IndexConfigTypeEnum;
 import top.bielai.shop.common.ServiceResultEnum;
 import top.bielai.shop.config.annotation.TokenToAdminUser;
-import top.bielai.shop.domain.XxShopAdminUserToken;
-import top.bielai.shop.domain.XxShopIndexConfig;
 import top.bielai.shop.service.XxShopIndexConfigService;
 import top.bielai.shop.util.BeanUtil;
-import top.bielai.shop.util.PageQueryUtil;
 import top.bielai.shop.util.Result;
 import top.bielai.shop.util.ResultGenerator;
 

@@ -1,4 +1,3 @@
-
 package top.bielai.shop.api.mall;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -26,7 +25,7 @@ import java.util.List;
  * @author bielai
  */
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/index-infos")
 public class XxShopIndexApi {
 
     @Resource
@@ -40,7 +39,7 @@ public class XxShopIndexApi {
      *
      * @return 首页数据
      */
-    @GetMapping("/index-infos")
+    @GetMapping
     public Result<IndexInfoVO> indexInfo() {
         IndexInfoVO indexInfoVO = new IndexInfoVO();
         List<XxShopCarousel> list = xxShopCarouselService.list(new LambdaQueryWrapper<XxShopCarousel>()
@@ -51,7 +50,7 @@ public class XxShopIndexApi {
                 Constants.INDEX_GOODS_HOT_NUMBER);
         List<XxShopIndexConfigGoodsVO> newGoods = xxShopIndexConfigService.getConfigGoodsForIndex(IndexConfigTypeEnum.INDEX_GOODS_NEW.getType(),
                 Constants.INDEX_GOODS_NEW_NUMBER);
-        List<XxShopIndexConfigGoodsVO> recommendGoods = xxShopIndexConfigService.getConfigGoodsForIndex(IndexConfigTypeEnum.INDEX_GOODS_RECOMMOND.getType(),
+        List<XxShopIndexConfigGoodsVO> recommendGoods = xxShopIndexConfigService.getConfigGoodsForIndex(IndexConfigTypeEnum.INDEX_GOODS_RECOMMEND.getType(),
                 Constants.INDEX_GOODS_RECOMMEND_NUMBER);
         indexInfoVO.setCarousels(carousels);
         indexInfoVO.setHotGoods(hotGoods);

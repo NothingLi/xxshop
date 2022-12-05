@@ -14,7 +14,6 @@ import top.bielai.shop.dao.GoodsCategoryMapper;
 import top.bielai.shop.domain.XxShopGoodsCategory;
 import top.bielai.shop.service.XxShopCategoryService;
 import top.bielai.shop.util.BeanUtil;
-import top.bielai.shop.util.PageQueryUtil;
 import top.bielai.shop.util.PageResult;
 
 import java.util.*;

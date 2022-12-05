@@ -1,4 +1,3 @@
-
 package top.bielai.shop.api.mall;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -31,7 +30,7 @@ import javax.validation.constraints.Min;
 @Valid
 @Validated
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/goods")
 public class XxShopGoodsApi {
 
     @Resource
@@ -81,7 +80,7 @@ public class XxShopGoodsApi {
      * @param goodsId 商品id
      * @return 商品详情
      */
-    @GetMapping("/goods/detail/{goodsId}")
+    @GetMapping("/detail/{goodsId}")
     public Result<XxShopGoodsDetailVO> goodsDetail(@ApiParam(value = "商品id") @PathVariable("goodsId") Long goodsId) {
         if (goodsId < 1) {
             XxShopException.fail(ErrorEnum.ERROR_PARAM);

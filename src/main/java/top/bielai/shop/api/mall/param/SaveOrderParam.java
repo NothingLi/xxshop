@@ -1,4 +1,3 @@
-
 package top.bielai.shop.api.mall.param;
 
 import lombok.Data;

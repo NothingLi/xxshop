@@ -17,8 +17,11 @@ public enum ErrorEnum {
     TOKEN_EXPIRE_ERROR(401, "你钥匙拿错了吧！请重新登录！"),
 
     USER_NULL_ERROR(401, "你是这的人么？请重新登录！"),
+    USER_NOT_NULL_ERROR(409, "注册过了啊，直接登陆吧！"),
 
     LOGIN_USER_LOCKED_ERROR(401, "你被禁止登陆咯！"),
+
+    LOGIN_PHONE_ERROR(400, "要输入正确的手机号噢！"),
 
     NOT_LOGIN_ERROR(401, "你没登陆啊蒙面人！"),
 
@@ -27,8 +30,9 @@ public enum ErrorEnum {
     USER_ADDRESS_DOWN(410, "这地址不对劲噢，你再看看！"),
 
     CART_ITEM_ERROR(410, "购物车商品有点问题噢！"),
+    CART_ITEM_LIMIT_ERROR(410, "购物车放不下了噢！"),
 
-    CART_ITEM_GOODS_NUM_ERROR(410, "没这么多货呀！"),
+    CART_ITEM_GOODS_NUM_ERROR(410, "库存不够辣！"),
 
     ORDER_STATUS_ERROR(410, "订单不能取消了哦"),
 
