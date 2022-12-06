@@ -13,7 +13,7 @@ import top.bielai.shop.service.XxShopCarouselService;
  */
 @Service
 public class XxShopCarouselServiceImpl extends ServiceImpl<XxShopCarouselMapper, XxShopCarousel>
-    implements XxShopCarouselService{
+        implements XxShopCarouselService {
 
 }
 

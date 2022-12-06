@@ -4,6 +4,9 @@ import lombok.Data;
 
 import java.io.Serializable;
 
+/**
+ * @author Administrator
+ */
 @Data
 public class XxShopUserVO implements Serializable {
 

@@ -5,7 +5,7 @@ import lombok.Data;
 /**
  * 收货地址VO
  *
- * @author Administrator
+ * @author bielai
  */
 @Data
 public class XxShopUserAddressVO {

@@ -2,7 +2,6 @@ package top.bielai.shop.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import top.bielai.shop.api.mall.vo.XxShopIndexConfigGoodsVO;
@@ -25,15 +24,19 @@ import java.util.stream.Collectors;
 public class XxShopIndexConfigServiceImpl extends ServiceImpl<XxShopIndexConfigMapper, XxShopIndexConfig>
         implements XxShopIndexConfigService {
 
-    @Autowired
-    private XxShopGoodsInfoMapper goodsMapper;
+    private final XxShopGoodsInfoMapper goodsMapper;
+
+    public XxShopIndexConfigServiceImpl(XxShopGoodsInfoMapper goodsMapper) {
+        this.goodsMapper = goodsMapper;
+    }
+
     @Override
     public List<XxShopIndexConfigGoodsVO> getConfigGoodsForIndex(int type, int limit) {
         List<XxShopIndexConfig> list = list(new LambdaQueryWrapper<XxShopIndexConfig>()
                 .eq(XxShopIndexConfig::getConfigType, type)
                 .orderByDesc(XxShopIndexConfig::getConfigRank)
                 .last("limit " + limit));
-        if(!CollectionUtils.isEmpty(list)){
+        if (!CollectionUtils.isEmpty(list)) {
             List<Long> goodIds = list.stream().map(XxShopIndexConfig::getGoodsId).collect(Collectors.toList());
             List<XxShopGoodsInfo> xxShopGoodsInfos = goodsMapper.selectBatchIds(goodIds);
             List<XxShopIndexConfigGoodsVO> xxShopIndexConfigGoodsVOList = BeanUtil.copyList(xxShopGoodsInfos, XxShopIndexConfigGoodsVO.class);

@@ -23,7 +23,7 @@ public class XxShopGoodsCategory implements Serializable {
      * 分类级别(1-一级分类 2-二级分类 3-三级分类)
      */
     @TableField(value = "category_level")
-    private Integer categoryLevel;
+    private Byte categoryLevel;
 
     /**
      * 父分类id

@@ -1,4 +1,3 @@
-
 package top.bielai.shop;
 
 import org.mybatis.spring.annotation.MapperScan;

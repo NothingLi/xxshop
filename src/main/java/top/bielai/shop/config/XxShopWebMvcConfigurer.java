@@ -22,6 +22,7 @@ public class XxShopWebMvcConfigurer extends WebMvcConfigurationSupport {
 
     @Autowired
     private TokenToUserIdMethodArgumentResolver tokenToUserIdMethodArgumentResolver;
+
     @Autowired
     private TokenToAdminUserMethodArgumentResolver tokenToAdminUserMethodArgumentResolver;
 
@@ -35,7 +36,7 @@ public class XxShopWebMvcConfigurer extends WebMvcConfigurationSupport {
     }
 
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/upload/**").addResourceLocations("file:" + Constants.FILE_UPLOAD_DIC);
+        registry.addResourceHandler("/files/**").addResourceLocations("file:" + Constants.FILE_UPLOAD_DIC);
         registry.addResourceHandler("/goods-img/**").addResourceLocations("file:" + Constants.FILE_UPLOAD_DIC);
 
         registry.
@@ -47,7 +48,7 @@ public class XxShopWebMvcConfigurer extends WebMvcConfigurationSupport {
 
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(authHandlerInterceptor).addPathPatterns("/**")
-                .excludePathPatterns("/user/login", "/user/logout", "/user/register");
+                .excludePathPatterns("/files/**");
     }
 
     /**

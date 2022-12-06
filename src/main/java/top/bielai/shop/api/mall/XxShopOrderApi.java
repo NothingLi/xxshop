@@ -6,15 +6,16 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import top.bielai.shop.api.mall.param.SaveOrderParam;
-import top.bielai.shop.api.mall.vo.*;
-import top.bielai.shop.common.*;
+import top.bielai.shop.api.mall.vo.XxShopOrderDetailVO;
+import top.bielai.shop.api.mall.vo.XxShopOrderListVO;
+import top.bielai.shop.api.mall.vo.XxShopShoppingCartItemVO;
+import top.bielai.shop.common.Constants;
+import top.bielai.shop.common.ErrorEnum;
+import top.bielai.shop.common.XxShopException;
 import top.bielai.shop.config.annotation.TokenToShopUser;
 import top.bielai.shop.domain.XxShopOrder;
-import top.bielai.shop.domain.XxShopOrderAddress;
-import top.bielai.shop.domain.XxShopOrderItem;
 import top.bielai.shop.domain.XxShopUserAddress;
 import top.bielai.shop.service.*;
-import top.bielai.shop.util.BeanUtil;
 import top.bielai.shop.util.Result;
 import top.bielai.shop.util.ResultGenerator;
 
@@ -34,7 +35,7 @@ import java.util.List;
 @Valid
 @Validated
 @RestController
-@RequestMapping("/api/v1/order")
+@RequestMapping("/api/v2/order")
 public class XxShopOrderApi {
 
     @Resource
@@ -82,30 +83,8 @@ public class XxShopOrderApi {
     @GetMapping("/{orderNo}")
     public Result<XxShopOrderDetailVO> getOrderDetail(@PathVariable("orderNo") @NotBlank(message = "订单编号呢？") String orderNo, @TokenToShopUser Long userId) {
         // 根据订单编号和用户id查询相关订单
-        XxShopOrder one = xxShopOrderService.getOne(new LambdaQueryWrapper<XxShopOrder>().eq(XxShopOrder::getOrderNo, orderNo).eq(XxShopOrder::getUserId, userId));
-        if (ObjectUtils.isEmpty(one)) {
-            XxShopException.fail(ErrorEnum.DATA_NOT_EXIST);
-        }
-        XxShopOrderDetailVO xxShopOrderDetailVO = new XxShopOrderDetailVO();
-        BeanUtil.copyProperties(one, xxShopOrderDetailVO);
 
-        // 查询订单项
-        List<XxShopOrderItem> orderItems = orderItemService.list(new LambdaQueryWrapper<XxShopOrderItem>().eq(XxShopOrderItem::getOrderId, one.getOrderId()));
-        List<XxShopOrderItemVO> xxShopOrderItemVOList = BeanUtil.copyList(orderItems, XxShopOrderItemVO.class);
-        // 查询订单地址
-        XxShopOrderAddress orderAddress = orderAddressService.getOne(new LambdaQueryWrapper<XxShopOrderAddress>().eq(XxShopOrderAddress::getOrderId, one.getOrderId()));
-        XxShopUserAddressVO xxShopUserAddressVO = new XxShopUserAddressVO();
-        BeanUtil.copyProperties(orderAddress, xxShopUserAddressVO);
-
-        // 设置订单状态
-        xxShopOrderDetailVO.setOrderStatusString(OrderStatusEnum.getXxShopOrderStatusEnumByStatus(xxShopOrderDetailVO.getOrderStatus()).getName());
-        // 设置支付类型
-        xxShopOrderDetailVO.setPayTypeString(PayTypeEnum.getPayTypeEnumByType(xxShopOrderDetailVO.getPayType()).getName());
-        // 设置支付状态
-        xxShopOrderDetailVO.setPayStatusString(PayStatusEnum.getPayStatusEnumByStatus(xxShopOrderDetailVO.getPayStatus()).getName());
-        xxShopOrderDetailVO.setXxShopOrderItemVOList(xxShopOrderItemVOList);
-        xxShopOrderDetailVO.setXxShopUserAddressVO(xxShopUserAddressVO);
-        return ResultGenerator.genSuccessResult(xxShopOrderDetailVO);
+        return ResultGenerator.genSuccessResult(xxShopOrderService.getDetailVO(null, userId, orderNo));
     }
 
     /**
@@ -121,7 +100,7 @@ public class XxShopOrderApi {
                                                      @TokenToShopUser Long userId) {
         Page<XxShopOrder> pageParam = new Page<XxShopOrder>().setCurrent(pageNumber).setSize(Constants.ORDER_SEARCH_PAGE_LIMIT);
         LambdaQueryWrapper<XxShopOrder> queryWrapper = new LambdaQueryWrapper<XxShopOrder>().eq(null != status, XxShopOrder::getOrderStatus, status)
-                .eq(XxShopOrder::getUserId, userId);
+                .eq(XxShopOrder::getUserId, userId).orderByDesc(XxShopOrder::getCreateTime);
         //封装分页请求参数
         return ResultGenerator.genSuccessResult(xxShopOrderService.orderList(pageParam, queryWrapper));
     }

@@ -1,7 +1,6 @@
 package top.bielai.shop.api.mall;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.ApiParam;
 import org.apache.commons.lang3.StringUtils;
@@ -30,7 +29,7 @@ import javax.validation.constraints.Min;
 @Valid
 @Validated
 @RestController
-@RequestMapping("/api/v1/goods")
+@RequestMapping("/api/v2/goods")
 public class XxShopGoodsApi {
 
     @Resource
@@ -46,10 +45,10 @@ public class XxShopGoodsApi {
      * @return 商品分页数据
      */
     @GetMapping("/search")
-    public Result<IPage<XxShopSearchGoodsVO>> search(@RequestParam(required = false) String keyword,
-                                                     @RequestParam(required = false) Long goodsCategoryId,
-                                                     @RequestParam(required = false) String orderBy,
-                                                     @RequestParam @Min(value = 1, message = "你想看啥啊？") Integer pageNumber) {
+    public Result<Page<XxShopSearchGoodsVO>> search(@RequestParam(required = false) String keyword,
+                                                    @RequestParam(required = false) Long goodsCategoryId,
+                                                    @RequestParam(required = false) String orderBy,
+                                                    @RequestParam @Min(value = 1, message = "你想看啥啊？") Integer pageNumber) {
         //两个搜索参数都为空，直接返回异常
         if (goodsCategoryId == null && StringUtils.isBlank(keyword)) {
             XxShopException.fail(ErrorEnum.ERROR_PARAM);

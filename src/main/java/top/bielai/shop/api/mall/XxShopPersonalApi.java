@@ -22,11 +22,11 @@ import javax.validation.Valid;
 /**
  * 小新商城用户操作相关接口
  *
- * @author Administrator
+ * @author bielai
  */
 @Valid
 @RestController
-@RequestMapping("/api/v1/user")
+@RequestMapping("/api/v2/user")
 public class XxShopPersonalApi {
 
     @Resource
@@ -41,7 +41,7 @@ public class XxShopPersonalApi {
      */
     @PostMapping("/login")
     public Result<String> login(@Validated @RequestBody ShopUserLoginParam userLoginParam) {
-        if (!NumberUtil.isPhone(userLoginParam.getLoginName())) {
+        if (NumberUtil.isNotPhone(userLoginParam.getLoginName())) {
             XxShopException.fail(ErrorEnum.LOGIN_PHONE_ERROR);
         }
         String token = xxShopUserService.login(userLoginParam.getLoginName(), userLoginParam.getPassword());
@@ -82,7 +82,7 @@ public class XxShopPersonalApi {
      */
     @PostMapping("/register")
     public Result<String> register(@Validated @RequestBody ShopUserRegisterParam userRegisterParam) {
-        if (!NumberUtil.isPhone(userRegisterParam.getLoginName())) {
+        if (NumberUtil.isNotPhone(userRegisterParam.getLoginName())) {
             XxShopException.fail(ErrorEnum.LOGIN_PHONE_ERROR);
         }
         boolean registerResult = xxShopUserService.register(userRegisterParam.getLoginName(), userRegisterParam.getPassword());

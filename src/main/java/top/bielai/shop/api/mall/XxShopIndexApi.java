@@ -25,7 +25,7 @@ import java.util.List;
  * @author bielai
  */
 @RestController
-@RequestMapping("/api/v1/index-infos")
+@RequestMapping("/api/v2/index-infos")
 public class XxShopIndexApi {
 
     @Resource

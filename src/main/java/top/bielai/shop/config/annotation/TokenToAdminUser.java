@@ -3,7 +3,7 @@ package top.bielai.shop.config.annotation;
 import java.lang.annotation.*;
 
 /**
- * @author Administrator
+ * @author bielai
  */
 @Target({ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)

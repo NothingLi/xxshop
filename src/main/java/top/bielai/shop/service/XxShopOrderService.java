@@ -3,6 +3,7 @@ package top.bielai.shop.service;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import top.bielai.shop.api.mall.vo.XxShopOrderDetailVO;
 import top.bielai.shop.api.mall.vo.XxShopOrderListVO;
 import top.bielai.shop.api.mall.vo.XxShopShoppingCartItemVO;
 import top.bielai.shop.domain.XxShopOrder;
@@ -28,6 +29,16 @@ public interface XxShopOrderService extends IService<XxShopOrder> {
     String saveOrder(Long userId, XxShopUserAddress address, List<XxShopShoppingCartItemVO> itemsForSave);
 
     /**
+     * 查询订单详情
+     *
+     * @param orderId 订单id
+     * @param userId  用户id
+     * @param orderNo 订单编号
+     * @return 订单详情
+     */
+    XxShopOrderDetailVO getDetailVO(Long orderId, Long userId, String orderNo);
+
+    /**
      * 分页查询订单
      *
      * @param pageParam    分页参数
@@ -46,6 +57,16 @@ public interface XxShopOrderService extends IService<XxShopOrder> {
     boolean cancelOrder(String orderNo, Long userId);
 
     /**
+     * 模拟支付成功，修改订单状态
+     *
+     * @param orderNo 订单编号
+     * @param payType 支付类型
+     * @param userId  用户id
+     * @return 结果
+     */
+    boolean paySuccess(String orderNo, int payType, Long userId);
+
+    /**
      * 根据订单号和用户id完成订单
      *
      * @param orderNo 订单号
@@ -55,12 +76,27 @@ public interface XxShopOrderService extends IService<XxShopOrder> {
     boolean finishOrder(String orderNo, Long userId);
 
     /**
-     * 模拟支付成功，修改订单状态
+     * 批量修改订单配货完成
      *
-     * @param orderNo 订单编号
-     * @param payType 支付类型
-     * @param userId  用户id
+     * @param ids 订单id
      * @return 结果
      */
-    boolean paySuccess(String orderNo, int payType, Long userId);
+    boolean checkDone(List<Long> ids);
+
+    /**
+     * 批量修改订单已出库
+     *
+     * @param ids 订单id
+     * @return 结果
+     */
+    boolean checkOut(List<Long> ids);
+
+    /**
+     * 批量修改订单商家关闭
+     *
+     * @param ids 订单id
+     * @return 结果
+     */
+    boolean closeOrder(List<Long> ids);
+
 }

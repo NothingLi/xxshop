@@ -7,6 +7,8 @@ import java.math.BigDecimal;
 
 /**
  * 购物车页面购物项VO
+ *
+ * @author Administrator
  */
 @Data
 public class XxShopShoppingCartItemVO implements Serializable {

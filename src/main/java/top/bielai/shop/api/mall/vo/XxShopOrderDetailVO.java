@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * 订单详情页页面VO
  *
- * @author Administrator
+ * @author bielai
  */
 @Data
 public class XxShopOrderDetailVO implements Serializable {

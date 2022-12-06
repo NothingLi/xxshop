@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import top.bielai.shop.common.Constants;
@@ -25,16 +24,22 @@ import javax.servlet.http.HttpServletResponse;
 @Component
 public class AuthHandlerInterceptor implements HandlerInterceptor {
 
-    @Autowired
-    private XxShopUserTokenService userTokenService;
+    private final XxShopUserTokenService userTokenService;
 
-    @Autowired
-    private XxShopAdminUserTokenService adminUserTokenService;
+    private final XxShopAdminUserTokenService adminUserTokenService;
     private static final String TOKEN = "token";
     private static final String METHOD = "OPTIONS";
 
 
-    private final String[] ignorePath = new String[]{};
+    private final String[] ignorePath = new String[]{
+            "/api/v2/index-infos", "/api/v2/categories",
+            "/user/login", "/user/logout", "/user/register",
+            "adminUser/login", "/adminUser/logout"};
+
+    public AuthHandlerInterceptor(XxShopUserTokenService userTokenService, XxShopAdminUserTokenService adminUserTokenService) {
+        this.userTokenService = userTokenService;
+        this.adminUserTokenService = adminUserTokenService;
+    }
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
@@ -47,7 +52,7 @@ public class AuthHandlerInterceptor implements HandlerInterceptor {
             }
         }
         String token = request.getHeader(TOKEN);
-        if (StringUtils.isBlank(token) || token.length() == Constants.TOKEN_LENGTH) {
+        if (StringUtils.isBlank(token) || token.length() != Constants.TOKEN_LENGTH) {
             log.error("没有传递token");
             XxShopException.fail(ErrorEnum.NOT_LOGIN_ERROR);
         }

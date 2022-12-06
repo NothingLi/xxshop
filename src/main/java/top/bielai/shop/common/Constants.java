@@ -9,7 +9,7 @@ public class Constants {
     /**
      * 上传文件的默认url前缀
      */
-    public final static String FILE_UPLOAD_DIC = "/opt/xxshop/upload/";
+    public final static String FILE_UPLOAD_DIC = "/app/xxshop/upload/";
 
     /**
      * 首页轮播图数量
@@ -84,4 +84,6 @@ public class Constants {
     public final static String ORDER_BY_NEW = "new";
 
     public final static String ORDER_BY_PRICE = "price";
+
+    public final static String SALT = "{Pq[uK_%u/~8F6NFQJo+gF'!Gr3TG[EQ";
 }

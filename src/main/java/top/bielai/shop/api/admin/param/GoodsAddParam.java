@@ -1,4 +1,3 @@
-
 package top.bielai.shop.api.admin.param;
 
 import lombok.Data;
@@ -11,7 +10,7 @@ import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
 /**
- * @author Administrator
+ * @author bielai
  */
 @Data
 public class GoodsAddParam {
@@ -21,7 +20,7 @@ public class GoodsAddParam {
      * 商品名称
      */
     @NotEmpty(message = "商品名称不能为空")
-    @Length(max = 128,message = "商品名称内容过长")
+    @Length(max = 128, message = "商品名称内容过长")
     private String goodsName;
 
 
@@ -29,7 +28,7 @@ public class GoodsAddParam {
      * 商品简介
      */
     @NotEmpty(message = "商品简介不能为空")
-    @Length(max = 200,message = "商品简介内容过长")
+    @Length(max = 200, message = "商品简介内容过长")
     private String goodsIntro;
 
 
@@ -79,7 +78,7 @@ public class GoodsAddParam {
      * 商品标签
      */
     @NotEmpty(message = "商品标签不能为空")
-    @Length(max = 16,message = "商品标签内容过长")
+    @Length(max = 16, message = "商品标签内容过长")
     private String tag;
 
     private Byte goodsSellStatus;

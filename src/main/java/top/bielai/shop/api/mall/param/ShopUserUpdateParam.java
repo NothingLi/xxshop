@@ -8,7 +8,7 @@ import java.io.Serializable;
 /**
  * 用户修改param
  *
- * @author Administrator
+ * @author bielai
  */
 @Data
 public class ShopUserUpdateParam implements Serializable {

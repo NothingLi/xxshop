@@ -2,7 +2,7 @@ package top.bielai.shop.common;
 
 
 /**
- * @author Administrator
+ * @author bielai
  */
 
 public enum IndexConfigTypeEnum {

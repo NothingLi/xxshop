@@ -8,7 +8,7 @@ import java.io.Serializable;
 /**
  * 修改购物项param
  *
- * @author Administrator
+ * @author bielai
  */
 @Data
 public class UpdateCartItemParam implements Serializable {

@@ -13,7 +13,7 @@ import top.bielai.shop.service.XxShopAdminUserTokenService;
  */
 @Service
 public class XxShopAdminUserTokenServiceImpl extends ServiceImpl<XxShopAdminUserTokenMapper, XxShopAdminUserToken>
-    implements XxShopAdminUserTokenService{
+        implements XxShopAdminUserTokenService {
 
 }
 

@@ -1,12 +1,15 @@
 server:
   port: 8080
+  compression:
+    enabled: true
+    min-response-size: 1KB
 spring:
   datasource:
     name: xx-shop-datasource
     driverClassName: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://mysql.bielai.top:32306/xx_shop?useUnicode=true&serverTimezone=Asia/Shanghai&characterEncoding=utf8&autoReconnect=true&useSSL=false&allowMultiQueries=true
     username: xx_shop
-    password: &?8.uhOdO~yx
+    password: "&?8.uhOdO~yx"
     hikari:
       minimum-idle: 5
       maximum-pool-size: 15

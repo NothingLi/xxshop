@@ -1,4 +1,3 @@
-
 package top.bielai.shop.api.admin.param;
 
 import lombok.Data;
@@ -9,7 +8,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 /**
- * @author Administrator
+ * @author bielai
  */
 @Data
 public class CarouselAddParam {

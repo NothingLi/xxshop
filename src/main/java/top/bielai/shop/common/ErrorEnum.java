@@ -30,6 +30,8 @@ public enum ErrorEnum {
 
     GOODS_EXIST_ERROR(409, "这个分类下面有这个商品了！"),
 
+    GOODS_NOT_EXIST_ERROR(404, "没有这个商品啊！"),
+
     USER_ADDRESS_DOWN(410, "这地址不对劲噢，你再看看！"),
 
     CART_ITEM_ERROR(410, "购物车商品有点问题噢！"),
@@ -37,11 +39,13 @@ public enum ErrorEnum {
 
     CART_ITEM_GOODS_NUM_ERROR(410, "库存不够辣！"),
 
-    ORDER_STATUS_ERROR(410, "订单不能取消了哦"),
+    ORDER_STATUS_ERROR(410, "订单状态不允许这样操作噢"),
 
     CATEGORY_LEVEL_ERROR(410, "分类选到底了么"),
 
-    DATA_NOT_EXIST(404, "没有你想要的东西噢！"),
+    DATA_NOT_EXIST(404, "没有这条数据！"),
+
+    DATA_EXIST_ERROR(409, "已经有相同的数据了！"),
 
     ORDER_NOT_EXIST(404, "订单号不对哦！"),
 

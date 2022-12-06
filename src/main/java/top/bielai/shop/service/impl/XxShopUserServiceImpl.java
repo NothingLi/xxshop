@@ -2,9 +2,9 @@ package top.bielai.shop.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import top.bielai.shop.api.mall.param.ShopUserUpdateParam;
@@ -16,11 +16,9 @@ import top.bielai.shop.domain.XxShopUserToken;
 import top.bielai.shop.mapper.XxShopUserMapper;
 import top.bielai.shop.service.XxShopUserService;
 import top.bielai.shop.service.XxShopUserTokenService;
-import top.bielai.shop.util.MD5Util;
 import top.bielai.shop.util.NumberUtil;
 import top.bielai.shop.util.SystemUtil;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 /**
@@ -32,16 +30,17 @@ import java.util.Date;
 public class XxShopUserServiceImpl extends ServiceImpl<XxShopUserMapper, XxShopUser>
         implements XxShopUserService {
 
-    @Autowired
-    private XxShopUserTokenService userTokenService;
+    private final XxShopUserTokenService userTokenService;
+
+    public XxShopUserServiceImpl(XxShopUserTokenService userTokenService) {
+        this.userTokenService = userTokenService;
+    }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public String login(String loginName, String password) {
-        String loginNameMd5 = MD5Util.md5Encode(loginName, StandardCharsets.UTF_8.name());
-        String passwordMd5 = MD5Util.md5Encode(loginNameMd5 + password, StandardCharsets.UTF_8.name());
         XxShopUser xxShopUser = baseMapper.selectOne(new LambdaQueryWrapper<XxShopUser>().eq(XxShopUser::getLoginName, loginName)
-                .eq(XxShopUser::getPasswordMd5, passwordMd5));
+                .eq(XxShopUser::getPasswordMd5, DigestUtils.md5Hex(password + Constants.SALT)));
         if (ObjectUtils.isEmpty(xxShopUser)) {
             XxShopException.fail(ErrorEnum.USER_NULL_ERROR);
         }
@@ -93,9 +92,7 @@ public class XxShopUserServiceImpl extends ServiceImpl<XxShopUserMapper, XxShopU
         newUser.setNickName(loginName);
         newUser.setIntroduceSign(Constants.USER_INTRO);
         newUser.setLockedFlag(0);
-        String loginNameMd5 = MD5Util.md5Encode(loginName, StandardCharsets.UTF_8.name());
-        String passwordMd5 = MD5Util.md5Encode(password, StandardCharsets.UTF_8.name());
-        newUser.setPasswordMd5(MD5Util.md5Encode(loginNameMd5 + passwordMd5, StandardCharsets.UTF_8.name()));
+        newUser.setPasswordMd5(DigestUtils.md5Hex(password + Constants.SALT));
         return baseMapper.insert(newUser) > 0;
     }
 
@@ -107,8 +104,9 @@ public class XxShopUserServiceImpl extends ServiceImpl<XxShopUserMapper, XxShopU
             XxShopException.fail(ErrorEnum.USER_NULL_ERROR);
         }
         xxShopUser.setNickName(userUpdateParam.getNickName());
-        if (StringUtils.isNotBlank(userUpdateParam.getPassword()) || !MD5Util.md5Encode("", StandardCharsets.UTF_8.name()).equals(userUpdateParam.getPassword())) {
-            xxShopUser.setPasswordMd5(MD5Util.md5Encode(MD5Util.md5Encode(xxShopUser.getLoginName(), StandardCharsets.UTF_8.name()), StandardCharsets.UTF_8.name()) + userUpdateParam.getPassword());
+        if (StringUtils.isNotBlank(userUpdateParam.getPassword()) || !DigestUtils.md5Hex("").equals(userUpdateParam.getPassword())) {
+
+            xxShopUser.setPasswordMd5(DigestUtils.md5Hex(userUpdateParam.getPassword() + Constants.SALT));
         }
         xxShopUser.setIntroduceSign(userUpdateParam.getIntroduceSign());
         return baseMapper.updateById(xxShopUser) > 0;

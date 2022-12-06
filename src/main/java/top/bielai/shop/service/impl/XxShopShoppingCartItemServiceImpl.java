@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import top.bielai.shop.api.mall.param.SaveCartItemParam;
@@ -37,8 +36,11 @@ import java.util.stream.Collectors;
 public class XxShopShoppingCartItemServiceImpl extends ServiceImpl<XxShopShoppingCartItemMapper, XxShopShoppingCartItem>
         implements XxShopShoppingCartItemService {
 
-    @Autowired
-    private XxShopGoodsInfoMapper goodsInfoMapper;
+    private final XxShopGoodsInfoMapper goodsInfoMapper;
+
+    public XxShopShoppingCartItemServiceImpl(XxShopGoodsInfoMapper goodsInfoMapper) {
+        this.goodsInfoMapper = goodsInfoMapper;
+    }
 
     @Override
     public List<XxShopShoppingCartItemVO> getCartItemsForSettle(List<Long> cartItemIds, Long xxShopUserId) {
@@ -63,7 +65,7 @@ public class XxShopShoppingCartItemServiceImpl extends ServiceImpl<XxShopShoppin
     public boolean saveXxShopCartItem(SaveCartItemParam saveCartItemParam, Long userId) {
         XxShopGoodsInfo xxShopGoodsInfo = goodsInfoMapper.selectById(saveCartItemParam.getGoodsId());
         if (ObjectUtils.isEmpty(xxShopGoodsInfo)) {
-            XxShopException.fail(ErrorEnum.DATA_NOT_EXIST);
+            XxShopException.fail(ErrorEnum.GOODS_NOT_EXIST_ERROR);
         }
         if (saveCartItemParam.getGoodsCount() > xxShopGoodsInfo.getStockNum()) {
             XxShopException.fail(ErrorEnum.CART_ITEM_GOODS_NUM_ERROR);
@@ -99,7 +101,7 @@ public class XxShopShoppingCartItemServiceImpl extends ServiceImpl<XxShopShoppin
         }
         XxShopGoodsInfo xxShopGoodsInfo = goodsInfoMapper.selectById(exist.getGoodsId());
         if (ObjectUtils.isEmpty(xxShopGoodsInfo)) {
-            XxShopException.fail(ErrorEnum.DATA_NOT_EXIST);
+            XxShopException.fail(ErrorEnum.GOODS_NOT_EXIST_ERROR);
         }
         if (exist.getGoodsCount() > xxShopGoodsInfo.getStockNum()) {
             XxShopException.fail(ErrorEnum.CART_ITEM_GOODS_NUM_ERROR);

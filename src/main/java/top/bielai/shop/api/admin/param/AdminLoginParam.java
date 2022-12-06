@@ -1,26 +1,27 @@
-
 package top.bielai.shop.api.admin.param;
 
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
 
+/**
+ * @author bielai
+ */
 @Data
 public class AdminLoginParam implements Serializable {
 
-    
+
     /**
      * 登录名
      */
     @NotEmpty(message = "登录名不能为空")
-    private String userName;
+    private String username;
 
-    
+
     /**
-     * 用户密码(需要MD5加密)
+     * 用户密码
      */
     @NotEmpty(message = "密码不能为空")
-    private String passwordMd5;
+    private String password;
 }

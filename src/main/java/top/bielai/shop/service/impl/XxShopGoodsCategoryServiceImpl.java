@@ -33,7 +33,7 @@ public class XxShopGoodsCategoryServiceImpl extends ServiceImpl<XxShopGoodsCateg
         return getVoList(list);
     }
 
-    private List<XxShopIndexCategoryVO> getVoList(List<XxShopGoodsCategory> list){
+    private List<XxShopIndexCategoryVO> getVoList(List<XxShopGoodsCategory> list) {
         if (!list.isEmpty()) {
             List<XxShopIndexCategoryVO> voList = BeanUtil.copyList(list, XxShopIndexCategoryVO.class);
             getChildren(voList);

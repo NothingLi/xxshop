@@ -1,7 +1,6 @@
 package top.bielai.shop.config.handler;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -16,15 +15,15 @@ import top.bielai.shop.domain.XxShopAdminUserToken;
 import top.bielai.shop.service.XxShopAdminUserTokenService;
 
 /**
- * @author Administrator
+ * @author bielai
  */
 @Component
 public class TokenToAdminUserMethodArgumentResolver implements HandlerMethodArgumentResolver {
 
-    @Autowired
-    private XxShopAdminUserTokenService adminUserTokenService;
+    private final XxShopAdminUserTokenService adminUserTokenService;
 
-    public TokenToAdminUserMethodArgumentResolver() {
+    public TokenToAdminUserMethodArgumentResolver(XxShopAdminUserTokenService adminUserTokenService) {
+        this.adminUserTokenService = adminUserTokenService;
     }
 
     public boolean supportsParameter(MethodParameter parameter) {
@@ -42,7 +41,7 @@ public class TokenToAdminUserMethodArgumentResolver implements HandlerMethodArgu
                 } else if (adminUserToken.getExpireTime().getTime() <= System.currentTimeMillis()) {
                     XxShopException.fail(ErrorEnum.TOKEN_EXPIRE_ERROR);
                 }
-                return adminUserToken;
+                return adminUserToken.getAdminUserId();
             } else {
                 XxShopException.fail(ErrorEnum.NOT_LOGIN_ERROR);
             }

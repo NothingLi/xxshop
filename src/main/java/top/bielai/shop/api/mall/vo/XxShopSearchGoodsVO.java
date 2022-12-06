@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 /**
  * 搜索列表页商品VO
  *
- * @author Administrator
+ * @author bielai
  */
 @Data
 public class XxShopSearchGoodsVO implements Serializable {

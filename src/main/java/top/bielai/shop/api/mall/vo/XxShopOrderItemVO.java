@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 /**
  * 订单详情页页面订单项VO
  *
- * @author Administrator
+ * @author bielai
  */
 @Data
 public class XxShopOrderItemVO implements Serializable {

@@ -1,11 +1,3 @@
-/**
- * 严肃声明：
- * 开源版本请务必保留此注释头信息，若删除我方将保留所有法律责任追究！
- * 本系统已申请软件著作权，受国家版权局知识产权以及国家计算机软件著作权保护！
- * 可正常分享和学习源码，不得用于违法犯罪活动，违者必究！
- * Copyright (c) 2019-2021 十三 all rights reserved.
- * 版权所有，侵权必究！
- */
 package top.bielai.shop.api.admin;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -36,7 +28,7 @@ import java.util.Arrays;
 @Valid
 @Validated
 @RestController
-@RequestMapping("/manage-api/v1/carousels")
+@RequestMapping("/manage-api/v2/carousels")
 public class XxShopAdminCarouselApi {
 
 
@@ -51,8 +43,8 @@ public class XxShopAdminCarouselApi {
      * @return 分页结果
      */
     @GetMapping
-    public Result<Page<XxShopCarousel>> list(@RequestParam @Min(value = 1, message = "第几页的数据呀") Integer pageNumber,
-                                             @RequestParam @Min(value = 1, message = "每页几条啊") Integer pageSize) {
+    public Result<Page<XxShopCarousel>> page(@RequestParam @Min(value = 1, message = "第几页的数据呀") Integer pageNumber,
+                                             @RequestParam @Min(value = 10, message = "每页几条啊") Integer pageSize) {
         return ResultGenerator.genSuccessResult(xxShopCarouselService.page(new Page<>(pageNumber, pageSize)));
     }
 

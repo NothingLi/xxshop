@@ -15,9 +15,10 @@ public interface XxShopIndexConfigService extends IService<XxShopIndexConfig> {
 
     /**
      * 根据类型查询配置商品
-     * @param type 类型
+     *
+     * @param type  类型
      * @param limit 数量
      * @return 商品列表
      */
-    List<XxShopIndexConfigGoodsVO>  getConfigGoodsForIndex(int type, int limit);
+    List<XxShopIndexConfigGoodsVO> getConfigGoodsForIndex(int type, int limit);
 }

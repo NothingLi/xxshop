@@ -7,7 +7,7 @@ import top.bielai.shop.domain.XxShopGoodsInfo;
 /**
  * 后台管理商品详情VO
  *
- * @author Administrator
+ * @author bielai
  */
 @Data
 public class GoodsDetailVO {

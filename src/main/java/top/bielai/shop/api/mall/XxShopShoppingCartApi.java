@@ -30,12 +30,12 @@ import java.util.List;
 /**
  * 小新商城购物车相关接口
  *
- * @author Administrator
+ * @author bielai
  */
 @Valid
 @Validated
 @RestController
-@RequestMapping("/api/v1/shop-cart")
+@RequestMapping("/api/v2/shop-cart")
 public class XxShopShoppingCartApi {
 
     @Resource

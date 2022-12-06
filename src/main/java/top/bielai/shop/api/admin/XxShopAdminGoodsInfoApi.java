@@ -1,21 +1,11 @@
-/**
- * 严肃声明：
- * 开源版本请务必保留此注释头信息，若删除我方将保留所有法律责任追究！
- * 本系统已申请软件著作权，受国家版权局知识产权以及国家计算机软件著作权保护！
- * 可正常分享和学习源码，不得用于违法犯罪活动，违者必究！
- * Copyright (c) 2019-2021 十三 all rights reserved.
- * 版权所有，侵权必究！
- */
 package top.bielai.shop.api.admin;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.Range;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import top.bielai.shop.api.admin.param.BatchIdParam;
@@ -46,7 +36,7 @@ import java.util.Arrays;
 @Valid
 @Validated
 @RestController
-@RequestMapping("/manage-api/v1/goods")
+@RequestMapping("/manage-api/v2/goods")
 public class XxShopAdminGoodsInfoApi {
 
     @Resource
@@ -65,9 +55,8 @@ public class XxShopAdminGoodsInfoApi {
      * @return 分页
      */
     @GetMapping("/list")
-    @ApiOperation(value = "商品列表", notes = "可根据名称和上架状态筛选")
-    public Result<Page<XxShopGoodsInfo>> list(@RequestParam @Min(value = 1, message = "第几页的数据呀") Integer pageNumber,
-                                              @RequestParam @Min(value = 1, message = "每页几条啊") Integer pageSize,
+    public Result<Page<XxShopGoodsInfo>> page(@RequestParam @Min(value = 1, message = "第几页的数据呀") Integer pageNumber,
+                                              @RequestParam @Min(value = 10, message = "每页几条啊") Integer pageSize,
                                               @RequestParam(required = false) String goodsName,
                                               @RequestParam(required = false) Integer goodsSellStatus) {
 
@@ -83,9 +72,8 @@ public class XxShopAdminGoodsInfoApi {
      * @return 结果
      */
     @PostMapping
-    @Transactional(rollbackFor = Exception.class)
     public Result<String> save(@Validated @RequestBody GoodsAddParam goodsAddParam) {
-        goodsCheck(goodsAddParam.getGoodsCategoryId(), goodsAddParam.getGoodsName());
+        goodsCheck(goodsAddParam.getGoodsCategoryId(), goodsAddParam.getGoodsName(), null);
         XxShopGoodsInfo xxShopGoods = new XxShopGoodsInfo();
         BeanUtil.copyProperties(goodsAddParam, xxShopGoods);
         if (goodsInfoService.save(xxShopGoods)) {
@@ -103,13 +91,12 @@ public class XxShopAdminGoodsInfoApi {
      * @return 结果
      */
     @PutMapping
-    @Transactional(rollbackFor = Exception.class)
     public Result<String> update(@Validated @RequestBody GoodsEditParam goodsEditParam) {
         XxShopGoodsInfo byId = goodsInfoService.getById(goodsEditParam.getGoodsId());
         if (ObjectUtils.isEmpty(byId)) {
-            XxShopException.fail(ErrorEnum.DATA_NOT_EXIST);
+            XxShopException.fail(ErrorEnum.GOODS_NOT_EXIST_ERROR);
         }
-        goodsCheck(goodsEditParam.getGoodsCategoryId(), goodsEditParam.getGoodsName());
+        goodsCheck(goodsEditParam.getGoodsCategoryId(), goodsEditParam.getGoodsName(), byId.getGoodsId());
         BeanUtil.copyProperties(goodsEditParam, byId);
         if (goodsInfoService.updateById(byId)) {
             return ResultGenerator.genSuccessResult();
@@ -118,14 +105,15 @@ public class XxShopAdminGoodsInfoApi {
         }
     }
 
-    private void goodsCheck(Long categoryId, String goodsName) {
+    private void goodsCheck(Long categoryId, String goodsName, Long goodsId) {
         XxShopGoodsCategory category = goodsCategoryService.getById(categoryId);
         if (category.getCategoryLevel() != CategoryLevelEnum.LEVEL_THREE.getLevel()) {
             XxShopException.fail(ErrorEnum.CATEGORY_LEVEL_ERROR);
         }
         XxShopGoodsInfo exist = goodsInfoService.getOne(new LambdaQueryWrapper<XxShopGoodsInfo>()
                 .eq(XxShopGoodsInfo::getGoodsName, goodsName)
-                .eq(XxShopGoodsInfo::getGoodsCategoryId, categoryId));
+                .eq(XxShopGoodsInfo::getGoodsCategoryId, categoryId)
+                .ne(ObjectUtils.isNotEmpty(goodsId), XxShopGoodsInfo::getGoodsId, goodsId));
         if (ObjectUtils.isNotEmpty(exist)) {
             XxShopException.fail(ErrorEnum.GOODS_EXIST_ERROR);
         }
@@ -142,7 +130,7 @@ public class XxShopAdminGoodsInfoApi {
 
         XxShopGoodsInfo goods = goodsInfoService.getById(id);
         if (ObjectUtils.isEmpty(goods)) {
-            XxShopException.fail(ErrorEnum.DATA_NOT_EXIST);
+            XxShopException.fail(ErrorEnum.GOODS_NOT_EXIST_ERROR);
         }
         GoodsDetailVO goodsDetailVO = new GoodsDetailVO();
         goodsDetailVO.setGoodsInfo(goods);
@@ -171,7 +159,6 @@ public class XxShopAdminGoodsInfoApi {
      * @return 结果
      */
     @PutMapping("/status/{sellStatus}")
-    @Transactional(rollbackFor = Exception.class)
     public Result<String> delete(@Validated @RequestBody BatchIdParam batchIdParam, @PathVariable("sellStatus") @Range(min = 0, max = 1, message = "状态不对噢") int sellStatus) {
 
         if (goodsInfoService.update(new LambdaUpdateWrapper<XxShopGoodsInfo>()

@@ -23,10 +23,10 @@ import java.util.List;
 /**
  * 小新商城个人地址相关接口
  *
- * @author Administrator
+ * @author bielai
  */
 @RestController
-@RequestMapping("/api/v1/address")
+@RequestMapping("/api/v2/address")
 public class XxShopUserAddressApi {
 
     @Resource

@@ -9,7 +9,7 @@ import java.io.Serializable;
 /**
  * 添加购物项param
  *
- * @author Administrator
+ * @author bielai
  */
 @Data
 public class SaveCartItemParam implements Serializable {

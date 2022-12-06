@@ -1,0 +1,36 @@
+{
+  "serverUrl": "https://xxshop.api.bielai.top",
+  "isStrict": false,
+  "outPath": "./src/main/resources/static/doc",
+  "allInOne": true,
+  "packageFilters": "",
+  "appToken": "647151ab08194b4a9d2051189390f91e",
+  "openUrl": "https://torna.bielai.top/api",
+  "debugEnvName": "就这一个环境",
+  "replace": true,
+  "tornaDebug": false,
+  "debugEnvUrl": "https://xxshop.api.bielai.top",
+  "inlineEnum": true,
+  "displayActualType": false,
+  "framework": "spring",
+  "createDebugPage": true,
+  "requestHeaders": [
+    {
+      "name": "token",
+      "type": "string",
+      "desc": "鉴权token",
+      "value": "",
+      "required": true,
+      "pathPatterns": "/**",
+      "excludePathPatterns": "/api/v2/user/login,/api/v2/user/logout,/api/v2/user/register,/manage-api/v2/adminUser/login,/manage-api/v2/adminUser/logout"
+    }
+  ],
+  "errorCodeDictionaries": [
+    {
+      "title": "title",
+      "enumClassName": "top.bielai.shop.common.ErrorEnum",
+      "codeField": "code",
+      "descField": "msg"
+    }
+  ]
+}

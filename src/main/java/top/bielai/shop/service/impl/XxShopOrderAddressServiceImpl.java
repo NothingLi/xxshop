@@ -13,7 +13,7 @@ import top.bielai.shop.service.XxShopOrderAddressService;
  */
 @Service
 public class XxShopOrderAddressServiceImpl extends ServiceImpl<XxShopOrderAddressMapper, XxShopOrderAddress>
-    implements XxShopOrderAddressService{
+        implements XxShopOrderAddressService {
 
 }
 

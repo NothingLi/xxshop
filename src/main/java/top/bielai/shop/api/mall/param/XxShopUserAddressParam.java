@@ -8,7 +8,7 @@ import javax.validation.constraints.NotNull;
 /**
  * 添加收货地址param
  *
- * @author Administrator
+ * @author bielai
  */
 @Data
 public class XxShopUserAddressParam {

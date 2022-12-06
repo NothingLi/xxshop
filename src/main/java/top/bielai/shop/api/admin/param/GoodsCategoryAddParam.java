@@ -1,4 +1,3 @@
-
 package top.bielai.shop.api.admin.param;
 
 import lombok.Data;
@@ -10,7 +9,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 /**
- * @author Administrator
+ * @author bielai
  */
 @Data
 public class GoodsCategoryAddParam {
@@ -37,7 +36,7 @@ public class GoodsCategoryAddParam {
      * 分类名称
      */
     @NotEmpty(message = "categoryName不能为空")
-    @Length(max = 16,message = "分类名称过长")
+    @Length(max = 16, message = "分类名称过长")
     private String categoryName;
 
 

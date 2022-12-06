@@ -2,7 +2,7 @@ package top.bielai.shop.common;
 
 
 /**
- * @author JiangYouYuan
+ * @author bielai
  */
 
 public enum PayStatusEnum {

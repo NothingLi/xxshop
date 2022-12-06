@@ -9,7 +9,7 @@ import javax.validation.constraints.NotNull;
 /**
  * 修改收货地址param
  *
- * @author Administrator
+ * @author bielai
  */
 @Data
 public class UpdateShopUserAddressParam {

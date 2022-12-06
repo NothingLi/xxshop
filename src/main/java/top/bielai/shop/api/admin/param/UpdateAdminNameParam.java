@@ -1,10 +1,12 @@
-
 package top.bielai.shop.api.admin.param;
 
 import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
 
+/**
+ * @author bielai
+ */
 @Data
 public class UpdateAdminNameParam {
 

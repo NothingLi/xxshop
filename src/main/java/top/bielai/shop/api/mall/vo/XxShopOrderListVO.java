@@ -10,11 +10,14 @@ import java.util.List;
 /**
  * 订单列表页面VO
  *
- * @author Administrator
+ * @author bielai
  */
 @Data
 public class XxShopOrderListVO implements Serializable {
 
+    /**
+     * 订单id
+     */
     private Long orderId;
 
 
