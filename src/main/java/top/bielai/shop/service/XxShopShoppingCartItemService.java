@@ -51,4 +51,13 @@ public interface XxShopShoppingCartItemService extends IService<XxShopShoppingCa
      * @return 结果
      */
     boolean updateXxShopCartItem(UpdateCartItemParam updateCartItemParam, Long userId);
+
+    /**
+     * 立即购买商品
+     *
+     * @param saveCartItemParam 购买商品信息
+     * @param userId            用户id
+     * @return 结算项
+     */
+    List<XxShopShoppingCartItemVO> immediatelySettle(SaveCartItemParam saveCartItemParam, Long userId);
 }

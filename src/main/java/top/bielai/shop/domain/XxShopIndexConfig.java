@@ -29,7 +29,7 @@ public class XxShopIndexConfig implements Serializable {
      * 1-搜索框热搜 2-搜索下拉框热搜 3-(首页)热销商品 4-(首页)新品上线 5-(首页)为你推荐
      */
     @TableField(value = "config_type")
-    private Integer configType;
+    private Byte configType;
 
     /**
      * 商品id 默认为0

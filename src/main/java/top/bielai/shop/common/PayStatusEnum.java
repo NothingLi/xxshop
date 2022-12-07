@@ -10,20 +10,20 @@ public enum PayStatusEnum {
     /**
      * 支付状态
      */
-    DEFAULT(-1, "支付失败"),
-    WAIT_PAY(0, "未支付"),
-    PAY_SUCCESS(1, "支付成功");
+    DEFAULT((byte) -1, "支付失败"),
+    WAIT_PAY((byte) 0, "未支付"),
+    PAY_SUCCESS((byte) 1, "支付成功");
 
-    private final int payStatus;
+    private final byte payStatus;
 
     private final String name;
 
-    PayStatusEnum(int payStatus, String name) {
+    PayStatusEnum(byte payStatus, String name) {
         this.payStatus = payStatus;
         this.name = name;
     }
 
-    public static PayStatusEnum getPayStatusEnumByStatus(int payStatus) {
+    public static PayStatusEnum getPayStatusEnumByStatus(byte payStatus) {
         for (PayStatusEnum payStatusEnum : PayStatusEnum.values()) {
             if (payStatusEnum.getPayStatus() == payStatus) {
                 return payStatusEnum;
@@ -32,7 +32,7 @@ public enum PayStatusEnum {
         return DEFAULT;
     }
 
-    public int getPayStatus() {
+    public byte getPayStatus() {
         return payStatus;
     }
 

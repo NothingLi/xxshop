@@ -87,7 +87,7 @@ public class XxShopGoodsInfo implements Serializable {
      * 商品上架状态 1-下架 0-上架
      */
     @TableField(value = "goods_sell_status")
-    private Integer goodsSellStatus;
+    private Byte goodsSellStatus;
 
     /**
      * 添加者主键id

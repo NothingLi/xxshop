@@ -20,10 +20,7 @@ import top.bielai.shop.mapper.XxShopShoppingCartItemMapper;
 import top.bielai.shop.service.XxShopShoppingCartItemService;
 import top.bielai.shop.util.BeanUtil;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -108,6 +105,30 @@ public class XxShopShoppingCartItemServiceImpl extends ServiceImpl<XxShopShoppin
         }
         exist.setGoodsCount(updateCartItemParam.getGoodsCount());
         return baseMapper.updateById(exist) > 0;
+    }
+
+    @Override
+    public List<XxShopShoppingCartItemVO> immediatelySettle(SaveCartItemParam saveCartItemParam, Long userId) {
+        XxShopGoodsInfo xxShopGoodsInfo = goodsInfoMapper.selectById(saveCartItemParam.getGoodsId());
+        if (ObjectUtils.isEmpty(xxShopGoodsInfo)) {
+            XxShopException.fail(ErrorEnum.GOODS_NOT_EXIST_ERROR);
+        }
+        if (saveCartItemParam.getGoodsCount() > xxShopGoodsInfo.getStockNum()) {
+            XxShopException.fail(ErrorEnum.CART_ITEM_GOODS_NUM_ERROR);
+        }
+        XxShopShoppingCartItem exist = getOne(new LambdaQueryWrapper<XxShopShoppingCartItem>().eq(XxShopShoppingCartItem::getGoodsId, saveCartItemParam.getGoodsId()).eq(XxShopShoppingCartItem::getUserId, userId));
+        if (ObjectUtils.isNotEmpty(exist)) {
+            if (saveCartItemParam.getGoodsCount() > xxShopGoodsInfo.getStockNum()) {
+                XxShopException.fail(ErrorEnum.CART_ITEM_GOODS_NUM_ERROR);
+            }
+            exist.setGoodsCount(saveCartItemParam.getGoodsCount());
+            baseMapper.updateById(exist);
+        } else {
+            BeanUtil.copyProperties(saveCartItemParam, exist);
+            exist.setUserId(userId);
+            baseMapper.insert(exist);
+        }
+        return getCartItemsForSettle(Collections.singletonList(exist.getCartItemId()), userId);
     }
 
     private List<XxShopShoppingCartItemVO> getXxShopShoppingCartItemVOList(List<XxShopShoppingCartItem> list) {

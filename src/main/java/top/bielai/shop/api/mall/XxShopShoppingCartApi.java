@@ -164,4 +164,20 @@ public class XxShopShoppingCartApi {
         }
         return ResultGenerator.genSuccessResult(itemsForSettle);
     }
+
+    /**
+     * 立即购买商品
+     *
+     * @param saveCartItemParam 购买商品信息
+     * @return 结算项
+     */
+    @PostMapping("/immediately")
+    public Result<List<XxShopShoppingCartItemVO>> immediately(@Validated @RequestBody SaveCartItemParam saveCartItemParam,
+                                                              @TokenToShopUser XxShopUser user) {
+        List<XxShopShoppingCartItemVO> itemsForSettle = shoppingCartItemService.immediatelySettle(saveCartItemParam, user.getUserId());
+        if (!CollectionUtils.isEmpty(itemsForSettle)) {
+            return ResultGenerator.genSuccessResult(itemsForSettle);
+        }
+        return ResultGenerator.genFailResult();
+    }
 }

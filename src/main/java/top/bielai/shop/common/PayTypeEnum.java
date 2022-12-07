@@ -10,21 +10,21 @@ public enum PayTypeEnum {
     /**
      * 支付方式
      */
-    DEFAULT(-1, "ERROR"),
-    NOT_PAY(0, "无"),
-    ALI_PAY(1, "支付宝"),
-    WECHAT_PAY(2, "微信支付");
+    DEFAULT((byte) -1, "ERROR"),
+    NOT_PAY((byte) 0, "无"),
+    ALI_PAY((byte) 1, "支付宝"),
+    WECHAT_PAY((byte) 2, "微信支付");
 
-    private int payType;
+    private final byte payType;
 
-    private String name;
+    private final String name;
 
-    PayTypeEnum(int payType, String name) {
+    PayTypeEnum(byte payType, String name) {
         this.payType = payType;
         this.name = name;
     }
 
-    public static PayTypeEnum getPayTypeEnumByType(int payType) {
+    public static PayTypeEnum getPayTypeEnumByType(byte payType) {
         for (PayTypeEnum payTypeEnum : PayTypeEnum.values()) {
             if (payTypeEnum.getPayType() == payType) {
                 return payTypeEnum;
@@ -33,19 +33,13 @@ public enum PayTypeEnum {
         return DEFAULT;
     }
 
-    public int getPayType() {
+    public byte getPayType() {
         return payType;
     }
 
-    public void setPayType(int payType) {
-        this.payType = payType;
-    }
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
 }

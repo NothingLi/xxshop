@@ -2,6 +2,7 @@ package top.bielai.shop.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import top.bielai.shop.domain.XxShopGoodsInfo;
 
 /**
@@ -19,7 +20,7 @@ public interface XxShopGoodsInfoMapper extends BaseMapper<XxShopGoodsInfo> {
      * @param stockNum 库存
      * @return 影响条数
      */
-    int reduceStockNum(Long id, Integer stockNum);
+    int reduceStockNum(@Param("id") Long id, @Param("stockNum") Integer stockNum);
 
     /**
      * 根据商品id回复库存
@@ -28,7 +29,7 @@ public interface XxShopGoodsInfoMapper extends BaseMapper<XxShopGoodsInfo> {
      * @param stockNum 库存
      * @return 影响条数
      */
-    int recoverStockNum(Long id, Integer stockNum);
+    int recoverStockNum(@Param("id") Long id, @Param("stockNum") Integer stockNum);
 }
 
 

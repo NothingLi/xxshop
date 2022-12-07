@@ -213,7 +213,7 @@ public class XxShopOrderServiceImpl extends ServiceImpl<XxShopOrderMapper, XxSho
             XxShopException.fail(ErrorEnum.ORDER_STATUS_ERROR);
         }
         xxShopOrder.setOrderStatus(OrderStatusEnum.ORDER_PAID.getOrderStatus());
-        xxShopOrder.setPayType(payType);
+        xxShopOrder.setPayType((byte) payType);
         xxShopOrder.setPayStatus(PayStatusEnum.PAY_SUCCESS.getPayStatus());
         xxShopOrder.setPayTime(new Date());
         return baseMapper.updateById(xxShopOrder) > 0;
@@ -222,19 +222,19 @@ public class XxShopOrderServiceImpl extends ServiceImpl<XxShopOrderMapper, XxSho
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean checkDone(List<Long> ids) {
-        return changeStatus(ids, 2, Collections.singletonList(1));
+        return changeStatus(ids, 2, Collections.singletonList((byte) 1));
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean checkOut(List<Long> ids) {
-        return changeStatus(ids, 3, Arrays.asList(1, 2));
+        return changeStatus(ids, 3, Arrays.asList((byte) 1, (byte) 2));
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean closeOrder(List<Long> ids) {
-        boolean close = changeStatus(ids, -3, Arrays.asList(0, 1, 23));
+        boolean close = changeStatus(ids, -3, Arrays.asList((byte) 0, (byte) 1, (byte) 2, (byte) 3));
         if (close) {
             return recoverStockNum(ids);
         }
@@ -245,7 +245,7 @@ public class XxShopOrderServiceImpl extends ServiceImpl<XxShopOrderMapper, XxSho
         return baseMapper.selectOne(new LambdaQueryWrapper<XxShopOrder>().eq(XxShopOrder::getOrderNo, orderNo).eq(XxShopOrder::getUserId, userId));
     }
 
-    private boolean changeStatus(List<Long> ids, int status, List<Integer> allowStatus) {
+    private boolean changeStatus(List<Long> ids, int status, List<Byte> allowStatus) {
         List<XxShopOrder> xxShopOrders = baseMapper.selectBatchIds(ids);
         if (CollectionUtils.isEmpty(xxShopOrders) || xxShopOrders.size() != ids.size()) {
             XxShopException.fail(ErrorEnum.ORDER_STATUS_ERROR);
@@ -255,7 +255,7 @@ public class XxShopOrderServiceImpl extends ServiceImpl<XxShopOrderMapper, XxSho
             String errorOrder = collect.stream().map(XxShopOrder::getOrderNo).collect(Collectors.joining(","));
             XxShopException.fail("这些：" + errorOrder + " 订单的状态不允许这么操作噢");
         }
-        xxShopOrders.forEach(order -> order.setOrderStatus(status));
+        xxShopOrders.forEach(order -> order.setOrderStatus((byte) status));
         return updateBatchById(xxShopOrders);
     }
 

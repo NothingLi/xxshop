@@ -43,7 +43,7 @@ public class XxShopUserAddress implements Serializable {
      * 是否为默认 0-非默认 1-是默认
      */
     @TableField(value = "default_flag")
-    private Integer defaultFlag;
+    private Byte defaultFlag;
 
     /**
      * 收件地区，填写省市区
