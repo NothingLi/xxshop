@@ -50,7 +50,7 @@ public class XxShopAdminIndexConfigApi {
      * @return 分页结果
      */
     @GetMapping
-    public Result<Page<XxShopIndexConfig>> page(@RequestParam @Min(value = 1, message = "第几页的数据呀") Integer pageNumber,
+    public Result<Page<XxShopIndexConfig>> page(@RequestParam @Min(value = 1, message = "页码输入不对！") Integer pageNumber,
                                                 @RequestParam @Min(value = 10, message = "每页几条啊") Integer pageSize,
                                                 @RequestParam(required = false) @Range(min = 1, max = 5, message = "类型不对噢") Integer configType) {
 

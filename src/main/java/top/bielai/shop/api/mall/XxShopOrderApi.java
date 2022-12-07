@@ -14,6 +14,7 @@ import top.bielai.shop.common.ErrorEnum;
 import top.bielai.shop.common.XxShopException;
 import top.bielai.shop.config.annotation.TokenToShopUser;
 import top.bielai.shop.domain.XxShopOrder;
+import top.bielai.shop.domain.XxShopUser;
 import top.bielai.shop.domain.XxShopUserAddress;
 import top.bielai.shop.service.*;
 import top.bielai.shop.util.Result;
@@ -57,19 +58,18 @@ public class XxShopOrderApi {
      * 生成订单接口
      *
      * @param saveOrderParam 订单参数
-     * @param userId         用户Id
      * @return 订单编号
      */
     @PostMapping
-    public Result<String> saveOrder(@Validated @RequestBody SaveOrderParam saveOrderParam, @TokenToShopUser Long userId) {
+    public Result<String> saveOrder(@Validated @RequestBody SaveOrderParam saveOrderParam, @TokenToShopUser XxShopUser user) {
         XxShopUserAddress address = xxShopUserAddressService.getOne(new LambdaQueryWrapper<XxShopUserAddress>()
-                .eq(XxShopUserAddress::getUserId, userId).eq(XxShopUserAddress::getAddressId, saveOrderParam.getAddressId()));
+                .eq(XxShopUserAddress::getUserId, user.getUserId()).eq(XxShopUserAddress::getAddressId, saveOrderParam.getAddressId()));
         if (ObjectUtils.isEmpty(address)) {
             XxShopException.fail(ErrorEnum.USER_ADDRESS_DOWN);
         }
-        List<XxShopShoppingCartItemVO> itemsForSave = cartItemService.getCartItemsForSettle(Arrays.asList(saveOrderParam.getCartItemIds()), userId);
+        List<XxShopShoppingCartItemVO> itemsForSave = cartItemService.getCartItemsForSettle(Arrays.asList(saveOrderParam.getCartItemIds()), user.getUserId());
         //生成订单并返回订单号
-        String saveOrderResult = xxShopOrderService.saveOrder(userId, address, itemsForSave);
+        String saveOrderResult = xxShopOrderService.saveOrder(user.getUserId(), address, itemsForSave);
 
         return ResultGenerator.genSuccessResult(saveOrderResult);
     }
@@ -81,10 +81,10 @@ public class XxShopOrderApi {
      * @return 订单详情
      */
     @GetMapping("/{orderNo}")
-    public Result<XxShopOrderDetailVO> getOrderDetail(@PathVariable("orderNo") @NotBlank(message = "订单编号呢？") String orderNo, @TokenToShopUser Long userId) {
+    public Result<XxShopOrderDetailVO> getOrderDetail(@PathVariable("orderNo") @NotBlank(message = "订单编号呢？") String orderNo, @TokenToShopUser XxShopUser user) {
         // 根据订单编号和用户id查询相关订单
 
-        return ResultGenerator.genSuccessResult(xxShopOrderService.getDetailVO(null, userId, orderNo));
+        return ResultGenerator.genSuccessResult(xxShopOrderService.getDetailVO(null, user.getUserId(), orderNo));
     }
 
     /**
@@ -95,12 +95,12 @@ public class XxShopOrderApi {
      * @return 订单分页
      */
     @GetMapping
-    public Result<Page<XxShopOrderListVO>> orderList(@RequestParam @Min(value = 1, message = "你要看哪样啊？") Integer pageNumber,
+    public Result<Page<XxShopOrderListVO>> orderList(@RequestParam @Min(value = 1, message = "页码输入不对！") Integer pageNumber,
                                                      @RequestParam(required = false) Integer status,
-                                                     @TokenToShopUser Long userId) {
+                                                     @TokenToShopUser XxShopUser user) {
         Page<XxShopOrder> pageParam = new Page<XxShopOrder>().setCurrent(pageNumber).setSize(Constants.ORDER_SEARCH_PAGE_LIMIT);
         LambdaQueryWrapper<XxShopOrder> queryWrapper = new LambdaQueryWrapper<XxShopOrder>().eq(null != status, XxShopOrder::getOrderStatus, status)
-                .eq(XxShopOrder::getUserId, userId).orderByDesc(XxShopOrder::getCreateTime);
+                .eq(XxShopOrder::getUserId, user.getUserId()).orderByDesc(XxShopOrder::getCreateTime);
         //封装分页请求参数
         return ResultGenerator.genSuccessResult(xxShopOrderService.orderList(pageParam, queryWrapper));
     }
@@ -112,8 +112,8 @@ public class XxShopOrderApi {
      * @return 结果
      */
     @PutMapping("/{orderNo}/cancel")
-    public Result<String> cancelOrder(@PathVariable("orderNo") String orderNo, @TokenToShopUser Long userId) {
-        if (xxShopOrderService.cancelOrder(orderNo, userId)) {
+    public Result<String> cancelOrder(@PathVariable("orderNo") String orderNo, @TokenToShopUser XxShopUser user) {
+        if (xxShopOrderService.cancelOrder(orderNo, user.getUserId())) {
             return ResultGenerator.genSuccessResult("订单取消成功", null);
         } else {
             return ResultGenerator.genFailResult();
@@ -127,8 +127,8 @@ public class XxShopOrderApi {
      * @return 结果
      */
     @PutMapping("/{orderNo}/finish")
-    public Result<String> finishOrder(@PathVariable("orderNo") String orderNo, @TokenToShopUser Long userId) {
-        if (xxShopOrderService.finishOrder(orderNo, userId)) {
+    public Result<String> finishOrder(@PathVariable("orderNo") String orderNo, @TokenToShopUser XxShopUser user) {
+        if (xxShopOrderService.finishOrder(orderNo, user.getUserId())) {
             return ResultGenerator.genSuccessResult();
         } else {
             return ResultGenerator.genFailResult();
@@ -143,8 +143,8 @@ public class XxShopOrderApi {
      * @return 结果
      */
     @GetMapping("/paySuccess")
-    public Result<String> paySuccess(@RequestParam("orderNo") @NotBlank(message = "不给订单号怎么知道哪个确认收货呀") String orderNo, @RequestParam("payType") @NotNull(message = "到底怎么付的款啊") int payType, @TokenToShopUser Long userId) {
-        if (xxShopOrderService.paySuccess(orderNo, payType, userId)) {
+    public Result<String> paySuccess(@RequestParam("orderNo") @NotBlank(message = "不给订单号怎么知道哪个确认收货呀") String orderNo, @RequestParam("payType") @NotNull(message = "到底怎么付的款啊") int payType, @TokenToShopUser XxShopUser user) {
+        if (xxShopOrderService.paySuccess(orderNo, payType, user.getUserId())) {
             return ResultGenerator.genSuccessResult("支付成功！", null);
         } else {
             return ResultGenerator.genFailResult();

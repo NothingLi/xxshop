@@ -46,24 +46,10 @@ public class XxShopUserAddressParam {
 
 
     /**
-     * 省
+     * 收件地区，填写省市区
      */
-    @NotBlank(message = "哪个省啊！")
-    private String provinceName;
-
-
-    /**
-     * 市
-     */
-    @NotBlank(message = "哪个市啊！")
-    private String cityName;
-
-
-    /**
-     * 区/县
-     */
-    @NotBlank(message = "哪个区县啊！")
-    private String regionName;
+    @NotBlank(message = "收件地区得填写省市区噢")
+    private String area;
 
 
     /**

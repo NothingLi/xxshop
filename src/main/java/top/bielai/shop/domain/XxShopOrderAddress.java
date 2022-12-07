@@ -35,22 +35,10 @@ public class XxShopOrderAddress implements Serializable {
     private String userPhone;
 
     /**
-     * 省
+     * 收件地区
      */
-    @TableField(value = "province_name")
-    private String provinceName;
-
-    /**
-     * 城
-     */
-    @TableField(value = "city_name")
-    private String cityName;
-
-    /**
-     * 区
-     */
-    @TableField(value = "region_name")
-    private String regionName;
+    @TableField(value = "area")
+    private String area;
 
     /**
      * 收件详细地址(街道/楼宇/单元)
@@ -76,9 +64,7 @@ public class XxShopOrderAddress implements Serializable {
         return (this.getOrderId() == null ? other.getOrderId() == null : this.getOrderId().equals(other.getOrderId()))
                 && (this.getUserName() == null ? other.getUserName() == null : this.getUserName().equals(other.getUserName()))
                 && (this.getUserPhone() == null ? other.getUserPhone() == null : this.getUserPhone().equals(other.getUserPhone()))
-                && (this.getProvinceName() == null ? other.getProvinceName() == null : this.getProvinceName().equals(other.getProvinceName()))
-                && (this.getCityName() == null ? other.getCityName() == null : this.getCityName().equals(other.getCityName()))
-                && (this.getRegionName() == null ? other.getRegionName() == null : this.getRegionName().equals(other.getRegionName()))
+                && (this.getArea() == null ? other.getArea() == null : this.getArea().equals(other.getArea()))
                 && (this.getDetailAddress() == null ? other.getDetailAddress() == null : this.getDetailAddress().equals(other.getDetailAddress()));
     }
 
@@ -89,9 +75,7 @@ public class XxShopOrderAddress implements Serializable {
         result = prime * result + ((getOrderId() == null) ? 0 : getOrderId().hashCode());
         result = prime * result + ((getUserName() == null) ? 0 : getUserName().hashCode());
         result = prime * result + ((getUserPhone() == null) ? 0 : getUserPhone().hashCode());
-        result = prime * result + ((getProvinceName() == null) ? 0 : getProvinceName().hashCode());
-        result = prime * result + ((getCityName() == null) ? 0 : getCityName().hashCode());
-        result = prime * result + ((getRegionName() == null) ? 0 : getRegionName().hashCode());
+        result = prime * result + ((getArea() == null) ? 0 : getArea().hashCode());
         result = prime * result + ((getDetailAddress() == null) ? 0 : getDetailAddress().hashCode());
         return result;
     }
@@ -104,9 +88,7 @@ public class XxShopOrderAddress implements Serializable {
                 ", orderId=" + orderId +
                 ", userName=" + userName +
                 ", userPhone=" + userPhone +
-                ", provinceName=" + provinceName +
-                ", cityName=" + cityName +
-                ", regionName=" + regionName +
+                ", provinceName=" + area +
                 ", detailAddress=" + detailAddress +
                 ", serialVersionUID=" + serialVersionUID +
                 "]";

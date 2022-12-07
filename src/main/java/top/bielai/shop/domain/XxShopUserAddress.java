@@ -46,22 +46,10 @@ public class XxShopUserAddress implements Serializable {
     private Integer defaultFlag;
 
     /**
-     * 省
+     * 收件地区，填写省市区
      */
-    @TableField(value = "province_name")
-    private String provinceName;
-
-    /**
-     * 城
-     */
-    @TableField(value = "city_name")
-    private String cityName;
-
-    /**
-     * 区
-     */
-    @TableField(value = "region_name")
-    private String regionName;
+    @TableField(value = "area")
+    private String area;
 
     /**
      * 收件详细地址(街道/楼宇/单元)
@@ -108,9 +96,7 @@ public class XxShopUserAddress implements Serializable {
                 && (this.getUserName() == null ? other.getUserName() == null : this.getUserName().equals(other.getUserName()))
                 && (this.getUserPhone() == null ? other.getUserPhone() == null : this.getUserPhone().equals(other.getUserPhone()))
                 && (this.getDefaultFlag() == null ? other.getDefaultFlag() == null : this.getDefaultFlag().equals(other.getDefaultFlag()))
-                && (this.getProvinceName() == null ? other.getProvinceName() == null : this.getProvinceName().equals(other.getProvinceName()))
-                && (this.getCityName() == null ? other.getCityName() == null : this.getCityName().equals(other.getCityName()))
-                && (this.getRegionName() == null ? other.getRegionName() == null : this.getRegionName().equals(other.getRegionName()))
+                && (this.getArea() == null ? other.getArea() == null : this.getArea().equals(other.getArea()))
                 && (this.getDetailAddress() == null ? other.getDetailAddress() == null : this.getDetailAddress().equals(other.getDetailAddress()))
                 && (this.getIsDeleted() == null ? other.getIsDeleted() == null : this.getIsDeleted().equals(other.getIsDeleted()))
                 && (this.getCreateTime() == null ? other.getCreateTime() == null : this.getCreateTime().equals(other.getCreateTime()))
@@ -126,9 +112,7 @@ public class XxShopUserAddress implements Serializable {
         result = prime * result + ((getUserName() == null) ? 0 : getUserName().hashCode());
         result = prime * result + ((getUserPhone() == null) ? 0 : getUserPhone().hashCode());
         result = prime * result + ((getDefaultFlag() == null) ? 0 : getDefaultFlag().hashCode());
-        result = prime * result + ((getProvinceName() == null) ? 0 : getProvinceName().hashCode());
-        result = prime * result + ((getCityName() == null) ? 0 : getCityName().hashCode());
-        result = prime * result + ((getRegionName() == null) ? 0 : getRegionName().hashCode());
+        result = prime * result + ((getArea() == null) ? 0 : getArea().hashCode());
         result = prime * result + ((getDetailAddress() == null) ? 0 : getDetailAddress().hashCode());
         result = prime * result + ((getIsDeleted() == null) ? 0 : getIsDeleted().hashCode());
         result = prime * result + ((getCreateTime() == null) ? 0 : getCreateTime().hashCode());
@@ -146,9 +130,7 @@ public class XxShopUserAddress implements Serializable {
                 ", userName=" + userName +
                 ", userPhone=" + userPhone +
                 ", defaultFlag=" + defaultFlag +
-                ", provinceName=" + provinceName +
-                ", cityName=" + cityName +
-                ", regionName=" + regionName +
+                ", provinceName=" + area +
                 ", detailAddress=" + detailAddress +
                 ", isDeleted=" + isDeleted +
                 ", createTime=" + createTime +

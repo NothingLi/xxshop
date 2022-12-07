@@ -13,6 +13,7 @@
   "inlineEnum": true,
   "displayActualType": false,
   "framework": "spring",
+  "showAuthor": false,
   "createDebugPage": true,
   "requestHeaders": [
     {
@@ -32,5 +33,9 @@
       "codeField": "code",
       "descField": "msg"
     }
+  ],
+  "ignoreRequestParams": [
+    "top.bielai.shop.domain.XxShopAdminUser",
+    "top.bielai.shop.domain.XxShopUser"
   ]
 }

@@ -57,7 +57,7 @@ public class XxShopShoppingCartItemServiceImpl extends ServiceImpl<XxShopShoppin
         Page<XxShopShoppingCartItemVO> result = new Page<>();
         BeanUtils.copyProperties(page, result, "records");
         result.setRecords(getXxShopShoppingCartItemVOList(page.getRecords()));
-        return null;
+        return result;
     }
 
     @Override

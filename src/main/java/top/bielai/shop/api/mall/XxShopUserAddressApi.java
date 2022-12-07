@@ -11,6 +11,7 @@ import top.bielai.shop.api.mall.vo.XxShopUserAddressVO;
 import top.bielai.shop.common.ErrorEnum;
 import top.bielai.shop.common.XxShopException;
 import top.bielai.shop.config.annotation.TokenToShopUser;
+import top.bielai.shop.domain.XxShopUser;
 import top.bielai.shop.domain.XxShopUserAddress;
 import top.bielai.shop.service.XxShopUserAddressService;
 import top.bielai.shop.util.BeanUtil;
@@ -38,8 +39,8 @@ public class XxShopUserAddressApi {
      * @return 收货地址列表
      */
     @GetMapping
-    public Result<List<XxShopUserAddressVO>> addressList(@TokenToShopUser Long userId) {
-        List<XxShopUserAddress> list = userAddressService.list(new LambdaQueryWrapper<XxShopUserAddress>().eq(XxShopUserAddress::getUserId, userId));
+    public Result<List<XxShopUserAddressVO>> addressList(@TokenToShopUser XxShopUser user) {
+        List<XxShopUserAddress> list = userAddressService.list(new LambdaQueryWrapper<XxShopUserAddress>().eq(XxShopUserAddress::getUserId, user.getUserId()));
         return ResultGenerator.genSuccessResult(BeanUtil.copyList(list, XxShopUserAddressVO.class));
     }
 
@@ -52,15 +53,15 @@ public class XxShopUserAddressApi {
     @PostMapping
     @Transactional(rollbackFor = Exception.class)
     public Result<String> saveUserAddress(@Validated @RequestBody XxShopUserAddressParam xxShopUserAddressParam,
-                                          @TokenToShopUser Long userId) {
+                                          @TokenToShopUser XxShopUser user) {
         XxShopUserAddress userAddress = new XxShopUserAddress();
         BeanUtil.copyProperties(xxShopUserAddressParam, userAddress);
-        userAddress.setUserId(userId);
+        userAddress.setUserId(user.getUserId());
         //添加成功
         if (userAddressService.save(userAddress)) {
             if (userAddress.getDefaultFlag() == 1) {
                 // 此地址是默认的话把其他地址都改成非默认地址
-                userAddressService.update(new LambdaUpdateWrapper<XxShopUserAddress>().eq(XxShopUserAddress::getUserId, userId)
+                userAddressService.update(new LambdaUpdateWrapper<XxShopUserAddress>().eq(XxShopUserAddress::getUserId, user.getUserId())
                         .ne(XxShopUserAddress::getAddressId, userAddress.getAddressId())
                         .set(XxShopUserAddress::getDefaultFlag, 0));
             }
@@ -79,20 +80,20 @@ public class XxShopUserAddressApi {
     @PutMapping
     @Transactional(rollbackFor = Exception.class)
     public Result<String> updateShopUserAddress(@Validated(value = {XxShopUserAddressParam.Update.class}) @RequestBody XxShopUserAddressParam updateShopUserAddressParam,
-                                                @TokenToShopUser Long userId) {
+                                                @TokenToShopUser XxShopUser user) {
         XxShopUserAddress one = userAddressService.getOne(new LambdaQueryWrapper<XxShopUserAddress>().eq(XxShopUserAddress::getAddressId, updateShopUserAddressParam.getAddressId())
-                .eq(XxShopUserAddress::getUserId, userId));
+                .eq(XxShopUserAddress::getUserId, user.getUserId()));
         if (ObjectUtils.isEmpty(one)) {
             XxShopException.fail(ErrorEnum.DATA_NOT_EXIST);
         }
         XxShopUserAddress userAddress = new XxShopUserAddress();
         BeanUtil.copyProperties(updateShopUserAddressParam, userAddress);
-        userAddress.setUserId(userId);
+        userAddress.setUserId(user.getUserId());
         //修改成功
         if (userAddressService.updateById(userAddress)) {
             if (userAddress.getDefaultFlag() == 1) {
                 // 此地址是默认的话把其他地址都改成非默认地址
-                userAddressService.update(new LambdaUpdateWrapper<XxShopUserAddress>().eq(XxShopUserAddress::getUserId, userId)
+                userAddressService.update(new LambdaUpdateWrapper<XxShopUserAddress>().eq(XxShopUserAddress::getUserId, user.getUserId())
                         .ne(XxShopUserAddress::getAddressId, userAddress.getAddressId())
                         .set(XxShopUserAddress::getDefaultFlag, 0));
             }
@@ -110,9 +111,9 @@ public class XxShopUserAddressApi {
      */
     @GetMapping("/{addressId}")
     public Result<XxShopUserAddressVO> getShopUserAddress(@PathVariable("addressId") Long addressId,
-                                                          @TokenToShopUser Long userId) {
+                                                          @TokenToShopUser XxShopUser user) {
         XxShopUserAddress one = userAddressService.getOne(new LambdaQueryWrapper<XxShopUserAddress>().eq(XxShopUserAddress::getAddressId, addressId)
-                .eq(XxShopUserAddress::getUserId, userId));
+                .eq(XxShopUserAddress::getUserId, user.getUserId()));
         if (ObjectUtils.isEmpty(one)) {
             XxShopException.fail(ErrorEnum.DATA_NOT_EXIST);
         }
@@ -127,9 +128,9 @@ public class XxShopUserAddressApi {
      * @return 地址信息
      */
     @GetMapping("/address/default")
-    public Result<XxShopUserAddressVO> getDefaultShopUserAddress(@TokenToShopUser Long userId) {
+    public Result<XxShopUserAddressVO> getDefaultShopUserAddress(@TokenToShopUser XxShopUser user) {
         XxShopUserAddress one = userAddressService.getOne(new LambdaQueryWrapper<XxShopUserAddress>().eq(XxShopUserAddress::getDefaultFlag, 1)
-                .eq(XxShopUserAddress::getUserId, userId));
+                .eq(XxShopUserAddress::getUserId, user.getUserId()));
         top.bielai.shop.api.mall.vo.XxShopUserAddressVO vo = new top.bielai.shop.api.mall.vo.XxShopUserAddressVO();
         BeanUtil.copyProperties(one, vo);
         return ResultGenerator.genSuccessResult(vo);
@@ -144,9 +145,9 @@ public class XxShopUserAddressApi {
     @DeleteMapping("/{addressId}")
     @Transactional(rollbackFor = Exception.class)
     public Result<String> deleteAddress(@PathVariable("addressId") Long addressId,
-                                        @TokenToShopUser Long userId) {
+                                        @TokenToShopUser XxShopUser user) {
         XxShopUserAddress one = userAddressService.getOne(new LambdaQueryWrapper<XxShopUserAddress>().eq(XxShopUserAddress::getAddressId, addressId)
-                .eq(XxShopUserAddress::getUserId, userId));
+                .eq(XxShopUserAddress::getUserId, user.getUserId()));
         if (ObjectUtils.isEmpty(one)) {
             XxShopException.fail(ErrorEnum.DATA_NOT_EXIST);
         }

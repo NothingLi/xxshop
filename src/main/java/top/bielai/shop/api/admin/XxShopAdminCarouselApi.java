@@ -43,7 +43,7 @@ public class XxShopAdminCarouselApi {
      * @return 分页结果
      */
     @GetMapping
-    public Result<Page<XxShopCarousel>> page(@RequestParam @Min(value = 1, message = "第几页的数据呀") Integer pageNumber,
+    public Result<Page<XxShopCarousel>> page(@RequestParam @Min(value = 1, message = "页码输入不对！") Integer pageNumber,
                                              @RequestParam @Min(value = 10, message = "每页几条啊") Integer pageSize) {
         return ResultGenerator.genSuccessResult(xxShopCarouselService.page(new Page<>(pageNumber, pageSize)));
     }

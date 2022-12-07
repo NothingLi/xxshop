@@ -1,6 +1,7 @@
 package top.bielai.shop.config.handler;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -11,7 +12,9 @@ import top.bielai.shop.common.Constants;
 import top.bielai.shop.common.ErrorEnum;
 import top.bielai.shop.common.XxShopException;
 import top.bielai.shop.config.annotation.TokenToAdminUser;
+import top.bielai.shop.domain.XxShopAdminUser;
 import top.bielai.shop.domain.XxShopAdminUserToken;
+import top.bielai.shop.service.XxShopAdminUserService;
 import top.bielai.shop.service.XxShopAdminUserTokenService;
 
 /**
@@ -19,6 +22,10 @@ import top.bielai.shop.service.XxShopAdminUserTokenService;
  */
 @Component
 public class TokenToAdminUserMethodArgumentResolver implements HandlerMethodArgumentResolver {
+
+    @Autowired
+    private XxShopAdminUserService adminUserService;
+
 
     private final XxShopAdminUserTokenService adminUserTokenService;
 
@@ -41,7 +48,14 @@ public class TokenToAdminUserMethodArgumentResolver implements HandlerMethodArgu
                 } else if (adminUserToken.getExpireTime().getTime() <= System.currentTimeMillis()) {
                     XxShopException.fail(ErrorEnum.TOKEN_EXPIRE_ERROR);
                 }
-                return adminUserToken.getAdminUserId();
+                XxShopAdminUser byId = adminUserService.getById(adminUserToken.getAdminUserId());
+                if (byId == null) {
+                    XxShopException.fail(ErrorEnum.ADMIN_NULL_ERROR);
+                }
+                if (byId.getLocked() == 1) {
+                    XxShopException.fail(ErrorEnum.LOGIN_USER_LOCKED_ERROR);
+                }
+                return byId;
             } else {
                 XxShopException.fail(ErrorEnum.NOT_LOGIN_ERROR);
             }

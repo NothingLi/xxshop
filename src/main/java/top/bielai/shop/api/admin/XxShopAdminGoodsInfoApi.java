@@ -55,7 +55,7 @@ public class XxShopAdminGoodsInfoApi {
      * @return 分页
      */
     @GetMapping("/list")
-    public Result<Page<XxShopGoodsInfo>> page(@RequestParam @Min(value = 1, message = "第几页的数据呀") Integer pageNumber,
+    public Result<Page<XxShopGoodsInfo>> page(@RequestParam @Min(value = 1, message = "页码输入不对！") Integer pageNumber,
                                               @RequestParam @Min(value = 10, message = "每页几条啊") Integer pageSize,
                                               @RequestParam(required = false) String goodsName,
                                               @RequestParam(required = false) Integer goodsSellStatus) {
@@ -161,9 +161,10 @@ public class XxShopAdminGoodsInfoApi {
     @PutMapping("/status/{sellStatus}")
     public Result<String> delete(@Validated @RequestBody BatchIdParam batchIdParam, @PathVariable("sellStatus") @Range(min = 0, max = 1, message = "状态不对噢") int sellStatus) {
 
+
         if (goodsInfoService.update(new LambdaUpdateWrapper<XxShopGoodsInfo>()
-                .eq(XxShopGoodsInfo::getGoodsSellStatus, sellStatus)
-                .in(XxShopGoodsInfo::getGoodsId, Arrays.toString(batchIdParam.getIds())))) {
+                .in(XxShopGoodsInfo::getGoodsId, Arrays.asList(batchIdParam.getIds()))
+                .set(XxShopGoodsInfo::getGoodsSellStatus, sellStatus))) {
             return ResultGenerator.genSuccessResult();
         } else {
             return ResultGenerator.genFailResult("修改失败");

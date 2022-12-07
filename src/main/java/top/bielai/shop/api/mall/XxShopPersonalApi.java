@@ -10,6 +10,7 @@ import top.bielai.shop.api.mall.vo.XxShopUserVO;
 import top.bielai.shop.common.ErrorEnum;
 import top.bielai.shop.common.XxShopException;
 import top.bielai.shop.config.annotation.TokenToShopUser;
+import top.bielai.shop.domain.XxShopUser;
 import top.bielai.shop.service.XxShopUserService;
 import top.bielai.shop.util.BeanUtil;
 import top.bielai.shop.util.NumberUtil;
@@ -57,14 +58,13 @@ public class XxShopPersonalApi {
 
 
     /**
-     * 退出登录
+     * 当前用户退出登录
      *
-     * @param userId 用户id
      * @return 结果
      */
     @PostMapping("/logout")
-    public Result<String> logout(Long userId) {
-        Boolean logoutResult = xxShopUserService.logout(userId);
+    public Result<String> logout(@TokenToShopUser XxShopUser user) {
+        Boolean logoutResult = xxShopUserService.logout(user.getUserId());
         //登出成功
         if (logoutResult) {
             return ResultGenerator.genSuccessResult();
@@ -101,8 +101,8 @@ public class XxShopPersonalApi {
      * @return 结果
      */
     @PutMapping("/info")
-    public Result<String> updateInfo(@Validated @RequestBody ShopUserUpdateParam userUpdateParam, @TokenToShopUser Long userId) {
-        boolean flag = xxShopUserService.updateUserInfo(userUpdateParam, userId);
+    public Result<String> updateInfo(@Validated @RequestBody ShopUserUpdateParam userUpdateParam, @TokenToShopUser XxShopUser user) {
+        boolean flag = xxShopUserService.updateUserInfo(userUpdateParam, user.getUserId());
         if (flag) {
             return ResultGenerator.genSuccessResult();
         }
@@ -117,9 +117,9 @@ public class XxShopPersonalApi {
      * @return 用户信息
      */
     @GetMapping("/info")
-    public Result<XxShopUserVO> getUserDetail(@TokenToShopUser Long userId) {
+    public Result<XxShopUserVO> getUserDetail(@TokenToShopUser XxShopUser user) {
         XxShopUserVO mallUserVO = new XxShopUserVO();
-        BeanUtil.copyProperties(xxShopUserService.getById(userId), mallUserVO);
+        BeanUtil.copyProperties(xxShopUserService.getById(user.getUserId()), mallUserVO);
         return ResultGenerator.genSuccessResult(mallUserVO);
     }
 }

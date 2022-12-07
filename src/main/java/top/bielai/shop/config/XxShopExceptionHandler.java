@@ -10,6 +10,7 @@ import top.bielai.shop.common.XxShopException;
 import top.bielai.shop.util.Result;
 import top.bielai.shop.util.ResultGenerator;
 
+import javax.validation.ConstraintViolationException;
 import javax.xml.bind.ValidationException;
 import java.util.Objects;
 
@@ -39,6 +40,12 @@ public class XxShopExceptionHandler {
 
     @ExceptionHandler(ValidationException.class)
     public Result<String> bindException(ValidationException e) {
+        return ResultGenerator.genErrorResult(400, e.getMessage());
+    }
+
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public Result<String> constraintViolationException(ConstraintViolationException e) {
         return ResultGenerator.genErrorResult(400, e.getMessage());
     }
 

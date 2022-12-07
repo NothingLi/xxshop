@@ -42,7 +42,7 @@ public class XxShopAdminManageUserApi {
      */
     @PostMapping("/login")
     public Result<String> login(@Validated @RequestBody AdminLoginParam adminLoginParam) {
-        String token = adminUserService.login(adminLoginParam.getUsername(), adminLoginParam.getPassword());
+        String token = adminUserService.login(adminLoginParam.getUserName(), adminLoginParam.getPassword());
 
         //登录成功
         if (StringUtils.isNotBlank(token) && token.length() == Constants.TOKEN_LENGTH) {
@@ -58,8 +58,8 @@ public class XxShopAdminManageUserApi {
      * @return 用户信息
      */
     @GetMapping
-    public Result<XxShopAdminUser> detail(@TokenToAdminUser Long adminUserId) {
-        XxShopAdminUser byId = adminUserService.getById(adminUserId);
+    public Result<XxShopAdminUser> detail(@TokenToAdminUser XxShopAdminUser adminUser) {
+        XxShopAdminUser byId = adminUserService.getById(adminUser.getAdminUserId());
         if (ObjectUtils.isNotEmpty(byId)) {
             byId.setLoginPassword("******");
             return ResultGenerator.genSuccessResult(byId);
@@ -74,8 +74,8 @@ public class XxShopAdminManageUserApi {
      * @return 结果
      */
     @PutMapping("/password")
-    public Result<String> updatePassword(@Validated @RequestBody UpdateAdminPasswordParam adminPasswordParam, @TokenToAdminUser Long adminUserId) {
-        if (adminUserService.updatePassword(adminUserId, adminPasswordParam)) {
+    public Result<String> updatePassword(@Validated @RequestBody UpdateAdminPasswordParam adminPasswordParam, @TokenToAdminUser XxShopAdminUser adminUser) {
+        if (adminUserService.updatePassword(adminUser.getAdminUserId(), adminPasswordParam)) {
             return ResultGenerator.genSuccessResult();
         } else {
             return ResultGenerator.genFailResult();
@@ -89,8 +89,8 @@ public class XxShopAdminManageUserApi {
      * @return 结果
      */
     @PutMapping("/name")
-    public Result<String> updateName(@Validated @RequestBody UpdateAdminNameParam adminNameParam, @TokenToAdminUser Long adminUserId) {
-        if (adminUserService.updateName(adminUserId, adminNameParam)) {
+    public Result<String> updateName(@Validated @RequestBody UpdateAdminNameParam adminNameParam, @TokenToAdminUser XxShopAdminUser adminUser) {
+        if (adminUserService.updateName(adminUser.getAdminUserId(), adminNameParam)) {
             return ResultGenerator.genSuccessResult();
         } else {
             return ResultGenerator.genFailResult();
@@ -103,8 +103,8 @@ public class XxShopAdminManageUserApi {
      * @return 结果
      */
     @DeleteMapping("/logout")
-    public Result<String> logout(@TokenToAdminUser Long adminUserId) {
-        if (adminUserService.logout(adminUserId)) {
+    public Result<String> logout(@TokenToAdminUser XxShopAdminUser adminUser) {
+        if (adminUserService.logout(adminUser.getAdminUserId())) {
             return ResultGenerator.genSuccessResult();
         }
         return ResultGenerator.genFailResult();

@@ -76,7 +76,7 @@ public class XxShopOrderServiceImpl extends ServiceImpl<XxShopOrderMapper, XxSho
             for (XxShopShoppingCartItemVO xxShopShoppingCartItemVO : shoppingCartItems) {
                 priceTotal = priceTotal.add(xxShopShoppingCartItemVO.getSellingPrice().multiply(BigDecimal.valueOf(xxShopShoppingCartItemVO.getGoodsCount())));
             }
-            if (BigDecimal.ZERO.compareTo(priceTotal) <= 0) {
+            if (priceTotal.compareTo(BigDecimal.ZERO) < 1) {
                 XxShopException.fail(ErrorEnum.PRICE_ERROR);
             }
             xxShopOrder.setTotalPrice(priceTotal);

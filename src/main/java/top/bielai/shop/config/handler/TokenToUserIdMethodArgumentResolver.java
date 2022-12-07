@@ -51,7 +51,7 @@ public class TokenToUserIdMethodArgumentResolver implements HandlerMethodArgumen
                 if (mallUser.getLockedFlag() == 1) {
                     XxShopException.fail(ErrorEnum.LOGIN_USER_LOCKED_ERROR);
                 }
-                return mallUser.getUserId();
+                return mallUser;
             } else {
                 XxShopException.fail(ErrorEnum.NOT_LOGIN_ERROR);
             }

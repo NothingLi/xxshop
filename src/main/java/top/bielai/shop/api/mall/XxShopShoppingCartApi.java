@@ -3,7 +3,6 @@ package top.bielai.shop.api.mall;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.commons.lang3.ObjectUtils;
-import org.hibernate.validator.constraints.Length;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.validation.annotation.Validated;
@@ -16,6 +15,7 @@ import top.bielai.shop.common.ErrorEnum;
 import top.bielai.shop.common.XxShopException;
 import top.bielai.shop.config.annotation.TokenToShopUser;
 import top.bielai.shop.domain.XxShopShoppingCartItem;
+import top.bielai.shop.domain.XxShopUser;
 import top.bielai.shop.service.XxShopShoppingCartItemService;
 import top.bielai.shop.util.Result;
 import top.bielai.shop.util.ResultGenerator;
@@ -23,6 +23,7 @@ import top.bielai.shop.util.ResultGenerator;
 import javax.annotation.Resource;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.Size;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
@@ -48,11 +49,11 @@ public class XxShopShoppingCartApi {
      * @return 分页结果
      */
     @GetMapping("/page")
-    public Result<Page<XxShopShoppingCartItemVO>> cartItemPageList(@RequestParam @Min(value = 1, message = "你要看啥啊？") Integer pageNumber, @TokenToShopUser Long userId) {
+    public Result<Page<XxShopShoppingCartItemVO>> cartItemPageList(@RequestParam @Min(value = 1, message = "页码输入不对！") Integer pageNumber, @TokenToShopUser XxShopUser user) {
 
 
         Page<XxShopShoppingCartItem> pageParam = new Page<>(pageNumber, Constants.SHOPPING_CART_PAGE_LIMIT);
-        LambdaQueryWrapper<XxShopShoppingCartItem> queryWrapper = new LambdaQueryWrapper<XxShopShoppingCartItem>().eq(XxShopShoppingCartItem::getUserId, userId);
+        LambdaQueryWrapper<XxShopShoppingCartItem> queryWrapper = new LambdaQueryWrapper<XxShopShoppingCartItem>().eq(XxShopShoppingCartItem::getUserId, user.getUserId());
         Page<XxShopShoppingCartItemVO> result = shoppingCartItemService.pageVo(pageParam, queryWrapper);
 
         return ResultGenerator.genSuccessResult(result);
@@ -66,8 +67,8 @@ public class XxShopShoppingCartApi {
      */
     @PostMapping
     public Result<String> saveXxShopShoppingCartItem(@Validated @RequestBody SaveCartItemParam saveCartItemParam,
-                                                     @TokenToShopUser Long userId) {
-        boolean saveResult = shoppingCartItemService.saveXxShopCartItem(saveCartItemParam, userId);
+                                                     @TokenToShopUser XxShopUser user) {
+        boolean saveResult = shoppingCartItemService.saveXxShopCartItem(saveCartItemParam, user.getUserId());
         //添加成功
         if (saveResult) {
             return ResultGenerator.genSuccessResult();
@@ -84,8 +85,8 @@ public class XxShopShoppingCartApi {
      */
     @PutMapping
     public Result<String> updateXxShopShoppingCartItem(@Validated @RequestBody UpdateCartItemParam updateCartItemParam,
-                                                       @TokenToShopUser Long userId) {
-        boolean updateResult = shoppingCartItemService.updateXxShopCartItem(updateCartItemParam, userId);
+                                                       @TokenToShopUser XxShopUser user) {
+        boolean updateResult = shoppingCartItemService.updateXxShopCartItem(updateCartItemParam, user.getUserId());
         //修改成功
         if (updateResult) {
             return ResultGenerator.genSuccessResult();
@@ -103,9 +104,9 @@ public class XxShopShoppingCartApi {
     @DeleteMapping("/{xxShopShoppingCartItemId}")
     @Transactional(rollbackFor = Exception.class)
     public Result<String> updateXxShopShoppingCartItem(@PathVariable("xxShopShoppingCartItemId") Long xxShopShoppingCartItemId,
-                                                       @TokenToShopUser Long userId) {
+                                                       @TokenToShopUser XxShopUser user) {
         XxShopShoppingCartItem one = shoppingCartItemService.getOne(new LambdaQueryWrapper<XxShopShoppingCartItem>()
-                .eq(XxShopShoppingCartItem::getCartItemId, xxShopShoppingCartItemId).eq(XxShopShoppingCartItem::getUserId, userId));
+                .eq(XxShopShoppingCartItem::getCartItemId, xxShopShoppingCartItemId).eq(XxShopShoppingCartItem::getUserId, user.getUserId()));
         if (ObjectUtils.isEmpty(one)) {
             XxShopException.fail(ErrorEnum.DATA_NOT_EXIST);
         }
@@ -127,8 +128,8 @@ public class XxShopShoppingCartApi {
     @DeleteMapping
     @Transactional(rollbackFor = Exception.class)
     public Result<String> deleteXxShopShoppingCartItemBatch(@RequestBody Long[] xxShopShoppingCartItemIds,
-                                                            @TokenToShopUser Long userId) {
-        if (shoppingCartItemService.remove(new LambdaQueryWrapper<XxShopShoppingCartItem>().eq(XxShopShoppingCartItem::getUserId, userId)
+                                                            @TokenToShopUser XxShopUser user) {
+        if (shoppingCartItemService.remove(new LambdaQueryWrapper<XxShopShoppingCartItem>().eq(XxShopShoppingCartItem::getUserId, user.getUserId())
                 .in(XxShopShoppingCartItem::getCartItemId, Arrays.asList(xxShopShoppingCartItemIds)))) {
             return ResultGenerator.genSuccessResult();
         }
@@ -143,12 +144,12 @@ public class XxShopShoppingCartApi {
      * @return 购物车项列表
      */
     @GetMapping("/settle")
-    public Result<List<XxShopShoppingCartItemVO>> toSettle(@Length(min = 1) Long[] cartItemIds, @TokenToShopUser Long userId) {
+    public Result<List<XxShopShoppingCartItemVO>> toSettle(@Size(min = 1, message = "你选了要买的东西吗？") Long[] cartItemIds, @TokenToShopUser XxShopUser user) {
         if (cartItemIds.length < 1) {
             XxShopException.fail("参数异常");
         }
         BigDecimal priceTotal = BigDecimal.ZERO;
-        List<XxShopShoppingCartItemVO> itemsForSettle = shoppingCartItemService.getCartItemsForSettle(Arrays.asList(cartItemIds), userId);
+        List<XxShopShoppingCartItemVO> itemsForSettle = shoppingCartItemService.getCartItemsForSettle(Arrays.asList(cartItemIds), user.getUserId());
         if (CollectionUtils.isEmpty(itemsForSettle)) {
             //无数据则抛出异常
             XxShopException.fail("参数异常");
@@ -157,7 +158,7 @@ public class XxShopShoppingCartApi {
             for (XxShopShoppingCartItemVO xxShopShoppingCartItemVO : itemsForSettle) {
                 priceTotal = priceTotal.add(xxShopShoppingCartItemVO.getSellingPrice().multiply(BigDecimal.valueOf(xxShopShoppingCartItemVO.getGoodsCount())));
             }
-            if (BigDecimal.ZERO.compareTo(priceTotal) <= 0) {
+            if (priceTotal.compareTo(BigDecimal.ZERO) < 1) {
                 XxShopException.fail(ErrorEnum.PRICE_ERROR);
             }
         }

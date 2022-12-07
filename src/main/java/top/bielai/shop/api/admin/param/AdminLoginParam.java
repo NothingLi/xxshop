@@ -16,7 +16,7 @@ public class AdminLoginParam implements Serializable {
      * 登录名
      */
     @NotEmpty(message = "登录名不能为空")
-    private String username;
+    private String userName;
 
 
     /**

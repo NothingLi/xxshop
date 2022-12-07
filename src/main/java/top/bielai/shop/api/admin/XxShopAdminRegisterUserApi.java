@@ -43,7 +43,7 @@ public class XxShopAdminRegisterUserApi {
      * @return 分页结果
      */
     @GetMapping
-    public Result<Page<XxShopUser>> page(@RequestParam @Min(value = 1, message = "第几页的数据呀") Integer pageNumber,
+    public Result<Page<XxShopUser>> page(@RequestParam @Min(value = 1, message = "页码输入不对！") Integer pageNumber,
                                          @RequestParam @Min(value = 10, message = "每页几条啊") Integer pageSize,
                                          @RequestParam(required = false) @Range(min = 0, max = 1, message = "用户状态选择不对噢") Integer lockStatus) {
         return ResultGenerator.genSuccessResult(xxShopUserService.page(new Page<>(pageNumber, pageSize),

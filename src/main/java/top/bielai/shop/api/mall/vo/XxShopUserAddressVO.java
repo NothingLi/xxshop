@@ -41,21 +41,9 @@ public class XxShopUserAddressVO {
 
 
     /**
-     * 省
+     * 收件地区
      */
-    private String provinceName;
-
-
-    /**
-     * 市
-     */
-    private String cityName;
-
-
-    /**
-     * 区/县
-     */
-    private String regionName;
+    private String area;
 
 
     /**
