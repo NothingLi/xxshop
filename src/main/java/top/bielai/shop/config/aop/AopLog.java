@@ -17,6 +17,9 @@ import java.util.Objects;
 import java.util.UUID;
 
 
+/**
+ * @author bielai
+ */
 @Aspect
 @Component
 @Slf4j
@@ -50,7 +53,6 @@ public class AopLog {
                 }
             }
             String requestBody = body.toString();
-            //String requestTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
             log.info("收到请求:{},路径:{},请求头:{},参数:{},{},请求人:{}", requestId, requestPath, requestHeader, params, requestBody, request.getHeader("token"));
             request.setAttribute(REQUEST_ID, requestId.toString());
         } catch (Exception e) {
@@ -77,9 +79,12 @@ public class AopLog {
             ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
             HttpServletRequest request = Objects.requireNonNull(attributes).getRequest();
             String exceptionMessage = e.getLocalizedMessage().substring(0, Math.min(e.getLocalizedMessage().length(), 512));
-
-            log.info("请求id:{} 处理出现异常,问题:{},请求人:{}", request.getAttribute(REQUEST_ID), exceptionMessage, request.getHeader("token"));
-            e.printStackTrace();
+            StringBuilder stackMsg = new StringBuilder(exceptionMessage + "异常发生在");
+            StackTraceElement[] stackTrace = e.getStackTrace();
+            for (StackTraceElement stackTraceElement : stackTrace) {
+                stackMsg.append(stackTraceElement.toString());
+            }
+            log.info("请求id:{} 处理出现异常,问题:{},请求人:{}", request.getAttribute(REQUEST_ID), stackMsg, request.getHeader("token"));
         } catch (Exception ex) {
             log.error("记录错误日志异常:{}", ex.getLocalizedMessage());
         }

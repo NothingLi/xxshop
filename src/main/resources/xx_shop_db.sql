@@ -3196,15 +3196,7 @@ CREATE TABLE `tb_xx_shop_user`
 -- Records of tb_xx_shop_user
 -- ----------------------------
 INSERT INTO `tb_xx_shop_user`
-VALUES (1, '十三', '13700002703', 'e10adc3949ba59abbe56e057f20f883e', '我不怕千万人阻挡，只怕自己投降', 0, 1,
-        '2020-05-22 08:44:57');
-INSERT INTO `tb_xx_shop_user`
-VALUES (6, '陈尼克', '13711113333', 'e10adc3949ba59abbe56e057f20f883e', '测试用户陈尼克', 0, 1, '2020-05-22 08:44:57');
-INSERT INTO `tb_xx_shop_user`
-VALUES (7, '13567896789', '13567896789', 'e10adc3949ba59abbe56e057f20f883e', '随新所欲，蜂富多彩', 0, 0,
-        '2022-11-17 14:23:00');
-INSERT INTO `tb_xx_shop_user`
-VALUES (8, '13512341234', '13512341234', 'e10adc3949ba59abbe56e057f20f883e', '随新所欲，蜂富多彩', 0, 0,
+VALUES (8, '13512341234', '13512341234', 'e10adc3949ba59abbe56e057f20f883e', '', 0, 0,
         '2022-11-17 20:06:37');
 
 -- ----------------------------

@@ -16,7 +16,9 @@ import top.bielai.shop.config.annotation.TokenToShopUser;
 import top.bielai.shop.domain.XxShopOrder;
 import top.bielai.shop.domain.XxShopUser;
 import top.bielai.shop.domain.XxShopUserAddress;
-import top.bielai.shop.service.*;
+import top.bielai.shop.service.XxShopOrderService;
+import top.bielai.shop.service.XxShopShoppingCartItemService;
+import top.bielai.shop.service.XxShopUserAddressService;
 import top.bielai.shop.util.Result;
 import top.bielai.shop.util.ResultGenerator;
 
@@ -47,12 +49,6 @@ public class XxShopOrderApi {
 
     @Resource
     private XxShopUserAddressService xxShopUserAddressService;
-
-    @Resource
-    private XxShopOrderItemService orderItemService;
-
-    @Resource
-    private XxShopOrderAddressService orderAddressService;
 
     /**
      * 生成订单接口
