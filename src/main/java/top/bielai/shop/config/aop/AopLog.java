@@ -82,7 +82,7 @@ public class AopLog {
             StringBuilder stackMsg = new StringBuilder(exceptionMessage + "异常发生在");
             StackTraceElement[] stackTrace = e.getStackTrace();
             for (StackTraceElement stackTraceElement : stackTrace) {
-                stackMsg.append(stackTraceElement.toString());
+                stackMsg.append(stackTraceElement.toString()).append(System.lineSeparator());
             }
             log.info("请求id:{} 处理出现异常,问题:{},请求人:{}", request.getAttribute(REQUEST_ID), stackMsg, request.getHeader("token"));
         } catch (Exception ex) {

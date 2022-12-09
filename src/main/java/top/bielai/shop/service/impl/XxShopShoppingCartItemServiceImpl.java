@@ -123,12 +123,14 @@ public class XxShopShoppingCartItemServiceImpl extends ServiceImpl<XxShopShoppin
             }
             exist.setGoodsCount(saveCartItemParam.getGoodsCount());
             baseMapper.updateById(exist);
+            return getCartItemsForSettle(Collections.singletonList(exist.getCartItemId()), userId);
         } else {
-            BeanUtil.copyProperties(saveCartItemParam, exist);
-            exist.setUserId(userId);
-            baseMapper.insert(exist);
+            XxShopShoppingCartItem item = new XxShopShoppingCartItem();
+            BeanUtil.copyProperties(saveCartItemParam, item);
+            item.setUserId(userId);
+            baseMapper.insert(item);
+            return getCartItemsForSettle(Collections.singletonList(item.getCartItemId()), userId);
         }
-        return getCartItemsForSettle(Collections.singletonList(exist.getCartItemId()), userId);
     }
 
     private List<XxShopShoppingCartItemVO> getXxShopShoppingCartItemVOList(List<XxShopShoppingCartItem> list) {

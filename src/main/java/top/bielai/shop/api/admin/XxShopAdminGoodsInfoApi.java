@@ -60,9 +60,11 @@ public class XxShopAdminGoodsInfoApi {
                                               @RequestParam(required = false) String goodsName,
                                               @RequestParam(required = false) Integer goodsSellStatus) {
 
-        return ResultGenerator.genSuccessResult(goodsInfoService.page(new Page<>(pageNumber, pageSize), new LambdaQueryWrapper<XxShopGoodsInfo>()
-                .like(StringUtils.isNotBlank(goodsName), XxShopGoodsInfo::getGoodsName, goodsName)
-                .eq(goodsSellStatus != null, XxShopGoodsInfo::getGoodsSellStatus, goodsSellStatus)));
+        return ResultGenerator.genSuccessResult(goodsInfoService.page(new Page<>(pageNumber, pageSize),
+                new LambdaQueryWrapper<XxShopGoodsInfo>()
+                        .like(StringUtils.isNotBlank(goodsName), XxShopGoodsInfo::getGoodsName, goodsName)
+                        .eq(goodsSellStatus != null, XxShopGoodsInfo::getGoodsSellStatus, goodsSellStatus)
+                        .orderByDesc(XxShopGoodsInfo::getUpdateTime)));
     }
 
     /**

@@ -33,6 +33,7 @@ public class AuthHandlerInterceptor implements HandlerInterceptor {
 
     private final String[] ignorePath = new String[]{
             "/api/v2/index-infos", "/api/v2/categories",
+            "/api/v2/goods/detail", "/api/v2/goods/search",
             "/user/login", "/user/logout", "/user/register",
             "adminUser/login", "/adminUser/logout"};
 
