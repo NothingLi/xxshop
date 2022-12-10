@@ -108,7 +108,7 @@ public class XxShopShoppingCartApi {
         XxShopShoppingCartItem one = shoppingCartItemService.getOne(new LambdaQueryWrapper<XxShopShoppingCartItem>()
                 .eq(XxShopShoppingCartItem::getCartItemId, xxShopShoppingCartItemId).eq(XxShopShoppingCartItem::getUserId, user.getUserId()));
         if (ObjectUtils.isEmpty(one)) {
-            XxShopException.fail(ErrorEnum.DATA_NOT_EXIST);
+            throw new XxShopException(ErrorEnum.DATA_NOT_EXIST);
         }
         //删除成功
         if (shoppingCartItemService.removeById(one)) {
@@ -146,20 +146,20 @@ public class XxShopShoppingCartApi {
     @GetMapping("/settle")
     public Result<List<XxShopShoppingCartItemVO>> toSettle(@Size(min = 1, message = "你选了要买的东西吗？") Long[] cartItemIds, @TokenToShopUser XxShopUser user) {
         if (cartItemIds.length < 1) {
-            XxShopException.fail("参数异常");
+            throw new XxShopException(ErrorEnum.ERROR_PARAM);
         }
         BigDecimal priceTotal = BigDecimal.ZERO;
         List<XxShopShoppingCartItemVO> itemsForSettle = shoppingCartItemService.getCartItemsForSettle(Arrays.asList(cartItemIds), user.getUserId());
         if (CollectionUtils.isEmpty(itemsForSettle)) {
             //无数据则抛出异常
-            XxShopException.fail("参数异常");
+            throw new XxShopException(ErrorEnum.ERROR_PARAM);
         } else {
             //总价
             for (XxShopShoppingCartItemVO xxShopShoppingCartItemVO : itemsForSettle) {
                 priceTotal = priceTotal.add(xxShopShoppingCartItemVO.getSellingPrice().multiply(BigDecimal.valueOf(xxShopShoppingCartItemVO.getGoodsCount())));
             }
             if (priceTotal.compareTo(BigDecimal.ZERO) < 1) {
-                XxShopException.fail(ErrorEnum.PRICE_ERROR);
+                throw new XxShopException(ErrorEnum.PRICE_ERROR);
             }
         }
         return ResultGenerator.genSuccessResult(itemsForSettle);

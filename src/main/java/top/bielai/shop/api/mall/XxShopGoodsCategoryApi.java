@@ -35,7 +35,7 @@ public class XxShopGoodsCategoryApi {
     public Result<List<XxShopIndexCategoryVO>> getCategories() {
         List<XxShopIndexCategoryVO> categories = categoryService.getCategoriesForIndex();
         if (CollectionUtils.isEmpty(categories)) {
-            XxShopException.fail(ErrorEnum.DATA_NOT_EXIST);
+            throw new XxShopException(ErrorEnum.DATA_NOT_EXIST);
         }
         return ResultGenerator.genSuccessResult(categories);
     }

@@ -96,7 +96,7 @@ public class XxShopAdminGoodsInfoApi {
     public Result<String> update(@Validated @RequestBody GoodsEditParam goodsEditParam) {
         XxShopGoodsInfo byId = goodsInfoService.getById(goodsEditParam.getGoodsId());
         if (ObjectUtils.isEmpty(byId)) {
-            XxShopException.fail(ErrorEnum.GOODS_NOT_EXIST_ERROR);
+            throw new XxShopException(ErrorEnum.GOODS_NOT_EXIST_ERROR);
         }
         goodsCheck(goodsEditParam.getGoodsCategoryId(), goodsEditParam.getGoodsName(), byId.getGoodsId());
         BeanUtil.copyProperties(goodsEditParam, byId);
@@ -110,14 +110,14 @@ public class XxShopAdminGoodsInfoApi {
     private void goodsCheck(Long categoryId, String goodsName, Long goodsId) {
         XxShopGoodsCategory category = goodsCategoryService.getById(categoryId);
         if (category.getCategoryLevel() != CategoryLevelEnum.LEVEL_THREE.getLevel()) {
-            XxShopException.fail(ErrorEnum.CATEGORY_LEVEL_ERROR);
+            throw new XxShopException(ErrorEnum.CATEGORY_LEVEL_ERROR);
         }
         XxShopGoodsInfo exist = goodsInfoService.getOne(new LambdaQueryWrapper<XxShopGoodsInfo>()
                 .eq(XxShopGoodsInfo::getGoodsName, goodsName)
                 .eq(XxShopGoodsInfo::getGoodsCategoryId, categoryId)
                 .ne(ObjectUtils.isNotEmpty(goodsId), XxShopGoodsInfo::getGoodsId, goodsId));
         if (ObjectUtils.isNotEmpty(exist)) {
-            XxShopException.fail(ErrorEnum.GOODS_EXIST_ERROR);
+            throw new XxShopException(ErrorEnum.GOODS_EXIST_ERROR);
         }
     }
 
@@ -132,7 +132,7 @@ public class XxShopAdminGoodsInfoApi {
 
         XxShopGoodsInfo goods = goodsInfoService.getById(id);
         if (ObjectUtils.isEmpty(goods)) {
-            XxShopException.fail(ErrorEnum.GOODS_NOT_EXIST_ERROR);
+            throw new XxShopException(ErrorEnum.GOODS_NOT_EXIST_ERROR);
         }
         GoodsDetailVO goodsDetailVO = new GoodsDetailVO();
         goodsDetailVO.setGoodsInfo(goods);

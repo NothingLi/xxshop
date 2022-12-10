@@ -68,13 +68,13 @@ public class XxShopAdminIndexConfigApi {
     @PostMapping
     public Result<String> save(@Validated @RequestBody IndexConfigAddParam indexConfigAddParam) {
         if (ObjectUtils.isEmpty(goodsInfoService.getById(indexConfigAddParam.getGoodsId()))) {
-            XxShopException.fail(ErrorEnum.GOODS_NOT_EXIST_ERROR);
+            throw new XxShopException(ErrorEnum.GOODS_NOT_EXIST_ERROR);
         }
         XxShopIndexConfig exist = indexConfigService.getOne(new LambdaQueryWrapper<XxShopIndexConfig>()
                 .eq(XxShopIndexConfig::getConfigType, indexConfigAddParam.getConfigType())
                 .eq(XxShopIndexConfig::getGoodsId, indexConfigAddParam.getGoodsId()));
         if (ObjectUtils.isNotEmpty(exist)) {
-            XxShopException.fail(ErrorEnum.DATA_EXIST_ERROR);
+            throw new XxShopException(ErrorEnum.DATA_EXIST_ERROR);
         }
         XxShopIndexConfig indexConfig = new XxShopIndexConfig();
         BeanUtil.copyProperties(indexConfigAddParam, indexConfig);
@@ -95,17 +95,17 @@ public class XxShopAdminIndexConfigApi {
     @PutMapping
     public Result<String> update(@Validated @RequestBody IndexConfigEditParam indexConfigEditParam) {
         if (ObjectUtils.isEmpty(indexConfigService.getById(indexConfigEditParam.getConfigId()))) {
-            XxShopException.fail(ErrorEnum.DATA_NOT_EXIST);
+            throw new XxShopException(ErrorEnum.DATA_NOT_EXIST);
         }
         if (ObjectUtils.isEmpty(goodsInfoService.getById(indexConfigEditParam.getGoodsId()))) {
-            XxShopException.fail(ErrorEnum.GOODS_NOT_EXIST_ERROR);
+            throw new XxShopException(ErrorEnum.GOODS_NOT_EXIST_ERROR);
         }
         XxShopIndexConfig exist = indexConfigService.getOne(new LambdaQueryWrapper<XxShopIndexConfig>()
                 .eq(XxShopIndexConfig::getConfigType, indexConfigEditParam.getConfigType())
                 .eq(XxShopIndexConfig::getGoodsId, indexConfigEditParam.getGoodsId())
                 .ne(XxShopIndexConfig::getConfigId, indexConfigEditParam.getConfigId()));
         if (ObjectUtils.isNotEmpty(exist)) {
-            XxShopException.fail(ErrorEnum.DATA_EXIST_ERROR);
+            throw new XxShopException(ErrorEnum.DATA_EXIST_ERROR);
         }
         XxShopIndexConfig indexConfig = new XxShopIndexConfig();
         BeanUtil.copyProperties(indexConfigEditParam, indexConfig);
@@ -126,7 +126,7 @@ public class XxShopAdminIndexConfigApi {
     public Result<XxShopIndexConfig> detail(@PathVariable("id") Long id) {
         XxShopIndexConfig exist = indexConfigService.getById(id);
         if (ObjectUtils.isEmpty(exist)) {
-            XxShopException.fail(ErrorEnum.DATA_NOT_EXIST);
+            throw new XxShopException(ErrorEnum.DATA_NOT_EXIST);
         }
         return ResultGenerator.genSuccessResult(exist);
     }

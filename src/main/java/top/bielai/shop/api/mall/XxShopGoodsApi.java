@@ -51,7 +51,7 @@ public class XxShopGoodsApi {
                                                     @RequestParam @Min(value = 1, message = "页码输入不对！") Integer pageNumber) {
         //两个搜索参数都为空，直接返回异常
         if (goodsCategoryId == null && StringUtils.isBlank(keyword)) {
-            XxShopException.fail(ErrorEnum.ERROR_PARAM);
+            throw new XxShopException(ErrorEnum.ERROR_PARAM);
         }
         LambdaQueryWrapper<XxShopGoodsInfo> queryWrapper = new LambdaQueryWrapper<>();
 
@@ -82,11 +82,11 @@ public class XxShopGoodsApi {
     @GetMapping("/detail/{goodsId}")
     public Result<XxShopGoodsDetailVO> goodsDetail(@ApiParam(value = "商品id") @PathVariable("goodsId") Long goodsId) {
         if (goodsId < 1) {
-            XxShopException.fail(ErrorEnum.ERROR_PARAM);
+            throw new XxShopException(ErrorEnum.ERROR_PARAM);
         }
         XxShopGoodsInfo byId = goodsInfoService.getById(goodsId);
         if (Constants.SELL_STATUS_UP != byId.getGoodsSellStatus()) {
-            XxShopException.fail(ErrorEnum.GOODS_PUT_DOWN);
+            throw new XxShopException(ErrorEnum.GOODS_PUT_DOWN);
         }
         XxShopGoodsDetailVO goodsDetailVO = new XxShopGoodsDetailVO();
         BeanUtil.copyProperties(byId, goodsDetailVO);

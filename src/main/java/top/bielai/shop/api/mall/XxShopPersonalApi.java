@@ -43,7 +43,7 @@ public class XxShopPersonalApi {
     @PostMapping("/login")
     public Result<String> login(@Validated @RequestBody ShopUserLoginParam userLoginParam) {
         if (NumberUtil.isNotPhone(userLoginParam.getLoginName())) {
-            XxShopException.fail(ErrorEnum.LOGIN_PHONE_ERROR);
+            throw new XxShopException(ErrorEnum.LOGIN_PHONE_ERROR);
         }
         String token = xxShopUserService.login(userLoginParam.getLoginName(), userLoginParam.getPassword());
 
@@ -83,7 +83,7 @@ public class XxShopPersonalApi {
     @PostMapping("/register")
     public Result<String> register(@Validated @RequestBody ShopUserRegisterParam userRegisterParam) {
         if (NumberUtil.isNotPhone(userRegisterParam.getLoginName())) {
-            XxShopException.fail(ErrorEnum.LOGIN_PHONE_ERROR);
+            throw new XxShopException(ErrorEnum.LOGIN_PHONE_ERROR);
         }
         boolean registerResult = xxShopUserService.register(userRegisterParam.getLoginName(), userRegisterParam.getPassword());
         //注册成功

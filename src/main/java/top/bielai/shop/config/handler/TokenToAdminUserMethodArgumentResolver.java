@@ -17,6 +17,8 @@ import top.bielai.shop.domain.XxShopAdminUserToken;
 import top.bielai.shop.service.XxShopAdminUserService;
 import top.bielai.shop.service.XxShopAdminUserTokenService;
 
+import java.time.LocalDateTime;
+
 /**
  * @author bielai
  */
@@ -44,20 +46,20 @@ public class TokenToAdminUserMethodArgumentResolver implements HandlerMethodArgu
                 XxShopAdminUserToken adminUserToken = adminUserTokenService.getOne(new LambdaQueryWrapper<XxShopAdminUserToken>()
                         .eq(XxShopAdminUserToken::getToken, token));
                 if (adminUserToken == null) {
-                    XxShopException.fail(ErrorEnum.ADMIN_NULL_ERROR);
-                } else if (adminUserToken.getExpireTime().getTime() <= System.currentTimeMillis()) {
-                    XxShopException.fail(ErrorEnum.TOKEN_EXPIRE_ERROR);
+                    throw new XxShopException(ErrorEnum.ADMIN_NULL_ERROR);
+                } else if (adminUserToken.getExpireTime().isBefore(LocalDateTime.now())) {
+                    throw new XxShopException(ErrorEnum.TOKEN_EXPIRE_ERROR);
                 }
                 XxShopAdminUser byId = adminUserService.getById(adminUserToken.getAdminUserId());
                 if (byId == null) {
-                    XxShopException.fail(ErrorEnum.ADMIN_NULL_ERROR);
+                    throw new XxShopException(ErrorEnum.ADMIN_NULL_ERROR);
                 }
                 if (byId.getLocked() == 1) {
-                    XxShopException.fail(ErrorEnum.LOGIN_USER_LOCKED_ERROR);
+                    throw new XxShopException(ErrorEnum.LOGIN_USER_LOCKED_ERROR);
                 }
                 return byId;
             } else {
-                XxShopException.fail(ErrorEnum.NOT_LOGIN_ERROR);
+                throw new XxShopException(ErrorEnum.NOT_LOGIN_ERROR);
             }
         }
         return null;

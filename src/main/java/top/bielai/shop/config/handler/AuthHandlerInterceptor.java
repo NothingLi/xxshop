@@ -16,6 +16,7 @@ import top.bielai.shop.service.XxShopUserTokenService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.time.LocalDateTime;
 
 /**
  * @author bielai
@@ -35,7 +36,7 @@ public class AuthHandlerInterceptor implements HandlerInterceptor {
             "/api/v2/index-infos", "/api/v2/categories",
             "/api/v2/goods/detail", "/api/v2/goods/search",
             "/user/login", "/user/logout", "/user/register",
-            "adminUser/login", "/adminUser/logout"};
+            "/adminUser/login", "/adminUser/logout"};
 
     public AuthHandlerInterceptor(XxShopUserTokenService userTokenService, XxShopAdminUserTokenService adminUserTokenService) {
         this.userTokenService = userTokenService;
@@ -44,6 +45,22 @@ public class AuthHandlerInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+        if (extracted(request)) return true;
+        String token = request.getHeader(TOKEN);
+        if (StringUtils.isBlank(token) || token.length() != Constants.TOKEN_LENGTH) {
+            log.error("没有传递token");
+            throw new XxShopException(ErrorEnum.NOT_LOGIN_ERROR);
+        }
+        XxShopUserToken userToken = userTokenService.getOne(new LambdaQueryWrapper<XxShopUserToken>().eq(XxShopUserToken::getToken, token));
+        XxShopAdminUserToken adminUserToken = adminUserTokenService.getOne(new LambdaQueryWrapper<XxShopAdminUserToken>()
+                .eq(XxShopAdminUserToken::getToken, token));
+        if (!tokenAccess(userToken, adminUserToken)) {
+            throw new XxShopException(ErrorEnum.TOKEN_EXPIRE_ERROR);
+        }
+        return true;
+    }
+
+    private boolean extracted(HttpServletRequest request) {
         if (METHOD.equals(request.getMethod())) {
             return true;
         }
@@ -52,23 +69,12 @@ public class AuthHandlerInterceptor implements HandlerInterceptor {
                 return true;
             }
         }
-        String token = request.getHeader(TOKEN);
-        if (StringUtils.isBlank(token) || token.length() != Constants.TOKEN_LENGTH) {
-            log.error("没有传递token");
-            XxShopException.fail(ErrorEnum.NOT_LOGIN_ERROR);
-        }
-        XxShopUserToken userToken = userTokenService.getOne(new LambdaQueryWrapper<XxShopUserToken>().eq(XxShopUserToken::getToken, token));
-        XxShopAdminUserToken adminUserToken = adminUserTokenService.getOne(new LambdaQueryWrapper<XxShopAdminUserToken>()
-                .eq(XxShopAdminUserToken::getToken, token));
-        if (tokenAccess(userToken, adminUserToken)) {
-            XxShopException.fail(ErrorEnum.TOKEN_EXPIRE_ERROR);
-        }
-        return true;
+        return false;
     }
 
     private boolean tokenAccess(XxShopUserToken userToken, XxShopAdminUserToken adminUserToken) {
-        return (ObjectUtils.isNotEmpty(userToken) && userToken.getExpireTime().getTime() <= System.currentTimeMillis()) ||
-                (ObjectUtils.isNotEmpty(adminUserToken) && adminUserToken.getExpireTime().getTime() <= System.currentTimeMillis());
+        return (ObjectUtils.isNotEmpty(userToken) && userToken.getExpireTime().isAfter(LocalDateTime.now())) ||
+                (ObjectUtils.isNotEmpty(adminUserToken) && adminUserToken.getExpireTime().isAfter(LocalDateTime.now()));
     }
 
 

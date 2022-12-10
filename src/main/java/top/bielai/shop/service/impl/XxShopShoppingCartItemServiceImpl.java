@@ -43,7 +43,7 @@ public class XxShopShoppingCartItemServiceImpl extends ServiceImpl<XxShopShoppin
     public List<XxShopShoppingCartItemVO> getCartItemsForSettle(List<Long> cartItemIds, Long xxShopUserId) {
         List<XxShopShoppingCartItem> list = list(new LambdaQueryWrapper<XxShopShoppingCartItem>().eq(XxShopShoppingCartItem::getUserId, xxShopUserId).in(XxShopShoppingCartItem::getCartItemId, cartItemIds));
         if (list.isEmpty() || list.size() != cartItemIds.size()) {
-            XxShopException.fail(ErrorEnum.CART_ITEM_ERROR);
+            throw new XxShopException(ErrorEnum.CART_ITEM_ERROR);
         }
         return getXxShopShoppingCartItemVOList(list);
     }
@@ -62,23 +62,23 @@ public class XxShopShoppingCartItemServiceImpl extends ServiceImpl<XxShopShoppin
     public boolean saveXxShopCartItem(SaveCartItemParam saveCartItemParam, Long userId) {
         XxShopGoodsInfo xxShopGoodsInfo = goodsInfoMapper.selectById(saveCartItemParam.getGoodsId());
         if (ObjectUtils.isEmpty(xxShopGoodsInfo)) {
-            XxShopException.fail(ErrorEnum.GOODS_NOT_EXIST_ERROR);
+            throw new XxShopException(ErrorEnum.GOODS_NOT_EXIST_ERROR);
         }
         if (saveCartItemParam.getGoodsCount() > xxShopGoodsInfo.getStockNum()) {
-            XxShopException.fail(ErrorEnum.CART_ITEM_GOODS_NUM_ERROR);
+            throw new XxShopException(ErrorEnum.CART_ITEM_GOODS_NUM_ERROR);
         }
         XxShopShoppingCartItem exist = getOne(new LambdaQueryWrapper<XxShopShoppingCartItem>().eq(XxShopShoppingCartItem::getGoodsId, saveCartItemParam.getGoodsId()).eq(XxShopShoppingCartItem::getUserId, userId));
         if (ObjectUtils.isNotEmpty(exist)) {
             int i = exist.getGoodsCount() + saveCartItemParam.getGoodsCount();
             if (i > xxShopGoodsInfo.getStockNum()) {
-                XxShopException.fail(ErrorEnum.CART_ITEM_GOODS_NUM_ERROR);
+                throw new XxShopException(ErrorEnum.CART_ITEM_GOODS_NUM_ERROR);
             }
             exist.setGoodsCount(i);
             return baseMapper.updateById(exist) > 0;
         }
         long count = count(new LambdaQueryWrapper<XxShopShoppingCartItem>().eq(XxShopShoppingCartItem::getUserId, userId));
         if (count >= Constants.SHOPPING_CART_ITEM_TOTAL_NUMBER) {
-            XxShopException.fail(ErrorEnum.CART_ITEM_LIMIT_ERROR);
+            throw new XxShopException(ErrorEnum.CART_ITEM_LIMIT_ERROR);
         }
         XxShopShoppingCartItem xxShopShoppingCartItem = new XxShopShoppingCartItem();
         BeanUtil.copyProperties(saveCartItemParam, xxShopShoppingCartItem);
@@ -91,17 +91,17 @@ public class XxShopShoppingCartItemServiceImpl extends ServiceImpl<XxShopShoppin
     public boolean updateXxShopCartItem(UpdateCartItemParam updateCartItemParam, Long userId) {
         XxShopShoppingCartItem exist = getOne(new LambdaQueryWrapper<XxShopShoppingCartItem>().eq(XxShopShoppingCartItem::getCartItemId, updateCartItemParam.getCartItemId()).eq(XxShopShoppingCartItem::getUserId, userId));
         if (ObjectUtils.isEmpty(exist)) {
-            XxShopException.fail(ErrorEnum.DATA_NOT_EXIST);
+            throw new XxShopException(ErrorEnum.DATA_NOT_EXIST);
         }
         if (exist.getGoodsCount().equals(updateCartItemParam.getGoodsCount())) {
             return true;
         }
         XxShopGoodsInfo xxShopGoodsInfo = goodsInfoMapper.selectById(exist.getGoodsId());
         if (ObjectUtils.isEmpty(xxShopGoodsInfo)) {
-            XxShopException.fail(ErrorEnum.GOODS_NOT_EXIST_ERROR);
+            throw new XxShopException(ErrorEnum.GOODS_NOT_EXIST_ERROR);
         }
         if (exist.getGoodsCount() > xxShopGoodsInfo.getStockNum()) {
-            XxShopException.fail(ErrorEnum.CART_ITEM_GOODS_NUM_ERROR);
+            throw new XxShopException(ErrorEnum.CART_ITEM_GOODS_NUM_ERROR);
         }
         exist.setGoodsCount(updateCartItemParam.getGoodsCount());
         return baseMapper.updateById(exist) > 0;
@@ -111,15 +111,15 @@ public class XxShopShoppingCartItemServiceImpl extends ServiceImpl<XxShopShoppin
     public List<XxShopShoppingCartItemVO> immediatelySettle(SaveCartItemParam saveCartItemParam, Long userId) {
         XxShopGoodsInfo xxShopGoodsInfo = goodsInfoMapper.selectById(saveCartItemParam.getGoodsId());
         if (ObjectUtils.isEmpty(xxShopGoodsInfo)) {
-            XxShopException.fail(ErrorEnum.GOODS_NOT_EXIST_ERROR);
+            throw new XxShopException(ErrorEnum.GOODS_NOT_EXIST_ERROR);
         }
         if (saveCartItemParam.getGoodsCount() > xxShopGoodsInfo.getStockNum()) {
-            XxShopException.fail(ErrorEnum.CART_ITEM_GOODS_NUM_ERROR);
+            throw new XxShopException(ErrorEnum.CART_ITEM_GOODS_NUM_ERROR);
         }
         XxShopShoppingCartItem exist = getOne(new LambdaQueryWrapper<XxShopShoppingCartItem>().eq(XxShopShoppingCartItem::getGoodsId, saveCartItemParam.getGoodsId()).eq(XxShopShoppingCartItem::getUserId, userId));
         if (ObjectUtils.isNotEmpty(exist)) {
             if (saveCartItemParam.getGoodsCount() > xxShopGoodsInfo.getStockNum()) {
-                XxShopException.fail(ErrorEnum.CART_ITEM_GOODS_NUM_ERROR);
+                throw new XxShopException(ErrorEnum.CART_ITEM_GOODS_NUM_ERROR);
             }
             exist.setGoodsCount(saveCartItemParam.getGoodsCount());
             baseMapper.updateById(exist);
@@ -143,10 +143,10 @@ public class XxShopShoppingCartItemServiceImpl extends ServiceImpl<XxShopShoppin
             BeanUtils.copyProperties(xxShopShoppingCartItem, vo);
             XxShopGoodsInfo xxShopGoodsInfo = collect.get(vo.getGoodsId());
             if (ObjectUtils.isEmpty(xxShopGoodsInfo)) {
-                XxShopException.fail(ErrorEnum.CART_ITEM_ERROR);
+                throw new XxShopException(ErrorEnum.CART_ITEM_ERROR);
             }
             if (vo.getGoodsCount() > xxShopGoodsInfo.getStockNum()) {
-                XxShopException.fail(ErrorEnum.CART_ITEM_GOODS_NUM_ERROR);
+                throw new XxShopException(ErrorEnum.CART_ITEM_GOODS_NUM_ERROR);
             }
             vo.setGoodsCoverImg(xxShopGoodsInfo.getGoodsCoverImg());
             String goodsName = xxShopGoodsInfo.getGoodsName();

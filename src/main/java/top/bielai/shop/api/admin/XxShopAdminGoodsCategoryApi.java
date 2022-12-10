@@ -88,7 +88,7 @@ public class XxShopAdminGoodsCategoryApi {
     public Result<String> update(@Validated @RequestBody GoodsCategoryEditParam goodsCategoryEditParam) {
         XxShopGoodsCategory byId = goodsCategoryService.getById(goodsCategoryEditParam.getCategoryId());
         if (ObjectUtils.isEmpty(byId)) {
-            XxShopException.fail(ErrorEnum.DATA_NOT_EXIST);
+            throw new XxShopException(ErrorEnum.DATA_NOT_EXIST);
         }
         BeanUtil.copyProperties(goodsCategoryEditParam, byId);
         if (goodsCategoryService.updateById(byId)) {
@@ -108,7 +108,7 @@ public class XxShopAdminGoodsCategoryApi {
     public Result<XxShopGoodsCategory> info(@PathVariable("id") Long id) {
         XxShopGoodsCategory goodsCategory = goodsCategoryService.getById(id);
         if (goodsCategory == null) {
-            XxShopException.fail(ErrorEnum.DATA_NOT_EXIST);
+            throw new XxShopException(ErrorEnum.DATA_NOT_EXIST);
         }
         return ResultGenerator.genSuccessResult(goodsCategory);
     }

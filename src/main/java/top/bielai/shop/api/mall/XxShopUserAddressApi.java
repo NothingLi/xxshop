@@ -84,7 +84,7 @@ public class XxShopUserAddressApi {
         XxShopUserAddress one = userAddressService.getOne(new LambdaQueryWrapper<XxShopUserAddress>().eq(XxShopUserAddress::getAddressId, updateShopUserAddressParam.getAddressId())
                 .eq(XxShopUserAddress::getUserId, user.getUserId()));
         if (ObjectUtils.isEmpty(one)) {
-            XxShopException.fail(ErrorEnum.DATA_NOT_EXIST);
+            throw new XxShopException(ErrorEnum.DATA_NOT_EXIST);
         }
         XxShopUserAddress userAddress = new XxShopUserAddress();
         BeanUtil.copyProperties(updateShopUserAddressParam, userAddress);
@@ -115,7 +115,7 @@ public class XxShopUserAddressApi {
         XxShopUserAddress one = userAddressService.getOne(new LambdaQueryWrapper<XxShopUserAddress>().eq(XxShopUserAddress::getAddressId, addressId)
                 .eq(XxShopUserAddress::getUserId, user.getUserId()));
         if (ObjectUtils.isEmpty(one)) {
-            XxShopException.fail(ErrorEnum.DATA_NOT_EXIST);
+            throw new XxShopException(ErrorEnum.DATA_NOT_EXIST);
         }
         XxShopUserAddressVO vo = new XxShopUserAddressVO();
         BeanUtil.copyProperties(one, vo);
@@ -149,7 +149,7 @@ public class XxShopUserAddressApi {
         XxShopUserAddress one = userAddressService.getOne(new LambdaQueryWrapper<XxShopUserAddress>().eq(XxShopUserAddress::getAddressId, addressId)
                 .eq(XxShopUserAddress::getUserId, user.getUserId()));
         if (ObjectUtils.isEmpty(one)) {
-            XxShopException.fail(ErrorEnum.DATA_NOT_EXIST);
+            throw new XxShopException(ErrorEnum.DATA_NOT_EXIST);
         }
         //删除成功
         if (userAddressService.removeById(one)) {

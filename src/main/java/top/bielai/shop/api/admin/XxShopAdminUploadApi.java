@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 import top.bielai.shop.common.Constants;
+import top.bielai.shop.common.ErrorEnum;
 import top.bielai.shop.common.XxShopException;
 import top.bielai.shop.domain.XxShopFile;
 import top.bielai.shop.service.XxShopFileService;
@@ -27,7 +28,10 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * 后台管理系统文件上传接口
@@ -82,7 +86,7 @@ public class XxShopAdminUploadApi {
             int total = 0;
             while (iter.hasNext()) {
                 if (total > 5) {
-                    XxShopException.fail("最多上传5张图片");
+                    throw new XxShopException(ErrorEnum.IMG_TOO_MORE);
                 }
                 total += 1;
                 MultipartFile file = multiRequest.getFile(iter.next());
@@ -90,7 +94,7 @@ public class XxShopAdminUploadApi {
             }
         }
         if (CollectionUtils.isEmpty(multipartFiles)) {
-            XxShopException.fail("参数异常");
+            throw new XxShopException(ErrorEnum.ERROR_PARAM);
         }
         List<String> fileNames = new ArrayList<>(multipartFiles.size());
         for (MultipartFile multipartFile : multipartFiles) {
@@ -98,7 +102,7 @@ public class XxShopAdminUploadApi {
                 fileNames.add(XxShopUtils.getHost(new URI(httpServletRequest.getRequestURL() + "")) + "/files/" + uploadFile(multipartFile));
             } catch (IOException e) {
                 log.error(e.getMessage());
-                XxShopException.fail("文件上传失败");
+                throw new XxShopException(ErrorEnum.ERROR);
             }
         }
         return ResultGenerator.genSuccessResult(fileNames);
@@ -115,16 +119,13 @@ public class XxShopAdminUploadApi {
         String suffixName = fileName.substring(fileName.lastIndexOf("."));
         //生成文件名称通用方法
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd/HH/mm/");
-        Random r = new Random();
         String filePath = sdf.format(new Date());
         String newFileName = filePath + fileMd5 + suffixName;
         File fileDirectory = new File(Constants.FILE_UPLOAD_DIC + filePath);
         //创建文件
         File destFile = new File(Constants.FILE_UPLOAD_DIC + newFileName);
-        if (!fileDirectory.exists()) {
-            if (!fileDirectory.mkdirs()) {
-                throw new IOException("文件夹创建失败,路径为：" + fileDirectory);
-            }
+        if (!fileDirectory.exists() || !fileDirectory.mkdirs()) {
+            throw new IOException("文件夹创建失败,路径为：" + fileDirectory);
         }
         file.transferTo(destFile);
         XxShopFile shopFile = new XxShopFile();

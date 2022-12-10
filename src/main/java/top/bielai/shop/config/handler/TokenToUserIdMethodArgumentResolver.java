@@ -17,6 +17,8 @@ import top.bielai.shop.domain.XxShopUserToken;
 import top.bielai.shop.mapper.XxShopUserMapper;
 import top.bielai.shop.mapper.XxShopUserTokenMapper;
 
+import java.time.LocalDateTime;
+
 /**
  * @author bielai
  */
@@ -41,19 +43,19 @@ public class TokenToUserIdMethodArgumentResolver implements HandlerMethodArgumen
             String token = webRequest.getHeader("token");
             if (null != token && !"".equals(token) && token.length() == Constants.TOKEN_LENGTH) {
                 XxShopUserToken userToken = userTokenMapper.selectOne(new LambdaQueryWrapper<XxShopUserToken>().eq(XxShopUserToken::getToken, token));
-                if (userToken == null || userToken.getExpireTime().getTime() <= System.currentTimeMillis()) {
-                    XxShopException.fail(ErrorEnum.TOKEN_EXPIRE_ERROR);
+                if (userToken == null || userToken.getExpireTime().isBefore(LocalDateTime.now())) {
+                    throw new XxShopException(ErrorEnum.TOKEN_EXPIRE_ERROR);
                 }
                 mallUser = userMapper.selectById(userToken.getUserId());
                 if (mallUser == null) {
-                    XxShopException.fail(ErrorEnum.USER_NULL_ERROR);
+                    throw new XxShopException(ErrorEnum.USER_NULL_ERROR);
                 }
                 if (mallUser.getLockedFlag() == 1) {
-                    XxShopException.fail(ErrorEnum.LOGIN_USER_LOCKED_ERROR);
+                    throw new XxShopException(ErrorEnum.LOGIN_USER_LOCKED_ERROR);
                 }
                 return mallUser;
             } else {
-                XxShopException.fail(ErrorEnum.NOT_LOGIN_ERROR);
+                throw new XxShopException(ErrorEnum.NOT_LOGIN_ERROR);
             }
         }
         return null;

@@ -12,7 +12,7 @@ public enum ErrorEnum {
     /**
      * 异常响应的各种情况
      */
-    ERROR_PARAM(400, "非法搜索参数"),
+    ERROR_PARAM(400, "参数异常"),
 
     TOKEN_EXPIRE_ERROR(401, "你登陆过期了啊！请重新登录！"),
 
@@ -27,6 +27,8 @@ public enum ErrorEnum {
     NOT_LOGIN_ERROR(401, "你没登陆啊蒙面人！"),
 
     GOODS_PUT_DOWN(410, "商品已下架噢！"),
+
+    IMG_TOO_MORE(410, "最多上传五张图片！"),
 
     GOODS_EXIST_ERROR(409, "这个分类下面有这个商品了！"),
 

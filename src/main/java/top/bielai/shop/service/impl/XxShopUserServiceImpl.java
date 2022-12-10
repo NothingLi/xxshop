@@ -19,7 +19,7 @@ import top.bielai.shop.service.XxShopUserTokenService;
 import top.bielai.shop.util.NumberUtil;
 import top.bielai.shop.util.SystemUtil;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
  * @author bielai
@@ -42,17 +42,15 @@ public class XxShopUserServiceImpl extends ServiceImpl<XxShopUserMapper, XxShopU
         XxShopUser xxShopUser = baseMapper.selectOne(new LambdaQueryWrapper<XxShopUser>().eq(XxShopUser::getLoginName, loginName)
                 .eq(XxShopUser::getPasswordMd5, DigestUtils.md5Hex(password + Constants.SALT)));
         if (ObjectUtils.isEmpty(xxShopUser)) {
-            XxShopException.fail(ErrorEnum.USER_NULL_ERROR);
+            throw new XxShopException(ErrorEnum.USER_NULL_ERROR);
         }
         if (xxShopUser.getLockedFlag() == 1) {
-            XxShopException.fail(ErrorEnum.LOGIN_USER_LOCKED_ERROR);
+            throw new XxShopException(ErrorEnum.LOGIN_USER_LOCKED_ERROR);
         }
         String newToken = getNewToken(System.currentTimeMillis() + "", xxShopUser.getUserId());
         XxShopUserToken byId = userTokenService.getById(xxShopUser.getUserId());
-        //当前时间
-        Date now = new Date();
-        //过期时间
-        Date expireTime = new Date(now.getTime() + 2 * 24 * 3600 * 1000);
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime expireTime = now.plusDays(2);
         if (ObjectUtils.isEmpty(byId)) {
             XxShopUserToken token = new XxShopUserToken();
             token.setUserId(xxShopUser.getUserId());
@@ -62,7 +60,7 @@ public class XxShopUserServiceImpl extends ServiceImpl<XxShopUserMapper, XxShopU
             if (userTokenService.save(token)) {
                 return newToken;
             } else {
-                XxShopException.fail(ErrorEnum.ERROR);
+                throw new XxShopException(ErrorEnum.ERROR);
             }
         }
         byId.setToken(newToken);
@@ -85,7 +83,7 @@ public class XxShopUserServiceImpl extends ServiceImpl<XxShopUserMapper, XxShopU
     public boolean register(String loginName, String password) {
         XxShopUser xxShopUser = baseMapper.selectOne(new LambdaQueryWrapper<XxShopUser>().eq(XxShopUser::getLoginName, loginName));
         if (ObjectUtils.isNotEmpty(xxShopUser)) {
-            XxShopException.fail(ErrorEnum.USER_NOT_NULL_ERROR);
+            throw new XxShopException(ErrorEnum.USER_NOT_NULL_ERROR);
         }
         XxShopUser newUser = new XxShopUser();
         newUser.setLoginName(loginName);
@@ -101,7 +99,7 @@ public class XxShopUserServiceImpl extends ServiceImpl<XxShopUserMapper, XxShopU
     public boolean updateUserInfo(ShopUserUpdateParam userUpdateParam, Long userId) {
         XxShopUser xxShopUser = baseMapper.selectById(userId);
         if (ObjectUtils.isEmpty(xxShopUser)) {
-            XxShopException.fail(ErrorEnum.USER_NULL_ERROR);
+            throw new XxShopException(ErrorEnum.USER_NULL_ERROR);
         }
         xxShopUser.setNickName(userUpdateParam.getNickName());
         if (StringUtils.isNotBlank(userUpdateParam.getPassword()) || !DigestUtils.md5Hex("").equals(userUpdateParam.getPassword())) {

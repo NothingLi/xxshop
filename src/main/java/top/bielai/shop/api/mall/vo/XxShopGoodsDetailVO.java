@@ -66,4 +66,9 @@ public class XxShopGoodsDetailVO implements Serializable {
      * 商品详情字段
      */
     private String goodsDetailContent;
+
+    /**
+     * 商品库存
+     */
+    private Integer stockNum;
 }

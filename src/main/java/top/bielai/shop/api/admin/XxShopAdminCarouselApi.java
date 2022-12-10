@@ -76,7 +76,7 @@ public class XxShopAdminCarouselApi {
     public Result<String> update(@Validated @RequestBody CarouselEditParam carouselEditParam) {
         XxShopCarousel byId = xxShopCarouselService.getById(carouselEditParam.getCarouselId());
         if (ObjectUtils.isEmpty(byId)) {
-            XxShopException.fail(ErrorEnum.DATA_NOT_EXIST);
+            throw new XxShopException(ErrorEnum.DATA_NOT_EXIST);
         }
         BeanUtil.copyProperties(carouselEditParam, byId);
         if (xxShopCarouselService.updateById(byId)) {
@@ -97,7 +97,7 @@ public class XxShopAdminCarouselApi {
     public Result<XxShopCarousel> info(@PathVariable("id") Integer id) {
         XxShopCarousel byId = xxShopCarouselService.getById(id);
         if (ObjectUtils.isEmpty(byId)) {
-            XxShopException.fail(ErrorEnum.DATA_NOT_EXIST);
+            throw new XxShopException(ErrorEnum.DATA_NOT_EXIST);
         }
         return ResultGenerator.genSuccessResult(byId);
     }

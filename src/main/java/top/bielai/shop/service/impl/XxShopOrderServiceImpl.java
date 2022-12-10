@@ -22,6 +22,7 @@ import top.bielai.shop.util.BeanUtil;
 import top.bielai.shop.util.NumberUtil;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -60,7 +61,7 @@ public class XxShopOrderServiceImpl extends ServiceImpl<XxShopOrderMapper, XxSho
         List<XxShopGoodsInfo> xxShopGoodsInfos = goodsInfoMapper.selectList(new LambdaQueryWrapper<XxShopGoodsInfo>().in(XxShopGoodsInfo::getGoodsId, goodIds));
         List<XxShopGoodsInfo> putDownGoods = xxShopGoodsInfos.stream().filter(good -> Constants.SELL_STATUS_DOWN == good.getGoodsSellStatus()).collect(Collectors.toList());
         if (!putDownGoods.isEmpty() || xxShopGoodsInfos.size() != goodIds.size()) {
-            XxShopException.fail(ErrorEnum.CART_ITEM_ERROR);
+            throw new XxShopException(ErrorEnum.CART_ITEM_ERROR);
         }
         //删除购物项
         if (cartItemMapper.delete(new LambdaQueryWrapper<XxShopShoppingCartItem>().in(XxShopShoppingCartItem::getCartItemId, itemIdList).eq(XxShopShoppingCartItem::getUserId, userId)) > 0) {
@@ -77,7 +78,7 @@ public class XxShopOrderServiceImpl extends ServiceImpl<XxShopOrderMapper, XxSho
                 priceTotal = priceTotal.add(xxShopShoppingCartItemVO.getSellingPrice().multiply(BigDecimal.valueOf(xxShopShoppingCartItemVO.getGoodsCount())));
             }
             if (priceTotal.compareTo(BigDecimal.ZERO) < 1) {
-                XxShopException.fail(ErrorEnum.PRICE_ERROR);
+                throw new XxShopException(ErrorEnum.PRICE_ERROR);
             }
             xxShopOrder.setTotalPrice(priceTotal);
             xxShopOrder.setPayStatus(PayStatusEnum.WAIT_PAY.getPayStatus());
@@ -102,11 +103,10 @@ public class XxShopOrderServiceImpl extends ServiceImpl<XxShopOrderMapper, XxSho
                     return orderNo;
                 }
             }
-            XxShopException.fail(ErrorEnum.ERROR);
+            throw new XxShopException(ErrorEnum.ERROR);
         } else {
-            XxShopException.fail(ErrorEnum.CART_ITEM_ERROR);
+            throw new XxShopException(ErrorEnum.CART_ITEM_ERROR);
         }
-        return null;
     }
 
     @Override
@@ -116,7 +116,7 @@ public class XxShopOrderServiceImpl extends ServiceImpl<XxShopOrderMapper, XxSho
                 .eq(ObjectUtils.isNotEmpty(userId), XxShopOrder::getUserId, userId)
                 .eq(StringUtils.isNotBlank(orderNo), XxShopOrder::getOrderNo, orderNo));
         if (org.apache.commons.lang3.ObjectUtils.isEmpty(one)) {
-            XxShopException.fail(ErrorEnum.DATA_NOT_EXIST);
+            throw new XxShopException(ErrorEnum.DATA_NOT_EXIST);
         }
         XxShopOrderDetailVO xxShopOrderDetailVO = new XxShopOrderDetailVO();
         BeanUtil.copyProperties(one, xxShopOrderDetailVO);
@@ -175,13 +175,13 @@ public class XxShopOrderServiceImpl extends ServiceImpl<XxShopOrderMapper, XxSho
     public boolean cancelOrder(String orderNo, Long userId) {
         XxShopOrder order = getOrderByNo(orderNo, userId);
         if (ObjectUtils.isEmpty(order)) {
-            XxShopException.fail(ErrorEnum.ORDER_NOT_EXIST);
+            throw new XxShopException(ErrorEnum.ORDER_NOT_EXIST);
         }
         if (order.getOrderStatus() == OrderStatusEnum.ORDER_SUCCESS.getOrderStatus()
                 || order.getOrderStatus() == OrderStatusEnum.ORDER_CLOSED_BY_USER.getOrderStatus()
                 || order.getOrderStatus() == OrderStatusEnum.ORDER_CLOSED_BY_EXPIRED.getOrderStatus()
                 || order.getOrderStatus() == OrderStatusEnum.ORDER_CLOSED_BY_JUDGE.getOrderStatus()) {
-            XxShopException.fail(ErrorEnum.ORDER_STATUS_ERROR);
+            throw new XxShopException(ErrorEnum.ORDER_STATUS_ERROR);
         }
         order.setOrderStatus(OrderStatusEnum.ORDER_CLOSED_BY_USER.getOrderStatus());
         return baseMapper.updateById(order) > 0 && recoverStockNum(Collections.singletonList(order.getOrderId()));
@@ -193,10 +193,10 @@ public class XxShopOrderServiceImpl extends ServiceImpl<XxShopOrderMapper, XxSho
     public boolean finishOrder(String orderNo, Long userId) {
         XxShopOrder xxShopOrder = getOrderByNo(orderNo, userId);
         if (ObjectUtils.isEmpty(xxShopOrder)) {
-            XxShopException.fail(ErrorEnum.ORDER_NOT_EXIST);
+            throw new XxShopException(ErrorEnum.ORDER_NOT_EXIST);
         }
         if (xxShopOrder.getOrderStatus() != OrderStatusEnum.ORDER_EXPRESS.getOrderStatus()) {
-            XxShopException.fail(ErrorEnum.ORDER_STATUS_ERROR);
+            throw new XxShopException(ErrorEnum.ORDER_STATUS_ERROR);
         }
         xxShopOrder.setOrderStatus(OrderStatusEnum.ORDER_SUCCESS.getOrderStatus());
         return baseMapper.updateById(xxShopOrder) > 0;
@@ -207,15 +207,15 @@ public class XxShopOrderServiceImpl extends ServiceImpl<XxShopOrderMapper, XxSho
     public boolean paySuccess(String orderNo, int payType, Long userId) {
         XxShopOrder xxShopOrder = getOrderByNo(orderNo, userId);
         if (ObjectUtils.isEmpty(xxShopOrder)) {
-            XxShopException.fail(ErrorEnum.ORDER_NOT_EXIST);
+            throw new XxShopException(ErrorEnum.ORDER_NOT_EXIST);
         }
         if (xxShopOrder.getOrderStatus() != OrderStatusEnum.ORDER_WAIT_PAY.getOrderStatus()) {
-            XxShopException.fail(ErrorEnum.ORDER_STATUS_ERROR);
+            throw new XxShopException(ErrorEnum.ORDER_STATUS_ERROR);
         }
         xxShopOrder.setOrderStatus(OrderStatusEnum.ORDER_PAID.getOrderStatus());
         xxShopOrder.setPayType((byte) payType);
         xxShopOrder.setPayStatus(PayStatusEnum.PAY_SUCCESS.getPayStatus());
-        xxShopOrder.setPayTime(new Date());
+        xxShopOrder.setPayTime(LocalDateTime.now());
         return baseMapper.updateById(xxShopOrder) > 0;
     }
 
@@ -248,12 +248,12 @@ public class XxShopOrderServiceImpl extends ServiceImpl<XxShopOrderMapper, XxSho
     private boolean changeStatus(List<Long> ids, int status, List<Byte> allowStatus) {
         List<XxShopOrder> xxShopOrders = baseMapper.selectBatchIds(ids);
         if (CollectionUtils.isEmpty(xxShopOrders) || xxShopOrders.size() != ids.size()) {
-            XxShopException.fail(ErrorEnum.ORDER_STATUS_ERROR);
+            throw new XxShopException(ErrorEnum.ORDER_STATUS_ERROR);
         }
         List<XxShopOrder> collect = xxShopOrders.stream().filter(order -> allowStatus.contains(order.getOrderStatus())).collect(Collectors.toList());
         if (CollectionUtils.isEmpty(collect)) {
             String errorOrder = collect.stream().map(XxShopOrder::getOrderNo).collect(Collectors.joining(","));
-            XxShopException.fail("这些：" + errorOrder + " 订单的状态不允许这么操作噢");
+            throw new XxShopException("这些：" + errorOrder + " 订单的状态不允许这么操作噢");
         }
         xxShopOrders.forEach(order -> order.setOrderStatus((byte) status));
         return updateBatchById(xxShopOrders);
@@ -271,7 +271,7 @@ public class XxShopOrderServiceImpl extends ServiceImpl<XxShopOrderMapper, XxSho
         try {
             xxShopOrderItems.forEach(item -> goodsInfoMapper.recoverStockNum(item.getGoodsId(), item.getGoodsCount()));
         } catch (Exception e) {
-            XxShopException.fail(ErrorEnum.ERROR);
+            throw new XxShopException(ErrorEnum.ERROR);
         }
         return true;
     }

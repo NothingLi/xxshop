@@ -61,7 +61,7 @@ public class XxShopOrderApi {
         XxShopUserAddress address = xxShopUserAddressService.getOne(new LambdaQueryWrapper<XxShopUserAddress>()
                 .eq(XxShopUserAddress::getUserId, user.getUserId()).eq(XxShopUserAddress::getAddressId, saveOrderParam.getAddressId()));
         if (ObjectUtils.isEmpty(address)) {
-            XxShopException.fail(ErrorEnum.USER_ADDRESS_DOWN);
+            throw new XxShopException(ErrorEnum.USER_ADDRESS_DOWN);
         }
         List<XxShopShoppingCartItemVO> itemsForSave = cartItemService.getCartItemsForSettle(Arrays.asList(saveOrderParam.getCartItemIds()), user.getUserId());
         //生成订单并返回订单号

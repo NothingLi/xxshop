@@ -19,7 +19,7 @@ import top.bielai.shop.service.XxShopAdminUserService;
 import top.bielai.shop.util.NumberUtil;
 import top.bielai.shop.util.SystemUtil;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
  * @author bielai
@@ -47,7 +47,7 @@ public class XxShopAdminUserServiceImpl extends ServiceImpl<XxShopAdminUserMappe
             String token = getNewToken(System.currentTimeMillis() + "", xxShopAdminUser.getAdminUserId());
             XxShopAdminUserToken adminUserToken = adminUserTokenMapper.selectById(xxShopAdminUser.getAdminUserId());
             //过期时间 48 小时
-            Date expireTime = new Date(System.currentTimeMillis() + 2 * 24 * 3600 * 1000);
+            LocalDateTime expireTime = LocalDateTime.now().plusDays(2);
             if (adminUserToken == null) {
                 adminUserToken = new XxShopAdminUserToken();
                 adminUserToken.setAdminUserId(xxShopAdminUser.getAdminUserId());
@@ -76,7 +76,7 @@ public class XxShopAdminUserServiceImpl extends ServiceImpl<XxShopAdminUserMappe
     public boolean updatePassword(Long adminUserId, UpdateAdminPasswordParam adminPasswordParam) {
         XxShopAdminUser xxShopAdminUser = baseMapper.selectById(adminUserId);
         if (ObjectUtils.isEmpty(xxShopAdminUser)) {
-            XxShopException.fail(ErrorEnum.DATA_NOT_EXIST);
+            throw new XxShopException(ErrorEnum.DATA_NOT_EXIST);
         }
         if (xxShopAdminUser.getLoginPassword().equals(DigestUtils.md5Hex(adminPasswordParam.getOriginalPassword() + Constants.SALT))) {
             xxShopAdminUser.setLoginPassword(DigestUtils.md5Hex(adminPasswordParam.getNewPassword() + Constants.SALT));
@@ -89,7 +89,7 @@ public class XxShopAdminUserServiceImpl extends ServiceImpl<XxShopAdminUserMappe
     public boolean updateName(Long adminUserId, UpdateAdminNameParam adminNameParam) {
         XxShopAdminUser xxShopAdminUser = baseMapper.selectById(adminUserId);
         if (ObjectUtils.isEmpty(xxShopAdminUser)) {
-            XxShopException.fail(ErrorEnum.DATA_NOT_EXIST);
+            throw new XxShopException(ErrorEnum.DATA_NOT_EXIST);
         }
         xxShopAdminUser.setLoginUserName(adminNameParam.getLoginUserName());
         xxShopAdminUser.setNickName(adminNameParam.getNickName());
