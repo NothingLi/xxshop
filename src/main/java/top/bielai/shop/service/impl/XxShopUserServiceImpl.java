@@ -75,7 +75,7 @@ public class XxShopUserServiceImpl extends ServiceImpl<XxShopUserMapper, XxShopU
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Boolean logout(Long userId) {
-        return baseMapper.deleteById(userId) > 0;
+        return userTokenService.removeById(userId);
     }
 
     @Override
