@@ -124,7 +124,7 @@ public class XxShopAdminUploadApi {
         File fileDirectory = new File(Constants.FILE_UPLOAD_DIC + filePath);
         //创建文件
         File destFile = new File(Constants.FILE_UPLOAD_DIC + newFileName);
-        if (!fileDirectory.exists() || !fileDirectory.mkdirs()) {
+        if (!fileDirectory.exists() && !fileDirectory.mkdirs()) {
             throw new IOException("文件夹创建失败,路径为：" + fileDirectory);
         }
         file.transferTo(destFile);
