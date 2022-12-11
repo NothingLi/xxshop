@@ -1,0 +1,28 @@
+* 系统介绍
+    * [概述](/README#概述)
+    * [简介](/README#简介)
+    * [参与人员](/README#参与人员)
+    * [系统功能](/README#系统功能)
+        * [商城端](/README#商城端)
+        * [后台端](/README#后台端)
+* 技术栈
+    * [架构](technologyStack#架构)
+    * [后端](technologyStack#后端)
+    * [前端](technologyStack#前端)
+        * [商城端](technologyStack#商城端)
+        * [后台端](technologyStack#后台端)
+    * [数据库](technologyStack#数据库)
+    * [项目部署](technologyStack#项目部署)
+* 展示
+    * 商城
+        * [首页](show#首页)
+        * [商品列表](show#商品列表)
+        * [商品详情](show#商品详情)
+        * [购物车](show#购物车)
+        * [订单列表](show#订单列表)
+        * [订单详情](show#订单详情)
+    * 后台
+        * [登录](show#后台登陆)
+        * [商品列表](show#后台商品列表)
+        * [订单管理](show#订单管理)
+        * [轮播图配置](show#轮播图配置)
