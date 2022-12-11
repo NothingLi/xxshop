@@ -27,3 +27,6 @@ mybatis-plus:
       logic-delete-value: 1
       logic-not-delete-value: 0
     banner: false
+logging:
+  level:
+    top.bielai.shop.mapper: debug

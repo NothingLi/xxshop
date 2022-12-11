@@ -55,9 +55,9 @@ public class XxShopGoodsApi {
         }
         LambdaQueryWrapper<XxShopGoodsInfo> queryWrapper = new LambdaQueryWrapper<>();
 
-        queryWrapper.like(StringUtils.isNotBlank("keyword"), XxShopGoodsInfo::getGoodsName, keyword)
+        queryWrapper.like(StringUtils.isNotBlank(keyword), XxShopGoodsInfo::getGoodsName, keyword)
                 .or()
-                .like(StringUtils.isNotBlank("keyword"), XxShopGoodsInfo::getGoodsIntro, keyword);
+                .like(StringUtils.isNotBlank(keyword), XxShopGoodsInfo::getGoodsIntro, keyword);
         queryWrapper.eq(goodsCategoryId != null, XxShopGoodsInfo::getGoodsCategoryId, goodsCategoryId);
         queryWrapper.eq(XxShopGoodsInfo::getGoodsSellStatus, Constants.SELL_STATUS_UP);
         if (Constants.ORDER_BY_NEW.equals(orderBy)) {
