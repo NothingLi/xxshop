@@ -18,6 +18,7 @@ import top.bielai.shop.util.ResultGenerator;
 import javax.annotation.Resource;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 
 /**
@@ -79,6 +80,7 @@ public class XxShopAdminCarouselApi {
             throw new XxShopException(ErrorEnum.DATA_NOT_EXIST);
         }
         BeanUtil.copyProperties(carouselEditParam, byId);
+        byId.setUpdateTime(LocalDateTime.now());
         if (xxShopCarouselService.updateById(byId)) {
             return ResultGenerator.genSuccessResult();
         } else {

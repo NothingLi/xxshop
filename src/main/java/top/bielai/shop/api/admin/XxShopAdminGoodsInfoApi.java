@@ -26,6 +26,7 @@ import top.bielai.shop.util.ResultGenerator;
 import javax.annotation.Resource;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 
 /**
@@ -100,6 +101,7 @@ public class XxShopAdminGoodsInfoApi {
         }
         goodsCheck(goodsEditParam.getGoodsCategoryId(), goodsEditParam.getGoodsName(), byId.getGoodsId());
         BeanUtil.copyProperties(goodsEditParam, byId);
+        byId.setUpdateTime(LocalDateTime.now());
         if (goodsInfoService.updateById(byId)) {
             return ResultGenerator.genSuccessResult();
         } else {

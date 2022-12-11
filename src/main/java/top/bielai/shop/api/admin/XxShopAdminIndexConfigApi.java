@@ -21,6 +21,7 @@ import top.bielai.shop.util.ResultGenerator;
 import javax.annotation.Resource;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 
 /**
@@ -109,6 +110,7 @@ public class XxShopAdminIndexConfigApi {
         }
         XxShopIndexConfig indexConfig = new XxShopIndexConfig();
         BeanUtil.copyProperties(indexConfigEditParam, indexConfig);
+        indexConfig.setUpdateTime(LocalDateTime.now());
         if (indexConfigService.updateById(indexConfig)) {
             return ResultGenerator.genSuccessResult();
         } else {

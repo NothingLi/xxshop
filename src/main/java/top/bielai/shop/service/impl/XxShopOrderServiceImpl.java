@@ -184,6 +184,7 @@ public class XxShopOrderServiceImpl extends ServiceImpl<XxShopOrderMapper, XxSho
             throw new XxShopException(ErrorEnum.ORDER_STATUS_ERROR);
         }
         order.setOrderStatus(OrderStatusEnum.ORDER_CLOSED_BY_USER.getOrderStatus());
+        order.setUpdateTime(LocalDateTime.now());
         return baseMapper.updateById(order) > 0 && recoverStockNum(Collections.singletonList(order.getOrderId()));
     }
 
@@ -199,6 +200,7 @@ public class XxShopOrderServiceImpl extends ServiceImpl<XxShopOrderMapper, XxSho
             throw new XxShopException(ErrorEnum.ORDER_STATUS_ERROR);
         }
         xxShopOrder.setOrderStatus(OrderStatusEnum.ORDER_SUCCESS.getOrderStatus());
+        xxShopOrder.setUpdateTime(LocalDateTime.now());
         return baseMapper.updateById(xxShopOrder) > 0;
     }
 
@@ -216,6 +218,7 @@ public class XxShopOrderServiceImpl extends ServiceImpl<XxShopOrderMapper, XxSho
         xxShopOrder.setPayType((byte) payType);
         xxShopOrder.setPayStatus(PayStatusEnum.PAY_SUCCESS.getPayStatus());
         xxShopOrder.setPayTime(LocalDateTime.now());
+        xxShopOrder.setUpdateTime(LocalDateTime.now());
         return baseMapper.updateById(xxShopOrder) > 0;
     }
 

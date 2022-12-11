@@ -21,6 +21,7 @@ import javax.annotation.Resource;
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 
 /**
@@ -91,6 +92,7 @@ public class XxShopAdminGoodsCategoryApi {
             throw new XxShopException(ErrorEnum.DATA_NOT_EXIST);
         }
         BeanUtil.copyProperties(goodsCategoryEditParam, byId);
+        byId.setUpdateTime(LocalDateTime.now());
         if (goodsCategoryService.updateById(byId)) {
             return ResultGenerator.genSuccessResult();
         } else {

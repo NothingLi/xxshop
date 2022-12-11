@@ -61,6 +61,7 @@ public class XxShopAdminUserServiceImpl extends ServiceImpl<XxShopAdminUserMappe
             } else {
                 adminUserToken.setToken(token);
                 adminUserToken.setExpireTime(expireTime);
+                adminUserToken.setUpdateTime(LocalDateTime.now());
                 //更新
                 if (adminUserTokenMapper.updateById(adminUserToken) > 0) {
                     //修改成功后返回

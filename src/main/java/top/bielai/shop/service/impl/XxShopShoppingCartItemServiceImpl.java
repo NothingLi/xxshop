@@ -20,6 +20,7 @@ import top.bielai.shop.mapper.XxShopShoppingCartItemMapper;
 import top.bielai.shop.service.XxShopShoppingCartItemService;
 import top.bielai.shop.util.BeanUtil;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -74,6 +75,7 @@ public class XxShopShoppingCartItemServiceImpl extends ServiceImpl<XxShopShoppin
                 throw new XxShopException(ErrorEnum.CART_ITEM_GOODS_NUM_ERROR);
             }
             exist.setGoodsCount(i);
+            exist.setUpdateTime(LocalDateTime.now());
             return baseMapper.updateById(exist) > 0;
         }
         long count = count(new LambdaQueryWrapper<XxShopShoppingCartItem>().eq(XxShopShoppingCartItem::getUserId, userId));
@@ -104,6 +106,7 @@ public class XxShopShoppingCartItemServiceImpl extends ServiceImpl<XxShopShoppin
             throw new XxShopException(ErrorEnum.CART_ITEM_GOODS_NUM_ERROR);
         }
         exist.setGoodsCount(updateCartItemParam.getGoodsCount());
+        exist.setUpdateTime(LocalDateTime.now());
         return baseMapper.updateById(exist) > 0;
     }
 
@@ -122,6 +125,7 @@ public class XxShopShoppingCartItemServiceImpl extends ServiceImpl<XxShopShoppin
                 throw new XxShopException(ErrorEnum.CART_ITEM_GOODS_NUM_ERROR);
             }
             exist.setGoodsCount(saveCartItemParam.getGoodsCount());
+            exist.setUpdateTime(LocalDateTime.now());
             baseMapper.updateById(exist);
             return getCartItemsForSettle(Collections.singletonList(exist.getCartItemId()), userId);
         } else {

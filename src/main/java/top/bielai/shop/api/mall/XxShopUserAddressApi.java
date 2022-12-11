@@ -19,6 +19,7 @@ import top.bielai.shop.util.Result;
 import top.bielai.shop.util.ResultGenerator;
 
 import javax.annotation.Resource;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -89,6 +90,7 @@ public class XxShopUserAddressApi {
         XxShopUserAddress userAddress = new XxShopUserAddress();
         BeanUtil.copyProperties(updateShopUserAddressParam, userAddress);
         userAddress.setUserId(user.getUserId());
+        userAddress.setUpdateTime(LocalDateTime.now());
         //修改成功
         if (userAddressService.updateById(userAddress)) {
             if (userAddress.getDefaultFlag() == 1) {
